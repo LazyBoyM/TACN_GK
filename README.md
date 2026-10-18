@@ -2,19 +2,26 @@
 
 ## Bản nâng cấp trải nghiệm học
 
+- **Bài I mặc định Học nhớ**: tự nhẩm trước khi mở lựa chọn, trả lời và đánh dấu Chắc/Chưa chắc rồi xem đáp án, nghĩa tiếng Việt và cách nhớ ngay. Các lựa chọn độc lập ở mỗi câu; câu hỏi luân phiên giữa thuật ngữ → định nghĩa và chiều ngược lại.
+- Mỗi lượt tối đa 6 thuật ngữ; câu sai, chưa chắc hoặc cần trợ giúp được đưa lại sau các câu khác, với tối đa một lượt kiểm tra lại cho mỗi câu gốc. Điểm lần đầu được giữ riêng; câu còn yếu tiếp tục nằm trong lịch ôn.
+- Theo dõi toàn bộ 48 thuật ngữ, kể cả câu từng đúng. “Nhớ qua nhiều buổi” cần đúng và chắc ở ít nhất 3 ngày khác nhau; lặp trong cùng ngày không tăng số ngày. Lịch 1/3/7/14 ngày là quy tắc thực hành của ứng dụng, không phải dự đoán đảm bảo trí nhớ.
+
 - **Luyện tập / Thi thử / Cần ôn** là ba luồng riêng. Thi thử gồm 45 câu, cho sửa lựa chọn, đánh dấu và chỉ chấm khi nộp; có bản xem lại từng câu.
 - Tự động lưu phiên riêng cho mỗi phần trên trình duyệt hiện tại. Đổi phần hoặc tải lại trang vẫn giữ tiến độ. Dữ liệu không đồng bộ giữa các thiết bị.
-- Bảng nối có bốn lượt 12 câu hoặc toàn bộ 48 câu; tìm kiếm không làm mất focus, có hoàn tác ghép cặp và xác nhận khi làm lại.
+- Bài I ghép từng câu: thuật ngữ luôn nằm trên các lựa chọn, mặc định 6 câu/lượt; có nhóm 12 câu hoặc đủ 48 câu. Định nghĩa đã dùng được ẩn bớt, có quay lại sửa, hoàn tác, tìm kiếm và danh sách nhảy đến từng câu. Chỉ hiện đúng/sai khi chấm lượt.
+- Chuyển giữa ghép từng câu và luyện 4 đáp án giữ riêng tiến độ của mỗi kiểu luyện.
 - Câu sai được lưu qua các phiên. Câu đã làm sai và trả lời đúng lại được hẹn ôn sau 1, 3, 7, 14 ngày.
 - Âm thanh mặc định tắt; hỗ trợ bàn phím, Escape đóng hộp thoại và tùy chọn giảm chuyển động của thiết bị.
 
 ### Cấu trúc mã
 
-`index.html` và `IT_English_Quiz_Revision.html` dùng chung `questions.js` (148 câu gốc), `app.js` (quiz và bảng nối), `study.js` (phiên học, thi thử, lưu trữ) và `study.css` (giao diện bổ sung). Khi chia sẻ offline, giữ các file này cùng thư mục. Không cần bước build hoặc backend.
+`index.html` và `IT_English_Quiz_Revision.html` dùng chung `questions.js` (148 câu gốc), `app.js` (quiz và logic ghép cặp), `part1.js` (ghép từng câu), `memory.js` (Học nhớ và lịch ôn), `study.js` (phiên học, thi thử, lưu trữ) và `study.css` (giao diện bổ sung). Khi chia sẻ offline, giữ các file này cùng thư mục. Không cần bước build hoặc backend.
 
 ### Kiểm tra
 
 `verify.cjs` kiểm tra các luồng thật bằng Playwright và Chrome: tìm kiếm, nối/hoàn tác, lưu phiên, đổi phần, thi thử/nộp/xem lại, luyện sai, chia lượt và mobile. Khởi chạy static server ở `http://127.0.0.1:4173`, rồi chạy `node verify.cjs` trong môi trường có package `playwright` và Chrome. Có thể đặt `PLAYWRIGHT_MODULE` thành đường dẫn package Playwright nếu dùng runtime có sẵn.
+
+`node verify-memory.cjs` kiểm tra thêm việc giấu đáp án, mức chắc chắn, lịch ôn, lặp câu yếu theo chiều ngược lại, số ngày ghi nhớ, chống ghi điểm trùng, hoàn thành phiên, khôi phục và nâng cấp phiên cũ.
 
 Các mô tả tính năng bên dưới là tài liệu ban đầu; phần cập nhật phía trên mô tả hành vi của bản hiện tại.
 

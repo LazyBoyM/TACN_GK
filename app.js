@@ -123,7 +123,7 @@ let activeMode = 'part1';
       ALPHABET_KEYS.push('A' + String.fromCharCode(65 + i)); // AA..AZ
     }
 
-    let part1SubMode = 'board'; // 'board' (Bảng Nối) | 'choice' (4 đáp án)
+    let part1SubMode = 'memory'; // memory | board | choice
     let matchingState = {
       isGraded: false,
       score: 0,
@@ -148,6 +148,7 @@ let activeMode = 'part1';
       matchingState.mobileViewTab = 'terms';
       matchingState.showCheatSheet = false;
       matchingState.pickerTargetTermId = null;
+      matchingState.focusTermId = null;
 
       // 1. Shuffled definitions with letters A..AV
       const boardData = getBoardData();

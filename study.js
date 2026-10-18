@@ -14,12 +14,22 @@ let undoPair = null;
 let restoring = false;
 let workspace = saved.workspace || 'practice';
 let currentKey = '';
-let boardSize = saved.boardSize || 12;
+let boardSize = saved.boardSize || 6;
 let boardPage = saved.boardPage || 0;
-function getBoardData() { return boardSize === 48 ? DATASET.part1Data : DATASET.part1Data.slice(boardPage*12,boardPage*12+12); }
+function getBoardData() { return DATASET.part1Data.slice(boardPage*boardSize,(boardPage+1)*boardSize); }
+// Introduce the memory mode once, preserving existing board/choice sessions.
+if(!saved.memoryRevision) {
+  const old=saved.sessions['practice:part1'];
+  if(old && ['board','choice'].includes(old.part1SubMode)) {
+    saved.part1Modes ||= {};
+    saved.part1Modes[old.part1SubMode]=JSON.parse(JSON.stringify(old));
+    delete saved.sessions['practice:part1'];
+  }
+  saved.part1Preference='memory';saved.memoryRevision=1;
+}
+if(validMemorySession(saved.memorySession))memorySession=saved.memorySession;
 const originalBuild = buildQuestionSet;
 const originalRender = renderCurrentQuestion;
-const originalBoard = renderMatchingBoard;
 const originalFeedback = showFeedback;
 const shell = document.querySelector('.app-shell');
 const bar = document.createElement('section');
@@ -31,22 +41,25 @@ live.id = 'study-notice'; live.setAttribute('role','status'); shell.append(live)
 function notice(message) { live.textContent = message; }
 function persist() {
   try { localStorage.setItem(STORE, JSON.stringify(saved)); }
-  catch { document.getElementById('save-status').textContent = 'Không lưu được trên thiết bị này; hãy giữ trang đang mở.'; }
+  catch { const message='Không lưu được trên thiết bị này; hãy giữ trang đang mở.';document.getElementById('save-status').textContent=message;notice(message); }
 }
 function snapshot() {
   if (restoring || !currentKey) return;
   saved.sessions[currentKey] = {activeMode,part1SubMode,questions,curIdx,correctCount,wrongCount,missedItems,isReviewingMissed,isAnswered,matchingState,exam};
+  if(workspace==='practice'&&activeMode==='part1')saved.part1Preference=part1SubMode;
+  if(memorySession)saved.memorySession=memorySession;
   saved.lastMode = activeMode; saved.workspace = workspace; saved.muted = audioMuted; saved.boardSize=boardSize; saved.boardPage=boardPage;
   persist(); updateNavigation();
 }
 function weakQuestions() {
-  return Object.values(saved.history).filter(h => h.wrong > 0 && (!h.due || h.due <= Date.now())).map(h => h.question);
+  return Object.values(saved.history).filter(h => (h.right > 0 || h.wrong > 0) && (!h.due || h.due <= Date.now())).map(h => h.question);
 }
 function record(q, correct) {
   if (!q.id) return;
   const h = saved.history[q.id] || {question:q,right:0,wrong:0,streak:0};
   h.question = q; h[correct ? 'right' : 'wrong']++;
   h.streak = correct ? h.streak + 1 : 0;
+  if(!correct&&h.memory)h.memory.days=[];
   h.due = Date.now() + (correct ? [1,3,7,14][Math.min(h.streak-1,3)] * 86400000 : 0);
   saved.history[q.id] = h;
 }
@@ -61,7 +74,7 @@ function updateNavigation() {
   document.querySelector('[data-mode="all"]').hidden = true;
   document.getElementById('study-context').innerHTML = workspace === 'exam'
     ? '<strong>Thi thử tổng hợp · 45 câu</strong><p>15 câu mỗi phần. Có thể sửa đáp án trước khi nộp; kết quả chỉ hiện khi kết thúc.</p>'
-    : workspace === 'review' ? '<strong>Ôn lại phần chưa vững</strong><p>Câu sai được lưu qua các phiên. Trả lời đúng để giãn lịch ôn 1, 3, 7 và 14 ngày.</p>'
+    : workspace === 'review' ? '<strong>Ôn lại câu đến lịch</strong><p>Câu từng đúng cũng cần ôn lại. Để luyện tự nhớ và mức chắc chắn cho thuật ngữ, chọn Bài 1 → Học nhớ.</p>'
     : '<strong>Học từng bước, nhớ lâu hơn</strong><p>Chọn phần bên dưới. Phiên đang học được tự động giữ lại khi đổi phần hoặc mở lại trang.</p>';
   document.getElementById('btn-shuffle').title = 'Bắt đầu phiên mới (R)';
   document.getElementById('audio-label').textContent = audioMuted ? 'Tắt âm' : 'Âm thanh';
@@ -72,9 +85,15 @@ function enter(mode, fresh=false) {
   snapshot();
   currentKey = workspace + ':' + mode;
   const state = fresh ? null : saved.sessions[currentKey];
+  if(workspace==='practice'&&mode==='part1'&&!state)part1SubMode=saved.part1Preference||'memory';
   restoring = true;
+  undoPair = null;
   exam = null; activeMode = mode;
-  if (state && Array.isArray(state.questions) && state.matchingState && Number.isInteger(state.curIdx)) {
+  if(workspace==='practice'&&mode==='part1'&&(state?.part1SubMode||part1SubMode)==='memory') {
+    part1SubMode='memory';
+    if(fresh||!validMemorySession(memorySession))memorySession=createMemorySession();
+    renderMemoryStudy();
+  } else if (state && Array.isArray(state.questions) && state.matchingState && Number.isInteger(state.curIdx)) {
     ({part1SubMode,questions,curIdx,correctCount,wrongCount,missedItems,isReviewingMissed,matchingState,exam} = JSON.parse(JSON.stringify(state)));
     if (workspace === 'practice' && mode === 'part1' && part1SubMode === 'board') renderMatchingBoard();
     else {
@@ -92,13 +111,17 @@ function enter(mode, fresh=false) {
     if (workspace === 'exam') exam={answers:{},flags:{},started:Date.now(),submitted:false};
     originalBuild(mode);
   }
-  restoring=false; undoPair=null; snapshot();
+  restoring=false; snapshot();
 }
 buildQuestionSet = function(mode) {
   if (mode === 'all') workspace='exam';
   enter(mode, mode === activeMode && currentKey === workspace + ':' + mode);
 };
 function startFresh() {
+  if(workspace==='practice'&&activeMode==='part1'&&part1SubMode==='memory') {
+    if(memorySession?.stage!=='complete'&&!confirm('Bắt đầu lượt học mới? Lịch ôn và kết quả đã ghi vẫn được giữ.'))return;
+    newMemoryRound();return;
+  }
   if ((questions.length && curIdx < questions.length) || (matchingState.terms.length && !matchingState.isGraded)) {
     if (!confirm('Bắt đầu phiên mới? Kết quả đang làm của phiên này sẽ được thay thế.')) return;
   }
@@ -118,6 +141,7 @@ document.addEventListener('click', e => {
   if (e.target.closest('#btn-audio')) setTimeout(snapshot,0);
 },true);
 window.addEventListener('keydown',e=>{
+  if(workspace==='practice'&&activeMode==='part1'&&part1SubMode==='memory'&&e.key.toLowerCase()!=='r') {handleMemoryKey(e);return;}
   if (e.key === 'Escape') {
     if (matchingState.pickerTargetTermId) closeDefPicker();
     else if (matchingState.showCheatSheet) toggleCheatSheet();
@@ -125,9 +149,15 @@ window.addEventListener('keydown',e=>{
   if (e.key.toLowerCase()==='r' && !e.ctrlKey && !e.metaKey && !e.altKey && !e.repeat && !e.target.matches('input,textarea,select') && !e.target.isContentEditable) {
     e.preventDefault(); e.stopImmediatePropagation(); startFresh();
   }
+  if(workspace==='practice'&&activeMode==='part1'&&part1SubMode==='board'&&!e.target.matches('input,textarea,select')&&!e.target.isContentEditable) {
+    if(e.key==='ArrowRight'||e.key==='ArrowLeft') {e.preventDefault();moveGuidedTerm(e.key==='ArrowRight'?1:-1);}
+    e.stopImmediatePropagation();
+  }
 },true);
 renderCurrentQuestion = function() {
+  document.body.classList.remove('guided-study');
   shell.classList.remove('is-matching-mode');
+  document.querySelector('.shortcuts-footer').hidden=false;
   if (workspace === 'review' && !questions.length) {
     document.getElementById('active-card-container').innerHTML='<article class="console-card"><h2>Chưa có câu cần ôn</h2><p>Câu trả lời sai sẽ xuất hiện ở đây. Những câu đã trả lời đúng sẽ quay lại khi đến lịch ôn.</p><button class="btn-primary" id="back-practice">Về luyện tập</button></article>';
     document.getElementById('back-practice').onclick=()=>bar.querySelector('[data-workspace="practice"]').click();
@@ -136,7 +166,7 @@ renderCurrentQuestion = function() {
   originalRender();
   if (workspace === 'practice' && activeMode === 'part1') {
     const toggle=document.createElement('div'); toggle.className='mode-switch';
-    toggle.innerHTML='<button class="btn-quiet" onclick="setPart1SubMode(\'board\')">Bảng nối 48 câu</button><span>Đang luyện 4 đáp án</span>';
+    toggle.innerHTML=part1ModeNav();
     document.getElementById('active-card-container').prepend(toggle);
   }
   if (exam && !exam.submitted && curIdx < questions.length) renderExamControls();
@@ -200,28 +230,11 @@ window.pairTermWithLetter=(id,letter)=>{
 };
 window.undoMatching=()=>{if(!undoPair)return;matchingState=undoPair;undoPair=null;renderMatchingBoard();snapshot();notice('Đã hoàn tác lần nối cuối.');};
 renderMatchingBoard=function(){
-  const focused=document.activeElement;
-  const modalWasOpen=!!document.querySelector('.modal-overlay');
-  originalBoard(); shell.classList.add('is-matching-mode'); syncMatchingMetrics();
-  const tools=document.querySelector('.matching-actions');
-  if(tools){const b=document.createElement('button');b.className='btn-quiet';b.textContent='Hoàn tác';b.disabled=!undoPair||matchingState.isGraded;b.onclick=undoMatching;tools.prepend(b);}
-  const batches=document.createElement('div');batches.className='board-batches';
-  batches.innerHTML=`<label for="board-batch">Lượt luyện</label><select id="board-batch">${[0,1,2,3].map(i=>`<option value="${i}" ${boardSize===12&&boardPage===i?'selected':''}>Câu ${i*12+1}–${i*12+12}</option>`).join('')}<option value="all" ${boardSize===48?'selected':''}>Toàn bộ 48 câu</option></select><span>Ghép cặp theo lượt nhỏ để dễ tập trung.</span>`;
-  document.querySelector('.matching-grid').before(batches);
-  document.getElementById('board-batch').onchange=e=>{
-    const value=e.target.value;
-    if(matchingState.terms.some(t=>t.userLetter)&&!matchingState.isGraded&&!confirm('Đổi lượt sẽ bắt đầu bảng nối mới. Tiếp tục?')){renderMatchingBoard();return;}
-    boardSize=value==='all'?48:12;boardPage=value==='all'?0:Number(value);undoPair=null;initMatchingBoard();snapshot();
-  };
-  const range=document.querySelector('.col-terms .matching-col-header>span');if(range)range.textContent=matchingState.terms.length+' thuật ngữ';
-  document.querySelectorAll('.def-item').forEach(el=>{el.tabIndex=0;el.setAttribute('role','button');el.onkeydown=e=>{if(e.target===el&&(e.key==='Enter'||e.key===' ')){e.preventDefault();e.stopPropagation();el.click();}};});
-  document.querySelectorAll('.term-header-line').forEach(el=>{el.tabIndex=0;el.setAttribute('role','button');el.onkeydown=e=>{if(e.target===el&&(e.key==='Enter'||e.key===' ')){e.preventDefault();e.stopPropagation();el.click();}};});
-  document.querySelectorAll('.modal-sheet').forEach(el=>{
-    el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-label',matchingState.showCheatSheet?'Tra cứu thuật ngữ':'Chọn định nghĩa');
-    el.onkeydown=e=>{if(e.key!=='Tab')return;const items=[...el.querySelectorAll('button,input,[tabindex="0"]')].filter(n=>!n.disabled&&!n.hidden);const first=items[0],last=items.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}};
-    if(!modalWasOpen)el.querySelector('input,button')?.focus();
-  });
-  if(modalWasOpen&&!document.querySelector('.modal-sheet'))document.querySelector('.term-header-line')?.focus();
+  document.body.classList.add('guided-study');
+  isAnswered=false;
+  shell.classList.remove('is-matching-mode');
+  renderGuidedMatching(); syncMatchingMetrics();
+  document.querySelector('.shortcuts-footer').hidden=true;
   document.querySelector('.track-line').setAttribute('aria-valuenow',parseFloat(document.getElementById('track-fill').style.width)||0);
   snapshot();
 };
@@ -230,13 +243,23 @@ window.gradeMatchingBoard=()=>{
   if(matchingState.isGraded)return;
   const left=matchingState.terms.filter(t=>!t.userLetter).length;
   if(left&&!confirm(`Còn ${left} câu chưa nối. Chấm bài ngay?`))return;
+  matchingState.searchQuery='';
   gradeOriginal();
   matchingState.terms.forEach(t=>record(getQuestionsForMode('part1').find(q=>q.id==='part1:'+t.id),!!t.isCorrect));snapshot();
 };
 const resetOriginal=window.resetMatchingBoard;
 window.resetMatchingBoard=()=>{if(confirm('Xóa các cặp đã nối để làm lại?')){undoPair=null;resetOriginal();snapshot();}};
 window.shuffleMatchingDefs=()=>{if(confirm('Trộn lại sẽ xóa các cặp đang nối. Tiếp tục?')){undoPair=null;initMatchingBoard();snapshot();}};
-window.setPart1SubMode=subMode=>{snapshot();part1SubMode=subMode;delete saved.sessions['practice:part1'];enter('part1',true);};
+window.setPart1SubMode=subMode=>{
+  if(subMode===part1SubMode)return;
+  snapshot();
+  saved.part1Modes ||= {};
+  saved.part1Modes[part1SubMode]=JSON.parse(JSON.stringify(saved.sessions['practice:part1']));
+  const target=saved.part1Modes[subMode];
+  if(target)saved.sessions['practice:part1']=target;else delete saved.sessions['practice:part1'];
+  part1SubMode=subMode;saved.part1Preference=subMode;restoring=true;
+  enter('part1',!target);
+};
 window.addEventListener('pagehide',snapshot);
 audioMuted=saved.muted;
 enter(workspace==='practice'?(saved.lastMode==='all'?'part1':saved.lastMode||'part1'):'all');
