@@ -2,6 +2,11 @@
 
 ## Bản nâng cấp trải nghiệm học
 
+- **Bài II tự điền từ**: gõ từ/cụm từ không có lựa chọn. Gợi ý theo mức: nghĩa tiếng Việt → chữ đầu → xem đáp án. Giữ 50 câu gốc; hai câu trùng nội dung được học chung thành 49 mẫu, không xóa câu khỏi bài thi.
+- Sau khi trả lời, xem cụm từ cần nhớ, lưu ý dạng từ và phần chính tả khác đáp án. Câu sai có ô gõ lại; thao tác chép lại không được tính là tự nhớ đúng. Câu dùng gợi ý/sai quay lại sau các câu khác và vẫn nằm trong lịch ôn.
+- **Thi viết Bài II** gồm đủ 50 câu, có lưu bản nháp, đánh dấu, quay lại sửa và chỉ chấm khi nộp. Bài II trong thi thử tổng hợp và hàng đợi ôn cũng yêu cầu tự gõ từ.
+- Chấm theo đáp án đề cương, bỏ qua hoa/thường và khoảng trắng thừa; không tự chấp nhận lỗi chính tả hoặc từ đồng nghĩa chưa được xác nhận. Lịch ôn theo dõi việc tự điền đúng ở các ngày khác nhau, giữ riêng kết quả lần đầu và kết quả có trợ giúp.
+
 - **Bài I mặc định Học nhớ**: tự nhẩm trước khi mở lựa chọn, trả lời và đánh dấu Chắc/Chưa chắc rồi xem đáp án, nghĩa tiếng Việt và cách nhớ ngay. Các lựa chọn độc lập ở mỗi câu; câu hỏi luân phiên giữa thuật ngữ → định nghĩa và chiều ngược lại.
 - Mỗi lượt tối đa 6 thuật ngữ; câu sai, chưa chắc hoặc cần trợ giúp được đưa lại sau các câu khác, với tối đa một lượt kiểm tra lại cho mỗi câu gốc. Điểm lần đầu được giữ riêng; câu còn yếu tiếp tục nằm trong lịch ôn.
 - Theo dõi toàn bộ 48 thuật ngữ, kể cả câu từng đúng. “Nhớ qua nhiều buổi” cần đúng và chắc ở ít nhất 3 ngày khác nhau; lặp trong cùng ngày không tăng số ngày. Lịch 1/3/7/14 ngày là quy tắc thực hành của ứng dụng, không phải dự đoán đảm bảo trí nhớ.
@@ -11,11 +16,11 @@
 - Bài I ghép từng câu: thuật ngữ luôn nằm trên các lựa chọn, mặc định 6 câu/lượt; có nhóm 12 câu hoặc đủ 48 câu. Định nghĩa đã dùng được ẩn bớt, có quay lại sửa, hoàn tác, tìm kiếm và danh sách nhảy đến từng câu. Chỉ hiện đúng/sai khi chấm lượt.
 - Chuyển giữa ghép từng câu và luyện 4 đáp án giữ riêng tiến độ của mỗi kiểu luyện.
 - Câu sai được lưu qua các phiên. Câu đã làm sai và trả lời đúng lại được hẹn ôn sau 1, 3, 7, 14 ngày.
-- Âm thanh mặc định tắt; hỗ trợ bàn phím, Escape đóng hộp thoại và tùy chọn giảm chuyển động của thiết bị.
+- Âm thanh mặc định tắt; hỗ trợ bàn phím và tùy chọn giảm chuyển động của thiết bị.
 
 ### Cấu trúc mã
 
-`index.html` và `IT_English_Quiz_Revision.html` dùng chung `questions.js` (148 câu gốc), `app.js` (quiz và logic ghép cặp), `part1.js` (ghép từng câu), `memory.js` (Học nhớ và lịch ôn), `study.js` (phiên học, thi thử, lưu trữ) và `study.css` (giao diện bổ sung). Khi chia sẻ offline, giữ các file này cùng thư mục. Không cần bước build hoặc backend.
+`index.html` và `IT_English_Quiz_Revision.html` dùng chung `questions.js` (148 câu gốc), `app.js` (quiz và logic ghép cặp), `part1.js` (ghép từng câu), `memory.js` (Học nhớ và lịch ôn Bài I), `writing.js` (học điền từ, thi viết và lịch ôn Bài II), `study.js` (phiên học, thi thử, lưu trữ), `base.css` (kiểu giao diện chung) và `study.css` (giao diện bổ sung). Khi chia sẻ offline, giữ các file này cùng thư mục. Không cần bước build hoặc backend.
 
 ### Kiểm tra
 
@@ -23,41 +28,10 @@
 
 `node verify-memory.cjs` kiểm tra thêm việc giấu đáp án, mức chắc chắn, lịch ôn, lặp câu yếu theo chiều ngược lại, số ngày ghi nhớ, chống ghi điểm trùng, hoàn thành phiên, khôi phục và nâng cấp phiên cũ.
 
-Các mô tả tính năng bên dưới là tài liệu ban đầu; phần cập nhật phía trên mô tả hành vi của bản hiện tại.
+`node verify-writing.cjs` kiểm tra học điền từ, gợi ý, chính tả/dạng từ, gõ lại không tăng mức thành thạo, lịch lặp hữu hạn, bài thi viết 50 câu, câu tự điền trong thi tổng hợp/ôn tập, lưu bản nháp, nâng cấp dữ liệu cũ và mobile.
 
-Ứng dụng web ôn thi trắc nghiệm & flashcard môn **Tiếng Anh Chuyên Ngành Công Nghệ Thông Tin (English for Information Technology)**.
+Ảnh kiểm tra được lưu vào `.test-artifacts/` và không đưa lên Git.
 
-Được thiết kế tối ưu cho phương pháp **Active Recall** (Tự nhớ trước - Mổ xẻ từ khóa sau), hỗ trợ đặc biệt cho các bạn sinh viên ngại dịch câu dài.
+### Mở ứng dụng
 
----
-
-## 🌟 Tính Năng Nổi Bật
-
-- **Toàn diện 148 câu đề cương cuối kỳ**:
-  - **Phần I (48 câu):** Matching thuật ngữ CNTT & Định nghĩa.
-  - **Phần II (50 câu):** Điền từ vào chỗ trống (Fill in the blanks).
-  - **Phần III (50 câu):** Đúng / Sai (True / False) nhận diện bẫy ngữ nghĩa.
-  - **Thi thử tổng hợp:** Rút ngẫu nhiên câu hỏi từ cả 3 phần.
-- **Tự động Random / Shuffle:** Mỗi lần bắt đầu hoặc bấm <kbd>R</kbd>, thứ tự câu hỏi và đáp án A, B, C, D được xáo trộn 100%.
-- **Active Recall nguyên bản:** Lúc làm bài câu hỏi giữ nguyên bản 100% không spoil gợi ý.
-- **Bóc tách từ khóa sau khi trả lời:**
-  - Tự động bôi sáng từ khóa cốt lõi ngay trên đề bài.
-  - Hiển thị dấu hiệu nhận diện trong đề + Mẹo suy luận không cần dịch.
-  - Dịch nghĩa toàn câu chuẩn xác tiếng Việt.
-- **Luyện riêng câu làm sai:** Tự động lưu các câu sai vào hàng đợi riêng để cày lại đến khi đạt 100%.
-- **Hỗ trợ phím tắt cực nhanh:**
-  - <kbd>1</kbd> - <kbd>4</kbd> hoặc <kbd>A</kbd> - <kbd>D</kbd>: Chọn đáp án.
-  - <kbd>T</kbd> / <kbd>F</kbd>: Trả lời True / False.
-  - <kbd>Space</kbd> / <kbd>Enter</kbd>: Câu tiếp theo.
-  - <kbd>R</kbd>: Trộn đề mới ngẫu nhiên.
-- **Chuẩn giao diện Impeccable:** Tông màu Dark Obsidian, font Be Vietnam Pro & IBM Plex Mono, độ tương phản cao đạt chuẩn WCAG AA.
-
----
-
-## 🚀 Cách Dùng Trực Tiếp
-
-1. Mở trực tiếp file `index.html` trong bất kỳ trình duyệt nào (Chrome, Edge, Firefox, Cốc Cốc).
-2. Hoặc kích hoạt **GitHub Pages**:
-   - Vào **Settings** > **Pages** trên repository này.
-   - Chọn **Branch: main** và thư mục **/ (root)** rồi bấm **Save**.
-   - Website sẽ chạy trực tiếp online trên cả máy tính lẫn điện thoại!
+Mở `index.html` trực tiếp, hoặc phục vụ thư mục bằng một static server. Để dùng GitHub Pages, chọn nhánh `main` và thư mục gốc trong Settings → Pages. Không cần cài đặt hay build ứng dụng.

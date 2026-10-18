@@ -1,0 +1,9 @@
+# Local agent tools and dependencies
+/.agents/
+/node_modules/
+
+# Generated browser verification screenshots
+/.test-artifacts/
+
+# Microsoft Office working files (do not delete while Word is open)
+~$*

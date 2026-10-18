@@ -28,6 +28,13 @@ if(!saved.memoryRevision) {
   saved.part1Preference='memory';saved.memoryRevision=1;
 }
 if(validMemorySession(saved.memorySession))memorySession=saved.memorySession;
+if(!saved.writingRevision) {
+  if(saved.sessions['practice:part2'])saved.part2LegacySession=JSON.parse(JSON.stringify(saved.sessions['practice:part2']));
+  saved.part2Preference='learn';saved.writingRevision=1;
+}
+part2Mode=saved.part2Preference==='exam'?'exam':'learn';
+if(validWritingSession(saved.writingSession))writingSession=saved.writingSession;
+if(validWritingExam(saved.writingExam))writingExam=saved.writingExam;
 const originalBuild = buildQuestionSet;
 const originalRender = renderCurrentQuestion;
 const originalFeedback = showFeedback;
@@ -48,11 +55,17 @@ function snapshot() {
   saved.sessions[currentKey] = {activeMode,part1SubMode,questions,curIdx,correctCount,wrongCount,missedItems,isReviewingMissed,isAnswered,matchingState,exam};
   if(workspace==='practice'&&activeMode==='part1')saved.part1Preference=part1SubMode;
   if(memorySession)saved.memorySession=memorySession;
+  if(writingSession)saved.writingSession=writingSession;
+  if(writingExam)saved.writingExam=writingExam;
+  if(workspace==='practice'&&activeMode==='part2')saved.part2Preference=part2Mode;
   saved.lastMode = activeMode; saved.workspace = workspace; saved.muted = audioMuted; saved.boardSize=boardSize; saved.boardPage=boardPage;
   persist(); updateNavigation();
 }
 function weakQuestions() {
-  return Object.values(saved.history).filter(h => (h.right > 0 || h.wrong > 0) && (!h.due || h.due <= Date.now())).map(h => h.question);
+  const due=Object.values(saved.history).filter(h => (h.right > 0 || h.wrong > 0) && (!h.due || h.due <= Date.now())).map(h=>h.question);
+  const unique=new Map();
+  due.forEach(q=>{const item=isWrittenQuestion(q)?writingItem(Number(q.id.split(':')[1])):null;const question=item?writingQuestion(item):q;unique.set(question.id,question);});
+  return [...unique.values()];
 }
 function record(q, correct) {
   if (!q.id) return;
@@ -73,8 +86,8 @@ function updateNavigation() {
   });
   document.querySelector('[data-mode="all"]').hidden = true;
   document.getElementById('study-context').innerHTML = workspace === 'exam'
-    ? '<strong>Thi thử tổng hợp · 45 câu</strong><p>15 câu mỗi phần. Có thể sửa đáp án trước khi nộp; kết quả chỉ hiện khi kết thúc.</p>'
-    : workspace === 'review' ? '<strong>Ôn lại câu đến lịch</strong><p>Câu từng đúng cũng cần ôn lại. Để luyện tự nhớ và mức chắc chắn cho thuật ngữ, chọn Bài 1 → Học nhớ.</p>'
+    ? '<strong>Thi thử tổng hợp · 45 câu</strong><p>15 câu mỗi phần. Bài 2 tự gõ từ, không có lựa chọn. Kết quả chỉ hiện khi nộp.</p>'
+    : workspace === 'review' ? '<strong>Ôn lại câu đến lịch</strong><p>Câu từng đúng cũng cần ôn lại. Bài 2 luôn tự điền; chọn Học điền từ trong Bài 2 nếu cần gợi ý và luyện cách viết.</p>'
     : '<strong>Học từng bước, nhớ lâu hơn</strong><p>Chọn phần bên dưới. Phiên đang học được tự động giữ lại khi đổi phần hoặc mở lại trang.</p>';
   document.getElementById('btn-shuffle').title = 'Bắt đầu phiên mới (R)';
   document.getElementById('audio-label').textContent = audioMuted ? 'Tắt âm' : 'Âm thanh';
@@ -89,7 +102,11 @@ function enter(mode, fresh=false) {
   restoring = true;
   undoPair = null;
   exam = null; activeMode = mode;
-  if(workspace==='practice'&&mode==='part1'&&(state?.part1SubMode||part1SubMode)==='memory') {
+  if(workspace==='practice'&&mode==='part2') {
+    part2Mode=saved.part2Preference==='exam'?'exam':'learn';
+    if(part2Mode==='exam'){if(fresh||!validWritingExam(writingExam))writingExam=createWritingExam();renderWritingExam();}
+    else{if(fresh||!validWritingSession(writingSession))writingSession=createWritingSession();renderWritingStudy();}
+  } else if(workspace==='practice'&&mode==='part1'&&(state?.part1SubMode||part1SubMode)==='memory') {
     part1SubMode='memory';
     if(fresh||!validMemorySession(memorySession))memorySession=createMemorySession();
     renderMemoryStudy();
@@ -100,7 +117,7 @@ function enter(mode, fresh=false) {
       renderCurrentQuestion();
       if (state.isAnswered && curIdx < questions.length && !exam) {
         isAnswered = true;
-        document.querySelectorAll('.choice-row,.binary-btn').forEach(b => b.disabled=true);
+        document.querySelectorAll('.choice-row,.binary-btn,#mixed-writing-form input,#mixed-writing-form button').forEach(b => b.disabled=true);
         const q=questions[curIdx]; originalFeedback(q.lastCorrect,q);
       }
     }
@@ -118,6 +135,11 @@ buildQuestionSet = function(mode) {
   enter(mode, mode === activeMode && currentKey === workspace + ':' + mode);
 };
 function startFresh() {
+  if(workspace==='practice'&&activeMode==='part2') {
+    if(part2Mode==='exam'){restartWritingExam();return;}
+    if(writingSession?.stage!=='complete'&&!confirm('Bắt đầu lượt điền từ mới? Các kết quả và lịch ôn đã ghi vẫn được giữ.'))return;
+    newWritingRound();return;
+  }
   if(workspace==='practice'&&activeMode==='part1'&&part1SubMode==='memory') {
     if(memorySession?.stage!=='complete'&&!confirm('Bắt đầu lượt học mới? Lịch ôn và kết quả đã ghi vẫn được giữ.'))return;
     newMemoryRound();return;
@@ -142,10 +164,6 @@ document.addEventListener('click', e => {
 },true);
 window.addEventListener('keydown',e=>{
   if(workspace==='practice'&&activeMode==='part1'&&part1SubMode==='memory'&&e.key.toLowerCase()!=='r') {handleMemoryKey(e);return;}
-  if (e.key === 'Escape') {
-    if (matchingState.pickerTargetTermId) closeDefPicker();
-    else if (matchingState.showCheatSheet) toggleCheatSheet();
-  }
   if (e.key.toLowerCase()==='r' && !e.ctrlKey && !e.metaKey && !e.altKey && !e.repeat && !e.target.matches('input,textarea,select') && !e.target.isContentEditable) {
     e.preventDefault(); e.stopImmediatePropagation(); startFresh();
   }
@@ -164,6 +182,7 @@ renderCurrentQuestion = function() {
     correctCount=wrongCount=0; syncMetrics(); snapshot(); return;
   }
   originalRender();
+  if(curIdx<questions.length&&isWrittenQuestion(questions[curIdx]))enhanceWrittenQuiz(questions[curIdx]);
   if (workspace === 'practice' && activeMode === 'part1') {
     const toggle=document.createElement('div'); toggle.className='mode-switch';
     toggle.innerHTML=part1ModeNav();
@@ -205,13 +224,13 @@ window.submitExam=()=>{
   const left=questions.length-Object.keys(exam.answers).length;
   if (!confirm(left?`Còn ${left} câu chưa trả lời. Nộp bài ngay?`:'Nộp bài và xem kết quả?')) return;
   correctCount=0; wrongCount=0; missedItems=[];
-  questions.forEach((q,i)=>{const correct=String(exam.answers[i]??'').trim().toLowerCase()===String(q.correctAnswer).trim().toLowerCase();if(correct)correctCount++;else {wrongCount++;missedItems.push(q);} record(q,correct);});
+  questions.forEach((q,i)=>{const value=exam.answers[i]??'',correct=writtenCorrect(q,value);if(correct)correctCount++;else {wrongCount++;missedItems.push(q);} if(isWrittenQuestion(q)){const item=writingItem(Number(q.id.split(':')[1]));recordWriting(item,String(value),correct,false,classifyWritten(value,q.correctAnswer));}else record(q,correct);});
   exam.submitted=true; curIdx=questions.length; renderCurrentQuestion();
   snapshot();
 };
 function renderExamReview() {
   const review=document.createElement('section'); review.className='exam-review';
-  review.innerHTML='<h2>Xem lại bài thi</h2>'+questions.map((q,i)=>`<details><summary>${i+1}. ${escapeHTML(q.prompt)} <span>${String(exam.answers[i]??'')===String(q.correctAnswer)?'✓':'✕'}</span></summary><p>Bạn chọn: ${escapeHTML(exam.answers[i]??'Chưa trả lời')}</p><p>Đáp án: <strong>${escapeHTML(q.correctAnswer)}</strong></p><p>${escapeHTML(q.explanation)}</p></details>`).join('');
+  review.innerHTML='<h2>Xem lại bài thi</h2>'+questions.map((q,i)=>`<details><summary>${i+1}. ${escapeHTML(q.prompt)} <span>${writtenCorrect(q,exam.answers[i]??'')?'✓':'✕'}</span></summary><p>Bạn ${isWrittenQuestion(q)?'điền':'chọn'}: ${escapeHTML(exam.answers[i]??'Chưa trả lời')}</p><p>Đáp án: <strong>${escapeHTML(q.correctAnswer)}</strong></p><p>${escapeHTML(q.explanation)}</p></details>`).join('');
   document.getElementById('active-card-container').append(review);
 }
 window.reviewMissedQueue=()=>{
@@ -247,9 +266,6 @@ window.gradeMatchingBoard=()=>{
   gradeOriginal();
   matchingState.terms.forEach(t=>record(getQuestionsForMode('part1').find(q=>q.id==='part1:'+t.id),!!t.isCorrect));snapshot();
 };
-const resetOriginal=window.resetMatchingBoard;
-window.resetMatchingBoard=()=>{if(confirm('Xóa các cặp đã nối để làm lại?')){undoPair=null;resetOriginal();snapshot();}};
-window.shuffleMatchingDefs=()=>{if(confirm('Trộn lại sẽ xóa các cặp đang nối. Tiếp tục?')){undoPair=null;initMatchingBoard();snapshot();}};
 window.setPart1SubMode=subMode=>{
   if(subMode===part1SubMode)return;
   snapshot();

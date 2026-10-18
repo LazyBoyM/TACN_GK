@@ -1,5 +1,9 @@
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const assert=require('assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const artifacts=path.join(__dirname,'.test-artifacts');
+fs.mkdirSync(artifacts,{recursive:true});
 (async()=>{
  const browser=await chromium.launch({headless:true,channel:'chrome'});
  const page=await browser.newPage({viewport:{width:1440,height:1000}});
@@ -86,9 +90,9 @@ const assert=require('assert/strict');
  // Review candidates contain due items and exclude future-due items unless explicitly early.
  assert(await page.evaluate(()=>memoryCandidates().every(q=>!memoryHistory(q.id)||memoryHistory(q.id).due<=Date.now())));
  await page.evaluate(()=>newMemoryRound());
- await page.screenshot({path:'memory-desktop.png',fullPage:true});
+ await page.screenshot({path:path.join(artifacts,'memory-desktop.png'),fullPage:true});
  await page.setViewportSize({width:390,height:844});
- await page.screenshot({path:'memory-mobile.png',fullPage:true});
+ await page.screenshot({path:path.join(artifacts,'memory-mobile.png'),fullPage:true});
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
  await page.getByRole('button',{name:'Hiện lựa chọn',exact:true}).click();
  assert.equal(await page.locator('.memory-options button').count(),4);
@@ -96,7 +100,7 @@ const assert=require('assert/strict');
  await page.locator(`[data-memory-id="${answer}"]`).click();
  await page.getByRole('button',{name:'Chưa chắc',exact:true}).click();
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
- await page.screenshot({path:'memory-mobile-feedback.png',fullPage:true});
+ await page.screenshot({path:path.join(artifacts,'memory-mobile-feedback.png'),fullPage:true});
  // Even an entirely unsuccessful round must terminate and retain all weak cards.
  const stress=await browser.newPage();stress.on('pageerror',e=>errors.push(e.message));
  await stress.goto('http://127.0.0.1:4173');
