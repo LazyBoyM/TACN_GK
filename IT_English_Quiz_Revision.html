@@ -2,35 +2,48 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IT English Study Console</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <meta name="theme-color" content="#090d16">
+  <meta name="description" content="Hệ thống luyện thi Tiếng Anh Chuyên Ngành (TACN) giữa kỳ thông minh với phương pháp Active Recall, dấu hiệu bắt bài và tối ưu di động.">
+  <title>IT English Study Console • Active Recall</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0b0f17;
-      --surface-1: #111827;
-      --surface-2: #182234;
-      --surface-3: #1f2d44;
+      --bg: #090d16;
+      --bg-surface: #0f1523;
+      --surface-1: rgba(17, 24, 39, 0.78);
+      --surface-2: rgba(24, 34, 53, 0.72);
+      --surface-3: rgba(30, 43, 67, 0.85);
+      --surface-hover: rgba(37, 52, 80, 0.9);
       --border-subtle: rgba(255, 255, 255, 0.08);
       --border-hover: rgba(255, 255, 255, 0.18);
-      --border-active: #0ea5e9;
+      --border-active: #38bdf8;
       --text-1: #f8fafc;
       --text-2: #cbd5e1;
-      --text-3: #94a3b8;
-      --accent: #0ea5e9;
+      --text-3: #8492a6;
+      --accent: #38bdf8;
+      --accent-deep: #0284c7;
+      --accent-glow: rgba(56, 189, 248, 0.25);
       --accent-muted: rgba(14, 165, 233, 0.12);
       --emerald: #10b981;
+      --emerald-light: #34d399;
       --emerald-muted: rgba(16, 185, 129, 0.12);
+      --emerald-border: rgba(16, 185, 129, 0.35);
       --rose: #f43f5e;
+      --rose-light: #fb7185;
       --rose-muted: rgba(244, 63, 94, 0.12);
+      --rose-border: rgba(244, 63, 94, 0.35);
+      --amber: #f59e0b;
       --radius-sm: 8px;
       --radius-md: 12px;
-      --radius-lg: 16px;
-      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-      --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3);
-      --transition: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+      --radius-lg: 18px;
+      --radius-xl: 24px;
+      --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 10px 28px -6px rgba(0, 0, 0, 0.5), 0 3px 10px rgba(0, 0, 0, 0.3);
+      --shadow-glow: 0 0 25px -4px rgba(14, 165, 233, 0.25);
+      --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     * {
@@ -39,10 +52,11 @@
       padding: 0;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      -webkit-tap-highlight-color: transparent;
     }
 
     ::selection {
-      background: var(--accent);
+      background: rgba(14, 165, 233, 0.35);
       color: #ffffff;
     }
 
@@ -54,19 +68,28 @@
       background: var(--bg);
     }
     ::-webkit-scrollbar-thumb {
-      background: #334155;
-      border-radius: 3px;
+      background: #253349;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334460;
     }
 
     body {
       background-color: var(--bg);
+      background-image: 
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(14, 165, 233, 0.14), transparent 70%),
+        radial-gradient(ellipse 60% 40% at 100% 100%, rgba(99, 102, 241, 0.08), transparent 60%),
+        radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 24px 24px;
       color: var(--text-1);
       font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 32px 16px 64px;
+      padding: 24px 16px max(40px, env(safe-area-inset-bottom, 24px));
       line-height: 1.5;
     }
 
@@ -75,7 +98,7 @@
       max-width: 780px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
     }
 
     /* Top Utility Bar */
@@ -83,26 +106,34 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 8px;
+      padding-bottom: 12px;
       border-bottom: 1px solid var(--border-subtle);
+      gap: 12px;
     }
 
     .app-brand {
       display: flex;
       align-items: center;
       gap: 12px;
+      min-width: 0;
     }
 
     .app-brand-mark {
-      width: 32px;
-      height: 32px;
-      background: var(--surface-2);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(99, 102, 241, 0.2));
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: var(--radius-md);
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--accent);
+      flex-shrink: 0;
+      box-shadow: 0 0 15px rgba(14, 165, 233, 0.2);
+    }
+
+    .brand-text {
+      min-width: 0;
     }
 
     .app-brand-title {
@@ -110,25 +141,55 @@
       font-weight: 700;
       letter-spacing: -0.02em;
       color: var(--text-1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .app-badge-gk {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: rgba(14, 165, 233, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: var(--accent);
     }
 
     .app-brand-sub {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-3);
-      font-variant-numeric: tabular-nums;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .app-brand-sub .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 8px var(--emerald);
     }
 
     .top-actions {
       display: flex;
       align-items: center;
       gap: 8px;
+      flex-shrink: 0;
     }
 
     .btn-quiet {
-      background: transparent;
+      background: var(--surface-1);
       border: 1px solid var(--border-subtle);
       color: var(--text-2);
-      padding: 6px 12px;
+      padding: 7px 12px;
       border-radius: var(--radius-sm);
       font-size: 0.82rem;
       font-weight: 600;
@@ -137,6 +198,8 @@
       align-items: center;
       gap: 6px;
       transition: all var(--transition);
+      touch-action: manipulation;
+      min-height: 38px;
     }
 
     .btn-quiet:hover {
@@ -145,26 +208,39 @@
       border-color: var(--border-hover);
     }
 
+    .btn-quiet:active {
+      transform: scale(0.97);
+    }
+
     .btn-quiet:focus-visible {
       outline: 2px solid var(--accent);
       outline-offset: 2px;
     }
 
+    .btn-quiet.is-active {
+      background: rgba(14, 165, 233, 0.12);
+      border-color: rgba(56, 189, 248, 0.3);
+      color: var(--accent);
+    }
+
     kbd {
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       background: var(--surface-3);
       border: 1px solid var(--border-subtle);
       border-radius: 4px;
       padding: 1px 5px;
       color: var(--text-2);
+      font-weight: 500;
     }
 
     /* Segmented Navigation */
     .segmented-control {
       background: var(--surface-1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-lg);
       padding: 4px;
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -173,19 +249,20 @@
 
     .seg-item {
       background: transparent;
-      border: none;
+      border: 1px solid transparent;
       color: var(--text-2);
-      padding: 8px 12px;
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
+      padding: 10px 8px;
+      border-radius: var(--radius-md);
+      font-size: 0.84rem;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 2px;
+      gap: 3px;
       transition: all var(--transition);
       text-align: center;
+      touch-action: manipulation;
     }
 
     .seg-item:hover {
@@ -194,10 +271,10 @@
     }
 
     .seg-item.active {
-      background: var(--surface-3);
+      background: linear-gradient(180deg, rgba(30, 48, 77, 0.8) 0%, rgba(20, 30, 48, 0.95) 100%);
       color: var(--text-1);
-      border: 1px solid var(--border-hover);
-      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      box-shadow: 0 4px 14px -2px rgba(14, 165, 233, 0.2);
     }
 
     .seg-item .count {
@@ -205,102 +282,184 @@
       font-size: 0.72rem;
       color: var(--text-3);
       font-weight: 500;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 1px 6px;
+      border-radius: 999px;
     }
 
     .seg-item.active .count {
       color: var(--accent);
+      background: rgba(14, 165, 233, 0.15);
     }
 
-    /* Scoreboard & Progress */
-    .metrics-bar {
+    /* Scoreboard & Metrics Dashboard */
+    .metrics-dashboard {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.85rem;
-      color: var(--text-2);
-      padding: 0 4px;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    .metrics-stats {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      font-variant-numeric: tabular-nums;
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
     }
 
-    .metric-item {
+    .metric-chip {
+      background: var(--surface-1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 8px 10px;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
+      text-align: center;
+      gap: 2px;
+      transition: border-color var(--transition);
+    }
+
+    .metric-chip:hover {
+      border-color: var(--border-hover);
+    }
+
+    .metric-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-3);
     }
 
     .metric-value {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.98rem;
       font-weight: 700;
       color: var(--text-1);
-      font-family: 'IBM Plex Mono', monospace;
+      font-variant-numeric: tabular-nums;
     }
 
-    .val-emerald { color: var(--emerald); }
-    .val-rose { color: var(--rose); }
+    .val-emerald { color: var(--emerald-light); }
+    .val-rose { color: var(--rose-light); }
+    .val-accent { color: var(--accent); }
+
+    /* Review Wrong Answers Button */
+    .review-alert-wrap {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-review-wrong {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      color: var(--rose-light);
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all var(--transition);
+      animation: pulseGlow 2.5s infinite;
+      touch-action: manipulation;
+    }
+
+    .btn-review-wrong:hover {
+      background: rgba(244, 63, 94, 0.2);
+      border-color: var(--rose);
+      transform: translateY(-1px);
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.2); }
+      50% { box-shadow: 0 0 12px 2px rgba(244, 63, 94, 0.25); }
+    }
 
     .track-line {
       width: 100%;
-      height: 4px;
+      height: 6px;
       background: var(--surface-2);
       border-radius: 999px;
       overflow: hidden;
-      margin-top: 8px;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
     }
 
     .track-fill {
       height: 100%;
-      background: var(--accent);
+      background: linear-gradient(90deg, #0284c7 0%, #0ea5e9 50%, #38bdf8 100%);
       width: 0%;
-      transition: width 200ms ease-out;
+      transition: width 250ms ease-out;
+      border-radius: 999px;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
     }
 
     /* Main Console Surface */
     .console-card {
       background: var(--surface-1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      padding: 32px;
+      border-radius: var(--radius-xl);
+      padding: 28px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 22px;
       box-shadow: var(--shadow-md);
       position: relative;
+      animation: cardIn 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .card-meta {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
-    .meta-phase {
-      font-size: 0.78rem;
+    .meta-phase-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.74rem;
       font-weight: 600;
-      color: var(--text-3);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      color: var(--accent);
+      background: rgba(14, 165, 233, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 999px;
+      padding: 3px 10px;
+      letter-spacing: 0.03em;
     }
 
     .meta-counter {
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: var(--text-3);
       font-variant-numeric: tabular-nums;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
     }
 
-    /* Pure Question Text: Absolutely NO spoilers or highlighted hints */
+    /* Pure Question Text: Absolutely NO spoilers or highlighted hints before answering */
     .question-prompt {
       font-size: 1.25rem;
       font-weight: 600;
-      line-height: 1.6;
-      color: var(--text-1);
-      max-width: 68ch;
+      line-height: 1.65;
+      color: #f1f5f9;
+      max-width: 70ch;
       letter-spacing: -0.01em;
+      word-break: break-word;
     }
 
     /* Options Stack */
@@ -314,7 +473,7 @@
       background: var(--surface-2);
       border: 1px solid var(--border-subtle);
       color: var(--text-1);
-      padding: 16px 18px;
+      padding: 14px 18px;
       border-radius: var(--radius-md);
       font-size: 0.98rem;
       font-weight: 500;
@@ -325,12 +484,18 @@
       transition: all var(--transition);
       text-align: left;
       outline: none;
+      min-height: 52px;
+      touch-action: manipulation;
     }
 
     .choice-row:hover:not(:disabled) {
       background: var(--surface-3);
-      border-color: var(--border-hover);
+      border-color: rgba(56, 189, 248, 0.3);
       transform: translateY(-1px);
+    }
+
+    .choice-row:active:not(:disabled) {
+      transform: scale(0.99);
     }
 
     .choice-row:focus-visible {
@@ -341,13 +506,29 @@
     .choice-row.state-correct {
       background: var(--emerald-muted) !important;
       border-color: var(--emerald) !important;
-      color: #34d399 !important;
+      color: var(--emerald-light) !important;
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.2);
+    }
+
+    .choice-row.state-correct .key-badge {
+      background: var(--emerald);
+      color: #0b0f17;
+      border-color: var(--emerald);
+      font-weight: 700;
     }
 
     .choice-row.state-incorrect {
       background: var(--rose-muted) !important;
       border-color: var(--rose) !important;
-      color: #f87171 !important;
+      color: var(--rose-light) !important;
+      box-shadow: 0 0 16px rgba(244, 63, 94, 0.2);
+    }
+
+    .choice-row.state-incorrect .key-badge {
+      background: var(--rose);
+      color: #ffffff;
+      border-color: var(--rose);
+      font-weight: 700;
     }
 
     .choice-row:disabled {
@@ -359,22 +540,35 @@
       align-items: center;
       gap: 14px;
       flex: 1;
+      min-width: 0;
+    }
+
+    .choice-text {
+      flex: 1;
+      line-height: 1.45;
+      word-break: break-word;
     }
 
     .key-badge {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
-      font-weight: 600;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
       background: var(--surface-1);
       border: 1px solid var(--border-subtle);
-      width: 26px;
-      height: 26px;
-      border-radius: 6px;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--text-2);
       flex-shrink: 0;
+      transition: all var(--transition);
+    }
+
+    .choice-row:hover:not(:disabled) .key-badge {
+      border-color: var(--accent);
+      color: var(--accent);
     }
 
     /* True/False Buttons */
@@ -387,7 +581,7 @@
     .binary-btn {
       background: var(--surface-2);
       border: 1px solid var(--border-subtle);
-      padding: 20px 16px;
+      padding: 18px 16px;
       border-radius: var(--radius-md);
       font-size: 1rem;
       font-weight: 600;
@@ -398,6 +592,8 @@
       gap: 12px;
       transition: all var(--transition);
       color: var(--text-1);
+      min-height: 56px;
+      touch-action: manipulation;
     }
 
     .binary-btn:hover:not(:disabled) {
@@ -406,16 +602,36 @@
       transform: translateY(-1px);
     }
 
+    .binary-btn:active:not(:disabled) {
+      transform: scale(0.99);
+    }
+
     .binary-btn.state-correct {
       background: var(--emerald-muted) !important;
       border-color: var(--emerald) !important;
-      color: #34d399 !important;
+      color: var(--emerald-light) !important;
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.2);
+    }
+
+    .binary-btn.state-correct .key-badge {
+      background: var(--emerald);
+      color: #0b0f17;
+      border-color: var(--emerald);
+      font-weight: 700;
     }
 
     .binary-btn.state-incorrect {
       background: var(--rose-muted) !important;
       border-color: var(--rose) !important;
-      color: #f87171 !important;
+      color: var(--rose-light) !important;
+      box-shadow: 0 0 16px rgba(244, 63, 94, 0.2);
+    }
+
+    .binary-btn.state-incorrect .key-badge {
+      background: var(--rose);
+      color: #ffffff;
+      border-color: var(--rose);
+      font-weight: 700;
     }
 
     .binary-btn:disabled {
@@ -424,33 +640,63 @@
 
     /* Feedback & Translation Panel */
     .feedback-panel {
-      background: var(--surface-2);
+      background: linear-gradient(180deg, rgba(20, 29, 46, 0.95) 0%, rgba(14, 21, 35, 0.95) 100%);
       border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-lg);
       padding: 20px;
       display: flex;
       flex-direction: column;
       gap: 14px;
-      animation: enterFeedback 180ms cubic-bezier(0.16, 1, 0.3, 1);
+      animation: enterFeedback 200ms cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.4);
     }
 
     .feedback-status {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 0.85rem;
+      gap: 10px;
+      font-size: 0.92rem;
       font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.01em;
+      line-height: 1.4;
     }
 
-    .feedback-status.is-correct { color: var(--emerald); }
-    .feedback-status.is-incorrect { color: var(--rose); }
+    .feedback-status.is-correct { 
+      color: var(--emerald-light); 
+    }
+    
+    .feedback-status.is-incorrect { 
+      color: var(--rose-light); 
+    }
+
+    .status-icon-pill {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.82rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .feedback-status.is-correct .status-icon-pill {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--emerald-light);
+      border: 1px solid var(--emerald);
+    }
+
+    .feedback-status.is-incorrect .status-icon-pill {
+      background: rgba(244, 63, 94, 0.2);
+      color: var(--rose-light);
+      border: 1px solid var(--rose);
+    }
 
     .clue-discovery-box {
-      background: rgba(14, 165, 233, 0.06);
-      border: 1px solid rgba(14, 165, 233, 0.22);
-      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(99, 102, 241, 0.05) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: var(--radius-md);
       padding: 14px 16px;
       display: flex;
       flex-direction: column;
@@ -460,45 +706,56 @@
     .clue-item {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 4px;
     }
 
     .clue-label {
-      font-size: 0.76rem;
+      font-size: 0.74rem;
       font-weight: 700;
       color: var(--accent);
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
     .clue-val-keyword {
       font-family: 'IBM Plex Mono', monospace;
       font-weight: 600;
-      color: #38bdf8;
+      color: #7dd3fc;
       font-size: 0.95rem;
+      background: rgba(14, 165, 233, 0.12);
+      padding: 4px 8px;
+      border-radius: 6px;
+      display: inline-block;
+      width: fit-content;
+      max-width: 100%;
+      word-break: break-word;
     }
 
     .clue-val-tip {
       font-size: 0.9rem;
       color: var(--text-2);
-      line-height: 1.5;
+      line-height: 1.55;
     }
 
     .feedback-vn {
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       color: var(--text-2);
-      line-height: 1.55;
+      line-height: 1.6;
       border-top: 1px solid var(--border-subtle);
-      padding-top: 10px;
+      padding-top: 12px;
     }
 
     .prompt-highlight {
       background: rgba(14, 165, 233, 0.18);
-      color: #38bdf8;
-      border-bottom: 2px solid var(--accent);
-      padding: 1px 4px;
-      border-radius: 2px;
+      color: #7dd3fc;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 6px;
+      padding: 1px 6px;
       font-weight: 600;
+      box-shadow: 0 0 10px rgba(14, 165, 233, 0.2);
     }
 
     /* Controls Action Bar */
@@ -506,27 +763,45 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-top: 8px;
+      padding-top: 6px;
+      gap: 12px;
+    }
+
+    .desktop-hint {
+      font-size: 0.82rem;
+      color: var(--text-3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .btn-primary {
-      background: var(--accent);
-      border: 1px solid transparent;
+      background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       color: #ffffff;
-      padding: 10px 20px;
-      border-radius: var(--radius-sm);
-      font-size: 0.9rem;
-      font-weight: 600;
+      padding: 12px 24px;
+      border-radius: var(--radius-md);
+      font-size: 0.94rem;
+      font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
       transition: all var(--transition);
+      box-shadow: 0 4px 16px rgba(14, 165, 233, 0.3);
+      touch-action: manipulation;
+      min-height: 46px;
     }
 
     .btn-primary:hover {
-      background: #0284c7;
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
       transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
     }
 
     .btn-primary:focus-visible {
@@ -537,33 +812,104 @@
     /* Completion Screen */
     .summary-card {
       text-align: center;
-      padding: 48px 24px;
+      padding: 44px 24px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 20px;
     }
 
+    .summary-badge-score {
+      width: 104px;
+      height: 104px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(99, 102, 241, 0.15));
+      border: 2px solid rgba(56, 189, 248, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 30px rgba(14, 165, 233, 0.25);
+    }
+
     .summary-numeral {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 3.2rem;
-      font-weight: 700;
-      color: var(--text-1);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #ffffff;
       letter-spacing: -0.03em;
       line-height: 1;
     }
 
     .summary-heading {
-      font-size: 1.25rem;
-      font-weight: 700;
+      font-size: 1.4rem;
+      font-weight: 800;
       color: var(--text-1);
+      letter-spacing: -0.02em;
+    }
+
+    .summary-tier {
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 4px 14px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .summary-tier.tier-high {
+      background: var(--emerald-muted);
+      border: 1px solid var(--emerald-border);
+      color: var(--emerald-light);
+    }
+
+    .summary-tier.tier-mid {
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #fbbf24;
+    }
+
+    .summary-tier.tier-low {
+      background: var(--rose-muted);
+      border: 1px solid var(--rose-border);
+      color: var(--rose-light);
     }
 
     .summary-desc {
       color: var(--text-2);
-      font-size: 0.92rem;
+      font-size: 0.95rem;
       max-width: 480px;
       line-height: 1.6;
+    }
+
+    .summary-stats-box {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      width: 100%;
+      max-width: 420px;
+      margin: 8px 0;
+    }
+
+    .summary-stat-item {
+      background: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px 8px;
+    }
+
+    .summary-stat-label {
+      font-size: 0.72rem;
+      color: var(--text-3);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .summary-stat-val {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-top: 4px;
     }
 
     /* Keyboard navigation help bar */
@@ -571,32 +917,752 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 16px;
-      font-size: 0.78rem;
+      gap: 14px;
+      font-size: 0.76rem;
       color: var(--text-3);
-      padding-top: 12px;
+      padding-top: 8px;
       flex-wrap: wrap;
     }
 
     .shortcut-pill {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
     @keyframes enterFeedback {
-      from { opacity: 0; transform: translateY(4px); }
+      from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* Wide App Shell for Matching Board Mode */
+    .app-shell.is-matching-mode {
+      max-width: 1220px;
+    }
+
+    /* Matching Board Container */
+    .matching-board-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      animation: cardIn 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Matching Toolbar */
+    .matching-toolbar {
+      background: var(--surface-1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+    }
+
+    .matching-toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .matching-badge-status {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent);
+      background: rgba(14, 165, 233, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 5px 12px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .matching-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Sub-mode switch inside Part 1 */
+    .sub-mode-toggle {
+      display: inline-flex;
+      background: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .sub-mode-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-2);
+      font-size: 0.76rem;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .sub-mode-btn.active {
+      background: var(--surface-3);
+      color: var(--text-1);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+
+    /* Summary Banner when Graded */
+    .matching-summary-banner {
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.12) 0%, rgba(99, 102, 241, 0.1) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: var(--radius-lg);
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      box-shadow: 0 0 25px rgba(14, 165, 233, 0.15);
+      animation: enterFeedback 200ms ease;
+    }
+
+    .banner-score-box {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .banner-circle-score {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #ffffff;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--surface-2);
+      border: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px rgba(14, 165, 233, 0.3);
+      flex-shrink: 0;
+    }
+
+    /* Main Matching Grid: 2 columns on desktop */
+    .matching-grid {
+      display: grid;
+      grid-template-columns: minmax(320px, 1fr) minmax(360px, 1.15fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .matching-col {
+      background: var(--surface-1);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .matching-col-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-subtle);
+      gap: 8px;
+    }
+
+    .matching-col-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .matching-col-title .badge-count {
+      font-size: 0.72rem;
+      background: var(--surface-3);
+      padding: 2px 7px;
+      border-radius: 999px;
+      color: var(--text-2);
+    }
+
+    .def-search-input {
+      background: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: var(--text-1);
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      width: 190px;
+      outline: none;
+      transition: all var(--transition);
+    }
+
+    .def-search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 10px rgba(14, 165, 233, 0.2);
+    }
+
+    .selection-hint-banner {
+      background: rgba(14, 165, 233, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      color: #7dd3fc;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      animation: enterFeedback 180ms ease;
+    }
+
+    /* Term Rows (Column A) */
+    .term-item {
+      background: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all var(--transition);
+    }
+
+    .term-item:hover {
+      border-color: rgba(56, 189, 248, 0.35);
+      background: var(--surface-3);
+    }
+
+    .term-item.is-selected {
+      border-color: var(--accent) !important;
+      background: rgba(14, 165, 233, 0.12) !important;
+      box-shadow: 0 0 18px rgba(14, 165, 233, 0.25);
+    }
+
+    .term-item.is-paired {
+      border-color: rgba(56, 189, 248, 0.4);
+      background: rgba(14, 165, 233, 0.05);
+    }
+
+    .term-item.is-correct {
+      border-color: var(--emerald) !important;
+      background: rgba(16, 185, 129, 0.08) !important;
+    }
+
+    .term-item.is-wrong {
+      border-color: var(--rose) !important;
+      background: rgba(244, 63, 94, 0.08) !important;
+    }
+
+    .term-header-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .term-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .term-num-badge {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-3);
+      background: var(--surface-1);
+      border: 1px solid var(--border-subtle);
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .term-name-text {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-1);
+      line-height: 1.4;
+    }
+
+    .term-pair-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 6px;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: all var(--transition);
+      border: none;
+    }
+
+    .term-pair-badge.empty {
+      background: var(--surface-1);
+      border: 1px dashed var(--border-hover);
+      color: var(--text-3);
+    }
+
+    .term-pair-badge.empty:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(14, 165, 233, 0.1);
+    }
+
+    .term-pair-badge.connected {
+      background: var(--accent);
+      color: #0b0f17;
+      border: 1px solid var(--accent);
+      box-shadow: 0 0 10px rgba(14, 165, 233, 0.35);
+    }
+
+    .term-pair-badge.badge-correct {
+      background: var(--emerald);
+      color: #0b0f17;
+      border: 1px solid var(--emerald);
+    }
+
+    .term-pair-badge.badge-wrong {
+      background: var(--rose);
+      color: #ffffff;
+      border: 1px solid var(--rose);
+    }
+
+    .term-paired-def-preview {
+      font-size: 0.84rem;
+      color: var(--text-2);
+      background: rgba(0, 0, 0, 0.28);
+      border-left: 2px solid var(--accent);
+      padding: 7px 10px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-unpair {
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: var(--text-3);
+      cursor: pointer;
+      padding: 2px 7px;
+      font-size: 0.75rem;
+      border-radius: 4px;
+      transition: all var(--transition);
+      flex-shrink: 0;
+    }
+
+    .btn-unpair:hover {
+      background: rgba(244, 63, 94, 0.25);
+      color: var(--rose-light);
+    }
+
+    /* Definition Cards (Column B) */
+    .def-item {
+      background: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transition: all var(--transition);
+      cursor: pointer;
+    }
+
+    .def-item:hover {
+      border-color: rgba(56, 189, 248, 0.35);
+      background: var(--surface-3);
+      transform: translateY(-1px);
+    }
+
+    .def-item.is-paired {
+      opacity: 0.72;
+      background: rgba(14, 165, 233, 0.05);
+      border-color: rgba(56, 189, 248, 0.25);
+    }
+
+    .def-item.is-active-target {
+      border-color: var(--accent);
+      box-shadow: 0 0 16px rgba(14, 165, 233, 0.3);
+      background: rgba(14, 165, 233, 0.12);
+    }
+
+    .def-letter-tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.84rem;
+      font-weight: 800;
+      background: var(--surface-3);
+      border: 1px solid var(--border-subtle);
+      color: var(--accent);
+      min-width: 36px;
+      height: 32px;
+      padding: 0 6px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .def-item.is-paired .def-letter-tag {
+      background: var(--accent);
+      color: #0b0f17;
+    }
+
+    .def-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .def-text-body {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: var(--text-1);
+    }
+
+    .def-connected-info {
+      font-size: 0.76rem;
+      color: var(--accent);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Explanation & Clue Card inside Term Row after grading */
+    .term-explanation-pane {
+      background: var(--surface-1);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 4px;
+      font-size: 0.84rem;
+    }
+
+    /* Mobile Sheet / Modal Definition Picker */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      animation: modalFadeIn 180ms ease;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-sheet {
+      background: var(--surface-1);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px 20px 0 0;
+      width: 100%;
+      max-width: 720px;
+      max-height: 84vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6);
+      animation: sheetUp 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes sheetUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .modal-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .modal-body {
+      padding: 14px 18px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Mobile View Toggle Buttons */
+    .mobile-view-tabs {
+      display: none;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 860px) {
+      .matching-grid {
+        grid-template-columns: 1fr;
+      }
+      .mobile-view-tabs {
+        display: grid;
+      }
+      .matching-grid.mobile-show-defs .col-terms {
+        display: none !important;
+      }
+      .matching-grid.mobile-show-terms .col-defs {
+        display: none !important;
+      }
+      .def-search-input {
+        width: 100%;
+      }
+      .matching-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .matching-toolbar-left, .matching-actions {
+        justify-content: space-between;
+      }
+    }
+
+    /* Mobile Web Optimizations */
     @media (max-width: 640px) {
-      body { padding: 16px 12px; }
-      .segmented-control { grid-template-columns: 1fr 1fr; }
-      .binary-stack { grid-template-columns: 1fr; }
-      .console-card { padding: 20px 16px; }
-      .question-prompt { font-size: 1.1rem; }
+      body {
+        padding: 14px 12px max(32px, env(safe-area-inset-bottom, 16px));
+      }
+
+      .app-shell {
+        gap: 12px;
+      }
+
+      .top-bar {
+        padding-bottom: 8px;
+        gap: 8px;
+      }
+
+      .app-brand {
+        min-width: 0;
+        flex: 1;
+        gap: 8px;
+      }
+
+      .app-brand-mark {
+        width: 30px;
+        height: 30px;
+        flex-shrink: 0;
+      }
+
+      .brand-text {
+        min-width: 0;
+        flex: 1;
+      }
+
+      .app-brand-title {
+        font-size: 0.88rem;
+        gap: 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .app-brand-sub {
+        font-size: 0.67rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .top-actions {
+        gap: 5px;
+        flex-shrink: 0;
+      }
+
+      .btn-quiet {
+        padding: 5px 8px;
+        font-size: 0.74rem;
+        min-height: 32px;
+        gap: 4px;
+      }
+
+      .btn-quiet svg {
+        width: 13px;
+        height: 13px;
+      }
+
+      .btn-quiet kbd {
+        display: none;
+      }
+
+      .segmented-control {
+        grid-template-columns: 1fr 1fr;
+        gap: 4px;
+      }
+
+      .seg-item {
+        padding: 8px 6px;
+        font-size: 0.8rem;
+      }
+
+      .metrics-grid {
+        gap: 6px;
+      }
+
+      .metric-chip {
+        padding: 6px 4px;
+      }
+
+      .metric-label {
+        font-size: 0.65rem;
+      }
+
+      .metric-value {
+        font-size: 0.88rem;
+      }
+
+      .console-card {
+        padding: 18px 14px;
+        border-radius: var(--radius-lg);
+        gap: 16px;
+      }
+
+      .card-meta {
+        gap: 6px;
+      }
+
+      .meta-phase-badge {
+        font-size: 0.7rem;
+        padding: 2px 8px;
+      }
+
+      .meta-counter {
+        font-size: 0.74rem;
+        padding: 2px 6px;
+      }
+
+      .question-prompt {
+        font-size: 1.08rem;
+        line-height: 1.55;
+      }
+
+      .choice-row {
+        padding: 12px 14px;
+        min-height: 48px;
+        font-size: 0.92rem;
+      }
+
+      /* Hide numeric keyboard shortcut badge on mobile */
+      .choice-row > kbd {
+        display: none;
+      }
+
+      .key-badge {
+        width: 25px;
+        height: 25px;
+        font-size: 0.75rem;
+      }
+
+      .binary-stack {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .binary-btn {
+        padding: 12px 6px;
+        min-height: 48px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        gap: 6px;
+      }
+
+      .binary-btn .key-badge {
+        width: 22px;
+        height: 22px;
+        font-size: 0.72rem;
+      }
+
+      .feedback-panel {
+        padding: 16px 14px;
+        gap: 12px;
+      }
+
+      .controls-row {
+        flex-direction: column-reverse;
+        gap: 10px;
+        align-items: stretch;
+      }
+
+      .desktop-hint {
+        display: none;
+      }
+
+      .btn-primary {
+        width: 100%;
+        padding: 14px;
+        font-size: 0.98rem;
+      }
+
+      .shortcuts-footer {
+        display: none;
+      }
+
+      .summary-card {
+        padding: 32px 16px;
+      }
+
+      .summary-badge-score {
+        width: 88px;
+        height: 88px;
+      }
+
+      .summary-numeral {
+        font-size: 1.9rem;
+      }
+
+      .summary-heading {
+        font-size: 1.25rem;
+      }
     }
   </style>
+  <link rel="stylesheet" href="study.css">
 </head>
 <body>
 
@@ -605,21 +1671,27 @@
     <!-- Top Utility Bar -->
     <header class="top-bar">
       <div class="app-brand">
-        <div class="app-brand-mark">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <div class="app-brand-mark" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="4 17 10 11 4 5"></polyline>
             <line x1="12" y1="19" x2="20" y2="19"></line>
           </svg>
         </div>
-        <div>
-          <div class="app-brand-title">IT English Practice Console</div>
-          <div class="app-brand-sub">Active Recall • Không gợi ý trước</div>
+        <div class="brand-text">
+          <h1 class="app-brand-title">
+            <span>IT English Console</span>
+            <span class="app-badge-gk">GK</span>
+          </h1>
+          <div class="app-brand-sub">
+            <span class="live-dot" aria-hidden="true"></span>
+            <span>Active Recall • Bắt bài nhanh</span>
+          </div>
         </div>
       </div>
 
       <div class="top-actions">
-        <button id="btn-shuffle" class="btn-quiet" title="Trộn lại ngẫu nhiên (R)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button id="btn-shuffle" class="btn-quiet" title="Trộn lại ngẫu nhiên câu hỏi (R)" aria-label="Trộn đề ngẫu nhiên">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="16 3 21 3 21 8"></polyline>
             <line x1="4" y1="20" x2="21" y2="3"></line>
             <polyline points="21 16 21 21 16 21"></polyline>
@@ -630,486 +1702,86 @@
           <kbd>R</kbd>
         </button>
 
-        <button id="btn-audio" class="btn-quiet" title="Bật/Tắt âm thanh">
-          <span id="audio-label">Âm thanh: Bật</span>
+        <button id="btn-audio" class="btn-quiet is-active" title="Bật / Tắt âm thanh" aria-label="Bật hoặc tắt âm thanh">
+          <span id="audio-icon-wrap">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+          </span>
+          <span id="audio-label">Âm thanh</span>
         </button>
       </div>
     </header>
 
     <!-- Segmented Navigation -->
-    <nav class="segmented-control" role="tablist">
-      <button class="seg-item active" data-mode="part1" role="tab">
-        <span>Phần I: Matching</span>
+    <nav class="segmented-control" role="tablist" aria-label="Chọn phần ôn tập">
+      <button class="seg-item active" data-mode="part1" role="tab" aria-selected="true">
+        <span>I: Bảng Nối Đề Thi</span>
         <span class="count">48 câu</span>
       </button>
-      <button class="seg-item" data-mode="part2" role="tab">
-        <span>Phần II: Điền Từ</span>
+      <button class="seg-item" data-mode="part2" role="tab" aria-selected="false">
+        <span>II: Điền Từ</span>
         <span class="count">50 câu</span>
       </button>
-      <button class="seg-item" data-mode="part3" role="tab">
-        <span>Phần III: Đúng / Sai</span>
+      <button class="seg-item" data-mode="part3" role="tab" aria-selected="false">
+        <span>III: Đúng / Sai</span>
         <span class="count">50 câu</span>
       </button>
-      <button class="seg-item" data-mode="all" role="tab">
+      <button class="seg-item" data-mode="all" role="tab" aria-selected="false">
         <span>Thi Thử Tổng Hợp</span>
         <span class="count">45 câu</span>
       </button>
     </nav>
 
-    <!-- Metrics Bar -->
-    <section class="metrics-bar" aria-label="Tiến trình học">
-      <div class="metrics-stats">
-        <div class="metric-item">
-          <span>Tiến độ</span>
+    <!-- Metrics Dashboard -->
+    <section class="metrics-dashboard" aria-label="Tiến trình học">
+      <div class="metrics-grid">
+        <div class="metric-chip">
+          <span class="metric-label">Tiến độ</span>
           <span class="metric-value"><span id="metric-cur">1</span>/<span id="metric-total">48</span></span>
         </div>
-        <div class="metric-item">
-          <span>Đúng</span>
+        <div class="metric-chip">
+          <span class="metric-label">Đúng</span>
           <span class="metric-value val-emerald" id="metric-correct">0</span>
         </div>
-        <div class="metric-item">
-          <span>Sai</span>
+        <div class="metric-chip">
+          <span class="metric-label">Sai</span>
           <span class="metric-value val-rose" id="metric-wrong">0</span>
         </div>
-        <div class="metric-item">
-          <span>Độ chính xác</span>
-          <span class="metric-value" id="metric-pct">0%</span>
+        <div class="metric-chip">
+          <span class="metric-label">Độ chính xác</span>
+          <span class="metric-value val-accent" id="metric-pct">0%</span>
         </div>
       </div>
 
-      <button id="btn-review-wrong" class="btn-quiet" style="display:none;">
-        <span>Làm lại các câu sai (<span id="wrong-badge-count">0</span>)</span>
-      </button>
-    </section>
+      <div class="review-alert-wrap" id="review-alert-wrap" style="display:none;">
+        <button id="btn-review-wrong" class="btn-review-wrong">
+          <span>↺ Luyện lại riêng <span id="wrong-badge-count">0</span> câu làm sai</span>
+        </button>
+      </div>
 
-    <div class="track-line" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-      <div class="track-fill" id="track-fill"></div>
-    </div>
+      <div class="track-line" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Thanh tiến độ">
+        <div class="track-fill" id="track-fill"></div>
+      </div>
+    </section>
 
     <!-- Active Question Console Card -->
     <main id="active-card-container"></main>
 
-    <!-- Keyboard Shortcuts Legend -->
-    <footer class="shortcuts-footer">
-      <div class="shortcut-pill"><kbd>1</kbd>-<kbd>4</kbd> hoặc <kbd>A</kbd>-<kbd>D</kbd> Chọn đáp án</div>
+    <!-- Keyboard Shortcuts Legend (Desktop only) -->
+    <footer class="shortcuts-footer" aria-label="Phím tắt trên máy tính">
+      <div class="shortcut-pill"><kbd>1</kbd>-<kbd>4</kbd> / <kbd>A</kbd>-<kbd>D</kbd> Chọn đáp án</div>
       <div class="shortcut-pill"><kbd>T</kbd>/<kbd>F</kbd> True/False</div>
-      <div class="shortcut-pill"><kbd>Space</kbd> hoặc <kbd>Enter</kbd> Câu tiếp theo</div>
+      <div class="shortcut-pill"><kbd>Space</kbd> / <kbd>Enter</kbd> Câu tiếp theo</div>
       <div class="shortcut-pill"><kbd>R</kbd> Trộn đề mới</div>
     </footer>
 
   </div>
 
-  <script>
-    const DATASET = {"part1Data":[{"id":1,"term":"A computer","clue":"electronic machine ... process the data","def":"is an electronic machine which can accept data in a certain form, process the data, and give the results of the processing in a specified format as information.","vn":"Máy tính là máy điện tử nhận dữ liệu, xử lý và xuất ra thông tin.","tip":"electronic machine + process data"},{"id":2,"term":"A clock","clue":"timing of signals","def":"controls the timing of signals in the computer.","vn":"Đồng hồ điều khiển nhịp xung/thời gian của các tín hiệu trong máy tính.","tip":"clock = timing of signals"},{"id":3,"term":"A cloud database","clue":"virtualized environment","def":"is an automated or built-in database for such a virtualized environment.","vn":"Cơ sở dữ liệu đám mây hoạt động trên môi trường ảo hóa.","tip":"cloud = virtualized"},{"id":4,"term":"A gateway","clue":"entrance to another network","def":"is an entrance to another network.","vn":"Cổng gateway là lối vào để kết nối sang một mạng khác.","tip":"gate = entrance"},{"id":5,"term":"A hub","clue":"channels incoming data","def":"channels incoming data maintains the bandwidth speed.","vn":"Hub điều phối và chuyển kênh dữ liệu đến.","tip":"hub = channels incoming data"},{"id":6,"term":"A modem","clue":"modulates and demodulates","def":"modulates and demodulates the data into a digital or an analog signal.","vn":"Modem: viết tắt của Modulator - Demodulator (điều chế tín hiệu số/tương tự).","tip":"Mo-dem = Modulates + Demodulates"},{"id":7,"term":"A network topology","clue":"layout of the interconnections","def":"is the layout of the interconnections of the nodes of a computer network which depends on the distance involved, the type of hardware used and the stability needed.","vn":"Topology là sơ đồ bố cục các kết nối giữa các nút mạng.","tip":"topology = layout of interconnections"},{"id":8,"term":"Algorithm","clue":"set of instructions for solving a specific problem","def":"a predetermined set of instructions for solving a specific problem in a limited number of steps.","vn":"Thuật toán là tập hợp hữu hạn các chỉ dẫn để giải quyết một bài toán cụ thể.","tip":"algorithm = instructions for solving problem"},{"id":9,"term":"Animations","clue":"moving pictures","def":"are made up of a series of independent pictures put together in sequence to look like moving pictures.","vn":"Hoạt họa là chuỗi ảnh độc lập ghép lại tạo cảm giác chuyển động.","tip":"animations = moving pictures"},{"id":10,"term":"Artificial","clue":"made by humans, not natural","def":"made by humans, not natural.","vn":"Nhân tạo nghĩa là do con người làm ra, không phải tự nhiên.","tip":"artificial = made by humans"},{"id":11,"term":"Artificial intelligence","clue":"human intelligence","def":"is a broad area of computer science that makes machines seem like they have human intelligence.","vn":"Trí tuệ nhân tạo (AI) giúp máy móc có trí thông minh như con người.","tip":"AI = human intelligence"},{"id":12,"term":"Background","clue":"colors and patterns of a web page","def":"the underlying colors and patterns of a web page.","vn":"Background là màu sắc nền và họa tiết chìm của trang web.","tip":"background = colors and patterns"},{"id":13,"term":"Blogging","clue":"online journal","def":"is a type of online journal in which the user can update daily, share, follow and post comments.","vn":"Blogging là hình thức viết nhật ký trực tuyến cập nhật thường xuyên.","tip":"blog = online journal"},{"id":14,"term":"Bot","clue":"works automatically","def":"a computer program that works automatically, especially one that searches for and finds information on the Internet.","vn":"Bot là chương trình chạy tự động tìm kiếm thông tin trên mạng.","tip":"bot = works automatically"},{"id":15,"term":"Browser hijacker","clue":"changes a browser’s behavior","def":"is malicious software that changes a browser’s behavior, settings, or appearance without user consent.","vn":"Phần mềm cướp trình duyệt thay đổi giao diện, thiết lập trái phép.","tip":"browser hijacker = changes browser's behavior"},{"id":16,"term":"Cache","clue":"provides fast access","def":"provides fast access for sections of a program and its data.","vn":"Cache là bộ nhớ đệm giúp truy xuất dữ liệu cực nhanh.","tip":"cache = fast access"},{"id":17,"term":"Cascading Style Sheets (CSS)","clue":"adding styles","def":"a mechanism for adding styles to web documents.","vn":"CSS là cơ chế thêm phong cách/định dạng (styles) cho tài liệu web.","tip":"CSS = adding styles"},{"id":18,"term":"Central processing unit (CPU)","clue":"brain of the computer","def":"is considered the brain of the computer.","vn":"CPU được coi là bộ não xử lý trung tâm của máy tính.","tip":"CPU = brain of computer"},{"id":19,"term":"Centralized Database","clue":"stored centrally","def":"The data is stored centrally and users from different locations can access this data.","vn":"CSDL tập trung: dữ liệu được lưu tại một nơi trung tâm duy nhất.","tip":"centralized = stored centrally"},{"id":20,"term":"DBMS","clue":"software used in databases","def":"the software used in databases to store, organized and retrieve the data.","vn":"DBMS (Hệ quản trị CSDL) là phần mềm dùng để lưu trữ và truy xuất dữ liệu.","tip":"DBMS = software used in databases"},{"id":21,"term":"End User Database","clue":"for the end-user","def":"a collaborative database that is designed specifically for the end-user as do the managers at various levels.","vn":"CSDL thiết kế riêng cho đối tượng người dùng cuối.","tip":"end user database = for the end-user"},{"id":22,"term":"Frames","clue":"rectangular areas","def":"rectangular areas that allow the display of different pages in the same browser window.","vn":"Frames là các vùng hình chữ nhật hiển thị các trang con trong cùng cửa sổ.","tip":"frames = rectangular areas"},{"id":23,"term":"Hard drive","clue":"magnetic device","def":"magnetic device used to store information.","vn":"Ổ cứng HDD là thiết bị lưu trữ bằng từ tính.","tip":"hard drive = magnetic device"},{"id":24,"term":"Hardware","clue":"see or touch","def":"is an electronic or mechanic part you can see or touch.","vn":"Phần cứng là các linh kiện có thể nhìn thấy hoặc sờ chạm được.","tip":"hardware = see or touch"},{"id":25,"term":"Hyperlinks","clue":"links to other pages","def":"are highlighted texts or pictures (buttons, image maps, etc.) that act as links to other pages.","vn":"Siêu liên kết dẫn tới các trang web khác.","tip":"hyperlinks = links to other pages"},{"id":26,"term":"Input devices","clue":"data to go into memory","def":"enable data to go into the computer’s memory.","vn":"Thiết bị nhập cho phép dữ liệu đi VÀO bộ nhớ máy tính.","tip":"input = go into"},{"id":27,"term":"Instant message","clue":"short message for free","def":"is a kind of service that allows people to send short message for free.","vn":"Nhắn tin tức thời là dịch vụ gửi tin nhắn ngắn miễn phí.","tip":"instant message = short message"},{"id":28,"term":"Java applets","clue":"small programs","def":"small programs that enable the creation of interactive files.","vn":"Java applets là các chương trình con nhỏ nhúng trên trình duyệt.","tip":"applet = small programs"},{"id":29,"term":"Monitor","clue":"on a screen","def":"displays the output from a computer on a screen.","vn":"Màn hình hiển thị kết quả xuất ra máy tính.","tip":"monitor = screen"},{"id":30,"term":"Nanotechnology","clue":"single atoms and molecules","def":"the science of making devices from single atoms and molecules.","vn":"Công nghệ nano chế tạo thiết bị từ cấp độ nguyên tử và phân tử.","tip":"nano = atoms and molecules"},{"id":31,"term":"Operating system","clue":"between applications and hardware","def":"is the set of programs between the applications programs and the hardware.","vn":"Hệ điều hành đứng ở giữa làm cầu nối giữa phần cứng và phần mềm ứng dụng.","tip":"OS = between applications and hardware"},{"id":32,"term":"Password","clue":"secret word","def":"A secret word that you type into a computer before you use it.","vn":"Mật khẩu là từ bí mật nhập vào trước khi sử dụng.","tip":"password = secret word"},{"id":33,"term":"Peripherals","clue":"physical units attached","def":"are the physical units attached to the computer.","vn":"Thiết bị ngoại vi là các bộ phận vật lý gắn ngoài máy tính.","tip":"peripherals = attached to computer"},{"id":34,"term":"Podcasting","clue":"audio only broadcast","def":"is a free service in which audio only broadcast released on the internet and users can download to listen.","vn":"Podcast là chương trình phát sóng chỉ có âm thanh (nghe).","tip":"podcast = audio only"},{"id":35,"term":"Ports","clue":"sockets","def":"sockets into which an external device may be connected.","vn":"Cổng kết nối là các ổ cắm để cắm thiết bị ngoại vi vào.","tip":"ports = sockets"},{"id":36,"term":"Processor","clue":"controls all the operations","def":"controls all the operations in a computer.","vn":"Bộ xử lý điều khiển toàn bộ các hoạt động tính toán trong máy tính.","tip":"processor = controls all operations"},{"id":37,"term":"RAM","clue":"read or written","def":"holds data read or written to it by the processor.","vn":"RAM là bộ nhớ cho phép bộ xử lý đọc và ghi dữ liệu.","tip":"RAM = read or written"},{"id":38,"term":"Ransomware","clue":"hold information at ransom","def":"is malware that employs encryption to hold a victim’s information at ransom. A user or organization’s critical data is encrypted so that they cannot access files, databases, or application.","vn":"Mã độc tống tiền mã hóa dữ liệu đòi tiền chuộc.","tip":"ransomware = at ransom"},{"id":39,"term":"ROM","clue":"start up the computer","def":"hold instructions which are needed to start up the computer.","vn":"ROM chứa các chỉ dẫn cần thiết để khởi động máy tính.","tip":"ROM = start up computer"},{"id":40,"term":"Software","clue":"set of instructions / program","def":"is a set of instructions, called a program, which tells the computer what to do.","vn":"Phần mềm là tập hợp các câu lệnh (chương trình) bảo máy tính phải làm gì.","tip":"software = program / instructions"},{"id":41,"term":"Spyware","clue":"covertly / computer activities","def":"software that enables a user to obtain convert information about another’s computer activities by transmitting data covertly from their hard drive.","vn":"Phần mềm gián điệp bí mật (covertly) theo dõi và gửi dữ liệu về kẻ tấn công.","tip":"spy = covertly"},{"id":42,"term":"Tags","clue":"placed around pieces of text","def":"are placed around pieces of text to tell the web browser how to display text or pictures.","vn":"Các thẻ (tag HTML) đặt bao quanh đoạn văn bản để chỉ định hiển thị.","tip":"tags = placed around text"},{"id":43,"term":"Teleworking","clue":"working at home","def":"the practice of working at home and communicating with the office by phone and computer.","vn":"Làm việc từ xa/tại nhà qua điện thoại và máy tính.","tip":"teleworking = working at home"},{"id":44,"Trojan":"Trojan","term":"Trojan","clue":"take control of your computer","def":"is a type of malicious code or software that can take control of your computer.","vn":"Trojan là mã độc ngụy trang để chiếm quyền kiểm soát máy tính.","tip":"Trojan = take control"},{"id":45,"term":"Video casting","clue":"videos created and uploaded to Youtube","def":"This is a type of communication in which videos are created and uploaded to a website like Youtube.","vn":"Phát video: sáng tạo nội dung video và tải lên các nền tảng như YouTube.","tip":"videocasting = videos uploaded to Youtube"},{"id":46,"term":"Video conferencing","clue":"video call to one or more people","def":"refers to a set of technologies that allow a person to make a video call to one or more people at the same time.","vn":"Hội nghị truyền hình cho phép gọi video nhiều người cùng lúc.","tip":"video conferencing = video call multiple people"},{"id":47,"term":"Visitor map","clue":"where the visitors to your site are from","def":"information about where the visitors to your site are from.","vn":"Bản đồ khách truy cập hiển thị thông tin vị trí người xem trang web.","tip":"visitor map = where visitors are from"},{"id":48,"term":"VOIP","clue":"telephone calls over the internet","def":"is a service to make telephone calls over the internet rather than through the traditional telephone or cell phone networks.","vn":"VOIP là dịch vụ truyền giọng nói/gọi thoại qua giao thức mạng Internet.","tip":"VOIP = telephone calls over internet"}],"part2Data":[{"id":1,"sentence":"__________ are designed to be worn on the body or integrated into the user’s clothing.","answer":"Wearables","clue":"worn on the body","options":["Wearables","Laptops","Tablets","Mainframes"],"vn":"Thiết bị đeo (Wearables) được thiết kế để đeo trên cơ thể hoặc tích hợp vào quần áo."},{"id":2,"sentence":"__________ is software that displays unwanted advertisements on your computer.","answer":"Adware","clue":"advertisements","options":["Adware","Spyware","Shareware","Freeware"],"vn":"Adware là phần mềm hiển thị quảng cáo không mong muốn."},{"id":3,"sentence":"__________ is a type of malware that prevents you from using your computer or accessing specific files on your computer unless a ransom is paid.","answer":"Ransomware","clue":"ransom is paid","options":["Ransomware","Worm","Virus","Phishing"],"vn":"Ransomware là mã độc tống tiền khóa dữ liệu."},{"id":4,"sentence":"An operating system has three main functions: manage the computer's resources, such as the central processing unit, __________, disk drives, and printers, establish a user interface, and execute and provide services for applications software.","answer":"memory","clue":"CPU, [?], disk drives","options":["memory","keyboard","mouse","monitor"],"vn":"Hệ điều hành quản lý tài nguyên: CPU, bộ nhớ (memory), ổ đĩa..."},{"id":5,"sentence":"Electronic communication is fast, __________ and convenient, but these attributes contain inherent disadvantages.","answer":"cheap","clue":"fast, [?], convenient","options":["cheap","expensive","slow","hard"],"vn":"Truyền thông điện tử thì nhanh, rẻ (cheap) và thuận tiện."},{"id":6,"sentence":"__________ enable us to extract the finish product from the system.","answer":"Output devices","clue":"extract product","options":["Output devices","Input devices","Storage devices","Cables"],"vn":"Thiết bị xuất (Output devices) giúp ta lấy kết quả hoàn chỉnh ra ngoài."},{"id":7,"sentence":"__________ is a type of malware that prevents you from using your computer or accessing specific files on your computer unless a ransom is paid.","answer":"Ransomware","clue":"ransom is paid","options":["Ransomware","Trojan","Spyware","Adware"],"vn":"Ransomware là mã độc tống tiền."},{"id":8,"sentence":"__________ means copying data to another place so that you don’t lose it.","answer":"Backing up","clue":"copying data... not lose it","options":["Backing up","Deleting","Formatting","Encrypting"],"vn":"Sao lưu (Backing up) là chép dữ liệu sang nơi khác để không bị mất."},{"id":9,"sentence":"__________ is a set of instructions, called a program, which tells the computer what to do.","answer":"Software","clue":"set of instructions, program","options":["Software","Hardware","Firmware","Malware"],"vn":"Phần mềm (Software) là tập hợp các chỉ dẫn điều khiển máy tính."},{"id":10,"sentence":"A __________ can manage any type of data, including text, numbers, images, sound and video and hyperlinks.","answer":"multimedia database","clue":"sound and video","options":["multimedia database","relational database","flat file","text file"],"vn":"CSDL đa phương tiện (multimedia database) quản lý cả âm thanh, hình ảnh, video."},{"id":11,"sentence":"A __________ connects computers over a relatively short distance, allowing them to share data, files, and resources.","answer":"LAN","clue":"short distance","options":["LAN","WAN","MAN","SAN"],"vn":"Mạng cục bộ (LAN) kết nối khoảng cách ngắn trong phòng/tòa nhà."},{"id":12,"sentence":"A __________ database in which various parts of a database are located in different physical locations along with databases replicated and distributed between different points in a network can be imagined.","answer":"distributed","clue":"different physical locations","options":["distributed","centralized","personal","local"],"vn":"CSDL phân tán (distributed database) đặt ở nhiều vị trí địa lý khác nhau."},{"id":13,"sentence":"A network topology is the layout of the interconnections of the __________ of a computer network.","answer":"nodes","clue":"interconnections of the...","options":["nodes","users","wires","emails"],"vn":"Sơ đồ mạng là bố cục liên kết giữa các nút (nodes) mạng."},{"id":14,"sentence":"A record about an employee might consist of several __________ which give their name, address, phone number, date of birth, salary and length of employment.","answer":"fields","clue":"name, address...","options":["fields","files","folders","bytes"],"vn":"Một bản ghi gồm nhiều trường (fields) như tên, địa chỉ, ngày sinh..."},{"id":15,"sentence":"Artificial Intelligence is slowly making progress, but it could soon __________ into a new trend in technology.","answer":"evolve","clue":"into a new trend","options":["evolve","stop","die","break"],"vn":"AI đang dần tiến bộ và có thể sớm phát triển (evolve) thành xu hướng mới."},{"id":16,"sentence":"But in the modern world, telecommunications mainly means transferring information across the Internet, via modem, phone lines or __________ networks.","answer":"wireless","clue":"modem, phone lines or...","options":["wireless","paper","manual","offline"],"vn":"Mạng không dây (wireless networks)."},{"id":17,"sentence":"By using __________, one can send a message to another person through a mail immediately.","answer":"email","clue":"mail immediately","options":["email","fax","post office","letter"],"vn":"Dùng thư điện tử (email) để gửi tin nhắn ngay lập tức."},{"id":18,"sentence":"Don’t use common words or numbers as __________, such as birthdays or names of your children.","answer":"passwords","clue":"birthdays or names","options":["passwords","usernames","addresses","domains"],"vn":"Không dùng ngày sinh làm mật khẩu (passwords)."},{"id":19,"sentence":"Due to the advancement of electronic media, business managers can effortlessly manage __________ transversely the world.","answer":"businesses","clue":"manage [?] transversely the world","options":["businesses","weather","mountains","rivers"],"vn":"Quản lý công việc kinh doanh (businesses) trên toàn thế giới."},{"id":20,"sentence":"Electronic communication can be classified into different types like messaging, voice call, e-mail, __________, etc.","answer":"video conferencing","clue":"messaging, voice call...","options":["video conferencing","sleeping","cooking","running"],"vn":"Hội nghị truyền hình (video conferencing)."},{"id":21,"sentence":"Hackers try to trick email recipients into believing that a message is genuine... so that they click on a link or open an __________.","answer":"attachment","clue":"click on a link or open an...","options":["attachment","envelope","application","account"],"vn":"Mở tệp đính kèm (attachment) độc hại."},{"id":22,"sentence":"Heterogeneous and homogenous are the two kinds of distribution __________.","answer":"database","clue":"Heterogeneous and homogenous","options":["database","monitor","cable","printer"],"vn":"Hệ CSDL phân tán thuần nhất và hỗn hợp (distribution database)."},{"id":23,"sentence":"HTML is a language that is all about the __________ of your information, not what the actual data is.","answer":"formatting","clue":"not what actual data is","options":["formatting","security","price","speed"],"vn":"HTML quy định định dạng/trình bày (formatting/structure) hiển thị."},{"id":24,"sentence":"If you want to inject something special into your web pages, you can use Adobe Flash to include interactive __________ and streaming audio.","answer":"animations","clue":"Adobe Flash","options":["animations","hardware","cables","routers"],"vn":"Adobe Flash chèn các hoạt ảnh (animations) tương tác."},{"id":25,"sentence":"If you want to share __________ with people, you can use RSS feeds and provide readers with a link to the feed.","answer":"news","clue":"RSS feeds","options":["news","money","hardware","passwords"],"vn":"Chia sẻ tin tức (news/content) bằng RSS feeds."},{"id":26,"sentence":"In __________, all nodes are connected to a common medium, call backbone, as it happens with Christmas lights.","answer":"bus topology","clue":"common medium, backbone","options":["bus topology","star topology","ring topology","mesh topology"],"vn":"Mạng hình trục (bus topology): các nút nối vào một đường trục chính backbone."},{"id":27,"sentence":"In a __________ network all nodes are connected to a common medium, call backbone, as it happens with Christmas lights.","answer":"bus","clue":"common medium, backbone","options":["bus","star","ring","tree"],"vn":"Mạng Bus."},{"id":28,"sentence":"In basic terms, AI is a __________ area of computer science that makes machines seem like they have human intelligence.","answer":"broad","clue":"area of computer science","options":["broad","narrow","tiny","bad"],"vn":"AI là một lĩnh vực rộng lớn (broad area) của khoa học máy tính."},{"id":29,"sentence":"In recent years, TV and radio broadcasting has been revolutionized by developments in satellite and __________ transmission.","answer":"digital","clue":"satellite and [?] transmission","options":["digital","manual","hand","paper"],"vn":"Truyền dẫn số (digital transmission) và vệ tinh."},{"id":30,"sentence":"In the ideal smart home, appliances and electronic devices work in __________ to keep the house secure.","answer":"harmony","clue":"work in [?]","options":["harmony","conflict","danger","trouble"],"vn":"Các thiết bị hoạt động hòa hợp/đồng bộ (harmony) với nhau."},{"id":31,"sentence":"In the near future we may have __________ pets, with video camera eyes and microphone ears, linked by radio to the family computer.","answer":"robotic","clue":"video camera eyes","options":["robotic","real","dead","wild"],"vn":"Thú cưng robot (robotic pets)."},{"id":32,"sentence":"Instant messaging is a service, like SMS, that __________ people to send short messages using their mobiles phones.","answer":"enables","clue":"people to send","options":["enables","prevents","stops","punishes"],"vn":"Cho phép (enables/allows) mọi người gửi tin nhắn ngắn."},{"id":33,"sentence":"Like human, a __________ retains information and becomes smarter over time.","answer":"neural network","clue":"retains information, smarter","options":["neural network","stone","cable","battery"],"vn":"Mạng nơ-ron (neural network/machine) ghi nhớ thông tin và thông minh hơn theo thời gian."},{"id":34,"sentence":"Netflix and Google announced reducing video streaming quality to prevent network __________ and collapse.","answer":"congestion","clue":"and collapse","options":["congestion","freedom","speed","success"],"vn":"Ngăn chặn nghẽn mạng (network congestion) và sụp đổ đường truyền."},{"id":35,"sentence":"Neural networks help solve the problem of providing higher revenue at __________ costs.","answer":"lower","clue":"higher revenue at [?] costs","options":["lower","higher","infinite","extreme"],"vn":"Đem lại doanh thu cao hơn với chi phí thấp hơn (lower costs)."},{"id":36,"sentence":"Neural networks, also called __________ neural networks, are ways of achieving deep learning.","answer":"artificial","clue":"neural networks","options":["artificial","natural","biological","human"],"vn":"Mạng nơ-ron nhân tạo (artificial neural networks - ANN)."},{"id":37,"sentence":"No __________ user can access the information.","answer":"unauthorized","clue":"can access the information","options":["unauthorized","registered","admin","good"],"vn":"Không người dùng trái phép nào (unauthorized user) có thể truy cập."},{"id":38,"sentence":"Nowadays, data are stored in public, hybrid or private cloud, also known as a __________ environment.","answer":"virtualized","clue":"cloud","options":["virtualized","physical","wooden","paper"],"vn":"Môi trường ảo hóa (virtualized environment)."},{"id":39,"sentence":"On the other hand, __________ may be difficult to set up and may be insecure as computer hackers can send viruses...","answer":"networks","clue":"send viruses to the net computer","options":["networks","keyboards","monitors","mouse"],"vn":"Mạng máy tính (networks) có thể khó thiết lập và tiềm ẩn nguy cơ an ninh."},{"id":40,"sentence":"Thanks to advances in processing speeds, __________ can actually make sense of all this information more quickly.","answer":"computers","clue":"make sense of information","options":["computers","books","pens","cables"],"vn":"Máy tính (computers) xử lý thông tin nhanh hơn."},{"id":41,"sentence":"Thanks to books and movies, each generation has formed its own fantasy of a world ruled or at least served by __________.","answer":"robots","clue":"ruled or served by","options":["robots","animals","aliens","plants"],"vn":"Thế giới được phục vụ bởi robot."},{"id":42,"sentence":"The __________ of large-size, unstructured information can be done very efficiently on several cloud virtual servers.","answer":"analysis","clue":"large-size, unstructured information","options":["analysis","deletion","destruction","loss"],"vn":"Phân tích (analysis) dữ liệu phi cấu trúc kích thước lớn."},{"id":43,"sentence":"The __________ of information in a network is controlled by communications protocols...","answer":"transmission","clue":"of information in a network","options":["transmission","destruction","stop","ending"],"vn":"Sự truyền tải thông tin (transmission of information) được kiểm soát bởi giao thức."},{"id":44,"sentence":"The best database packages also include network facilities, which can make business more __________.","answer":"productive","clue":"make business more","options":["productive","slow","lazy","broken"],"vn":"Làm cho doanh nghiệp năng suất/hiệu quả hơn (productive)."},{"id":45,"sentence":"The role of the operating system is to __________ directly with the hardware.","answer":"communicate","clue":"directly with hardware","options":["communicate","fight","hide","break"],"vn":"Giao tiếp/tương tác trực tiếp (communicate) với phần cứng."},{"id":46,"sentence":"There are three basic hardware sections: the CPU, main memory and __________.","answer":"peripherals","clue":"CPU, memory and...","options":["peripherals","software","internet","cloud"],"vn":"3 phần cơ bản: CPU, bộ nhớ chính và thiết bị ngoại vi (peripherals)."},{"id":47,"sentence":"There is no central hub, and communication is sent in one direction around the __________ through the use of a token.","answer":"ring","clue":"around the [?] ... token","options":["ring","star","bus","tree"],"vn":"Mạng Token Ring: truyền dữ liệu một chiều quanh vòng (ring)."},{"id":48,"sentence":"When you ask Siri or Cortana... it’s feeding it to a __________.","answer":"search engine","clue":"feeding it to a [?]","options":["search engine","printer","speaker","scanner"],"vn":"Đưa dữ liệu vào công cụ tìm kiếm (search engine)."},{"id":49,"sentence":"While people are mostly using home WiFi, they would still use their mobile phones for voice __________.","answer":"calls","clue":"voice [?]","options":["calls","screens","cases","batteries"],"vn":"Cuộc gọi thoại (voice calls)."},{"id":50,"sentence":"With potential congestion of fixed broadband, devices will fall back on __________ networks.","answer":"cellular","clue":"mobile data traffic","options":["cellular","wired","satellite","fiber"],"vn":"Mạng di động tế bào (cellular networks)."}],"part3Data":[{"id":1,"text":"A cloud database is an automated or built-in database for such a virtualized environment.","answer":true,"reason":"ĐÚNG: Khái niệm chuẩn của Cloud database hoạt động trong môi trường ảo hóa.","clue":"Cloud database ... virtualized environment","tip":"Định nghĩa chuẩn xác: Cloud database vận hành trên nền tảng ảo hóa đám mây."},{"id":2,"text":"A cloud database is used for large data sets.","answer":true,"reason":"ĐÚNG: Cloud database thiết kế tối ưu cho tập dữ liệu lớn (Big data / large data sets).","clue":"Cloud database ... large data sets","tip":"Cloud database được tối ưu đặc biệt cho các tập dữ liệu lớn."},{"id":3,"text":"A cloud service offers various advantages... as well as low availability.","answer":false,"reason":"SAI: Dịch vụ đám mây đem lại ĐỘ SẴN SÀNG CAO (high availability), không phải 'low'.","clue":"low availability","tip":"Bẫy từ 'low'! Dịch vụ đám mây (Cloud) nổi tiếng vì độ sẵn sàng cao (HIGH availability), không bao giờ là 'low'."},{"id":4,"text":"A database query function allows you to extract information according to certain conditions or criteria.","answer":true,"reason":"ĐÚNG: Hàm truy vấn (query) dùng để trích xuất dữ liệu theo điều kiện/tiêu chí.","clue":"query function ... extract information","tip":"Chức năng truy vấn (query) cho phép trích xuất thông tin theo tiêu chí nhất định."},{"id":5,"text":"A database query function allows you to extract information according to certain conditions or criteria.","answer":true,"reason":"ĐÚNG: Câu lặp lại của câu 4.","clue":"query function ... extract information","tip":"Chức năng truy vấn (query) cho phép trích xuất thông tin theo tiêu chí nhất định."},{"id":6,"text":"A field is a group of records holding large amount of information.","answer":false,"reason":"SAI: Bẫy tráo khái niệm! 'Record' mới là nhóm các fields, còn field là trường đơn lẻ (như Name, Age).","clue":"field is a group of records","tip":"Bẫy tráo khái niệm! 'Record' mới là nhóm các fields, còn field chỉ là 1 cột thuộc tính đơn lẻ."},{"id":7,"text":"A LAN connects computers in an office building, school, over a relatively long distance.","answer":false,"reason":"SAI: Bẫy từ 'long distance'! LAN là mạng cục bộ khoảng cách NGẮN (short distance), WAN mới là long distance.","clue":"LAN ... long distance","tip":"Bẫy từ 'long distance'! LAN là mạng cục bộ khoảng cách NGẮN (short distance), WAN mới là long."},{"id":8,"text":"A mainframe computer is less powerful than a PC.","answer":false,"reason":"SAI: Bẫy từ 'less powerful'! Máy tính lớn (Mainframe) MẠNH HƠN RẤT NHIỀU (more powerful) so với PC cá nhân.","clue":"less powerful","tip":"Bẫy từ 'less powerful'! Mainframe (máy tính lớn) mạnh hơn rất nhiều (MORE powerful) so với PC cá nhân."},{"id":9,"text":"A mainframe computer is more powerful than a PC.","answer":true,"reason":"ĐÚNG: Mainframe mạnh hơn PC.","clue":"more powerful","tip":"Mainframe máy tính khổng lồ chắc chắn mạnh hơn PC cá nhân."},{"id":10,"text":"A mainframe is used by large organizations that need to process great amount of data.","answer":true,"reason":"ĐÚNG: Mainframe dùng cho các tập đoàn lớn xử lý lượng dữ liệu khổng lồ.","clue":"great amount of data","tip":"Mainframe được các tập đoàn lớn dùng để xử lý lượng dữ liệu cực lớn."},{"id":11,"text":"A mainframe is used by large organizations that need to process small amount of data.","answer":false,"reason":"SAI: Bẫy từ 'small amount'! Xử lý lượng dữ liệu lớn (great amount), không phải nhỏ.","clue":"small amount of data","tip":"Bẫy từ 'small'! Mainframe xử lý lượng dữ liệu khổng lồ (GREAT amount), không phải dữ liệu nhỏ."},{"id":12,"text":"A MAN is a specialized network that provides access to block-level storage...","answer":false,"reason":"SAI: Đây là định nghĩa của SAN (Storage Area Network), không phải MAN (Metropolitan Area Network).","clue":"MAN ... block-level storage","tip":"Bẫy tráo tên mạng! Cung cấp lưu trữ block-level là mạng SAN (Storage Area Network), MAN là mạng đô thị."},{"id":13,"text":"A Personal Database is an automated or built-in database for such a virtualized environment.","answer":false,"reason":"SAI: Đây là định nghĩa của Cloud database, không phải Personal Database!","clue":"Personal Database ... virtualized environment","tip":"Bẫy tráo khái niệm! Môi trường ảo hóa (virtualized) là Cloud Database, Personal DB là cho cá nhân."},{"id":14,"text":"A Personal Digital Assistant is small enough to fit into the palm of your hand.","answer":true,"reason":"ĐÚNG: Thiết bị trợ lý số cá nhân PDA nhỏ gọn vừa lòng bàn tay.","clue":"palm of your hand","tip":"PDA (Personal Digital Assistant) là thiết bị trợ lý số bỏ túi nhỏ gọn vừa lòng bàn tay."},{"id":15,"text":"A VPN establishes an encrypted channel that keeps a user’s identity and access credentials... inaccessible to hackers.","answer":true,"reason":"ĐÚNG: VPN mã hóa đường truyền ngăn chặn hacker nghe lén.","clue":"VPN ... encrypted channel","tip":"VPN luôn gắn liền với kênh truyền được mã hóa (encrypted channel) bảo mật."},{"id":16,"text":"A Web Application Firewall (WAF) which updates a threat database in real-time is one of the effective ways to filter application input to protect against code injection.","answer":true,"reason":"ĐÚNG: WAF bảo vệ chống tấn công SQL/Code Injection thời gian thực.","clue":"WAF ... protect against code injection","tip":"Tường lửa ứng dụng web (WAF) cập nhật thời gian thực để ngăn chặn tấn công chèn mã độc (code injection)."},{"id":17,"text":"A wireless access point allows wireless devices to connect to the network.","answer":true,"reason":"ĐÚNG: Điểm truy cập Access Point cho phép thiết bị không dây kết nối mạng.","clue":"wireless access point ... connect","tip":"Access Point (AP) chính là điểm phát cho các thiết bị không dây kết nối vào mạng."},{"id":18,"text":"Animations are placed around pieces of text to tell the web browser how to display text or pictures.","answer":false,"reason":"SAI: Đây là định nghĩa của Thẻ HTML (Tags), animations là ảnh động!","clue":"Animations ... placed around pieces of text","tip":"Bẫy tráo khái niệm! Đặt bao quanh đoạn văn bản trên web là Thẻ Tags HTML, Animations là hoạt ảnh/hình động."},{"id":19,"text":"Background means the underlying colors and patterns of a web page.","answer":true,"reason":"ĐÚNG: Background là màu nền và họa tiết web.","clue":"Background ... colors and patterns","tip":"Background chính là màu nền và họa tiết cơ sở của trang web."},{"id":20,"text":"Centralized Database are the paid versions of the enormous databases, designed for users who wish to access the information for assistance.","answer":false,"reason":"SAI: CSDL tập trung là lưu trữ dữ liệu tại một nơi trung tâm, không phải bản trả phí.","clue":"Centralized Database ... paid versions","tip":"Bẫy khái niệm! Bản thương mại trả phí là Commercial Database, Centralized DB chỉ là lưu trữ tập trung."},{"id":21,"text":"Digital TV is a way of transmitting pictures by means of digital signals, in contrast to the analogue signals used by traditional TV.","answer":true,"reason":"ĐÚNG: Truyền hình số truyền tín hiệu số (digital) thay vì analog truyền thống.","clue":"Digital TV ... digital signals","tip":"Truyền hình số (Digital TV) truyền tín hiệu kỹ thuật số, đối lập với analog cổ điển."},{"id":22,"text":"E-mail, telephone, video calling, FAX machine are typically used to transmit information in electronic communication.","answer":true,"reason":"ĐÚNG: Các phương tiện truyền thông điện tử phổ biến.","clue":"E-mail, telephone, video calling, FAX","tip":"Tất cả các phương tiện này đều thuộc truyền thông điện tử (electronic communication)."},{"id":23,"text":"Hackers are always looking to exploit a private network or system's vulnerabilities so they can steal confidential information and data.","answer":true,"reason":"ĐÚNG: Tin tặc luôn tìm cách khai thác lỗ hổng để đánh cắp dữ liệu.","clue":"Hackers ... steal confidential/secret information","tip":"Tin tặc luôn nhắm vào các lỗ hổng (vulnerabilities) để đánh cắp thông tin bí mật."},{"id":24,"text":"Hackers are always trying to attack a private network or system's vulnerabilities so they can steal secret information and data.","answer":true,"reason":"ĐÚNG: Tương tự câu 23.","clue":"Hackers ... steal confidential/secret information","tip":"Tin tặc luôn nhắm vào các lỗ hổng (vulnerabilities) để đánh cắp thông tin bí mật."},{"id":25,"text":"Hackers are always trying to attack a private network or system’s vulnerabilities so they can steal secret information and data.","answer":true,"reason":"ĐÚNG: Tương tự câu 23 & 24.","clue":"Hackers ... steal confidential/secret information","tip":"Tin tặc luôn nhắm vào các lỗ hổng (vulnerabilities) để đánh cắp thông tin bí mật."},{"id":26,"text":"Hardware is any physical part of the computer which includes the internal components and the external parts like the monitor and printer.","answer":true,"reason":"ĐÚNG: Phần cứng bao gồm cả linh kiện bên trong và thiết bị bên ngoài.","clue":"Hardware ... physical part","tip":"Phần cứng (Hardware) bao gồm tất cả các linh kiện vật lý (physical) bên trong và bên ngoài máy tính."},{"id":27,"text":"If you want to protect your PC, don’t open email attachments from strangers and take care when downloading files from the Web.","answer":true,"reason":"ĐÚNG: Lời khuyên bảo mật cơ bản: không mở file đính kèm lạ.","clue":"don't open email attachments from strangers","tip":"Nguyên tắc an toàn cơ bản: không mở file đính kèm từ người lạ để tránh mã độc."},{"id":28,"text":"If you want to send instant messages on Facebook Messenger, Whatsapp or Snapchat, you will be charged a large amount of fee.","answer":false,"reason":"SAI: Bẫy 'large amount of fee'! Các ứng dụng này gửi tin nhắn MIỄN PHÍ (free) qua Internet.","clue":"large amount of fee","tip":"Bẫy từ 'large amount of fee'! Nhắn tin Messenger, WhatsApp, Snapchat hoàn toàn MIỄN PHÍ qua Internet."},{"id":29,"text":"If your computer is attacked by ransomware, you don’t have to pay any ransom to unlock your screen and your files.","answer":false,"reason":"SAI: Ransomware tống tiền bắt nạn nhân PHẢI trả tiền chuộc mới mở khóa file.","clue":"don't have to pay any ransom","tip":"Bẫy từ 'don't have to pay'! Ransomware tống tiền bắt buộc nạn nhân PHẢI trả tiền chuộc mới mong mở file."},{"id":30,"text":"In a star bus network, each node is connected to its left in a circle.","answer":false,"reason":"SAI: Kết nối thành vòng tròn là RING network, không phải star bus!","clue":"star bus ... connected in a circle","tip":"Bẫy tráo mô hình! Nối thành vòng tròn (in a circle) là mạng VÒNG (Ring network), không phải star bus."},{"id":31,"text":"In distribution database, the data is stored centrally and user from various locations can access this data.","answer":false,"reason":"SAI: CSDL phân tán thì dữ liệu lưu ở nhiều nơi, lưu tập trung là CENTRALIZED database!","clue":"distribution database ... stored centrally","tip":"Bẫy tráo khái niệm! Đã là CSDL phân tán (distribution) thì dữ liệu chia nhiều nơi, lưu tập trung là Centralized."},{"id":32,"text":"Instant message is a kind of service that allows people to send short message for free.","answer":true,"reason":"ĐÚNG: Nhắn tin tức thời là dịch vụ nhắn tin ngắn miễn phí.","clue":"Instant message ... short message for free","tip":"Nhắn tin tức thời (Instant message) gửi tin nhắn ngắn miễn phí qua mạng."},{"id":33,"text":"Instant messages are sent for free over the internet and can contain multimedia items like emoji, pictures, videos and voice recordings.","answer":true,"reason":"ĐÚNG: Tin nhắn tức thời gửi miễn phí và hỗ trợ đa phương tiện.","clue":"Instant messages ... emoji, pictures, videos","tip":"Tin nhắn tức thời ngày nay đều hỗ trợ chèn đa phương tiện (emoji, ảnh, video, âm thanh)."},{"id":34,"text":"Instant messages are sent for free over the internet and can contain multimedia items like emoji, pictures, videos and voice recordings.","answer":true,"reason":"ĐÚNG: Câu lặp lại câu 33.","clue":"Instant messages ... emoji, pictures, videos","tip":"Tin nhắn tức thời ngày nay đều hỗ trợ chèn đa phương tiện (emoji, ảnh, video, âm thanh)."},{"id":35,"text":"Malware attack is malicious software that changes a browser's behavior, settings, or appearance without user consent.","answer":false,"reason":"SAI: Đây là định nghĩa chính xác của BROWSER HIJACKER, không phải chung chung là malware attack.","clue":"changes a browser's behavior","tip":"Bẫy khái niệm chung chung! Thay đổi hành vi và giao diện trình duyệt là BROWSER HIJACKER."},{"id":36,"text":"MANs are typically bigger than LANs but smaller and WANs.","answer":true,"reason":"ĐÚNG: Mạng đô thị MAN lớn hơn LAN nhưng nhỏ hơn WAN (LAN < MAN < WAN).","clue":"MANs bigger than LANs but smaller and WANs","tip":"Quy mô chuẩn: Mạng cục bộ LAN < Mạng đô thị MAN < Mạng diện rộng WAN."},{"id":37,"text":"Meta tag is invisible information (e.g. a hidden keyword) on a website.","answer":true,"reason":"ĐÚNG: Meta tag chứa thông tin vô hình/ẩn phục vụ tìm kiếm SEO.","clue":"Meta tag ... invisible information","tip":"Thẻ meta tag chứa thông tin vô hình đối với người đọc nhưng quan trọng cho công cụ tìm kiếm."},{"id":38,"text":"Neural networks are used to convert handwritten characters into digital characters that a machine can recognize.","answer":true,"reason":"ĐÚNG: Mạng nơ-ron được ứng dụng nhận diện chữ viết tay số hóa (OCR).","clue":"Neural networks ... handwritten into digital characters","tip":"Mạng nơ-ron được dùng trong nhận dạng chữ viết tay thành văn bản số (OCR)."},{"id":39,"text":"Peripherals are the physical units attached to the computer. They include storage devices and input/output devices.","answer":true,"reason":"ĐÚNG: Thiết bị ngoại vi gắn ngoài gồm thiết bị lưu trữ và vào/ra.","clue":"Peripherals ... attached to the computer","tip":"Thiết bị ngoại vi là các linh kiện vật lý được gắn thêm vào máy tính (bàn phím, chuột, máy in...)."},{"id":40,"text":"Phishing is a cyber-attack in which phishing emails are sent to gather users’ login information.","answer":true,"reason":"ĐÚNG: Phishing (lừa đảo) gửi email giả mạo để lấy trộm mật khẩu/thông tin đăng nhập.","clue":"Phishing ... emails to gather login information","tip":"Phishing là tấn công giả mạo email để lừa lấy cắp thông tin đăng nhập/mật khẩu."},{"id":41,"text":"Private networks can’t be attacked by intruders who attempt to obtain information such as Social Security numbers, bank accounts...","answer":false,"reason":"SAI: Bẫy từ 'can't be attacked'! Mạng riêng tư VẪN CÓ THỂ bị kẻ xấu tấn công nếu có lỗ hổng.","clue":"can't be attacked","tip":"Bẫy từ tuyệt đối 'can't be attacked'! Mạng riêng tư VẪN CÓ THỂ bị tin tặc tấn công nếu có lỗ hổng."},{"id":42,"text":"Relational database is the database which is made up of related files.","answer":true,"reason":"ĐÚNG: CSDL quan hệ được cấu thành từ các bảng/tệp có mối liên hệ.","clue":"Relational database ... related files","tip":"Cơ sở dữ liệu quan hệ (Relational DB) gồm các bảng/tệp liên kết chặt chẽ với nhau."},{"id":43,"text":"Systems Administrators, Network Administrators, or anyone who has anything to do with cybersecurity will also be under a great deal of stress.","answer":true,"reason":"ĐÚNG: Dân IT quản trị hệ thống và an ninh mạng chịu áp lực công việc rất lớn.","clue":"Systems Administrators ... great deal of stress","tip":"Quản trị viên hệ thống và an ninh mạng chịu áp lực và căng thẳng công việc rất cao."},{"id":44,"text":"Tech professionals are not required to constantly keep themselves up-to-date on the latest trends and developments.","answer":false,"reason":"SAI: Bẫy từ 'not required'! Dân công nghệ BẮT BUỘC phải liên tục cập nhật kiến thức mới.","clue":"not required to keep up-to-date","tip":"Bẫy từ 'not required'! Dân công nghệ BẮT BUỘC (required) phải liên tục học và cập nhật cái mới."},{"id":45,"text":"Thanks to electronic communication, mobile phones now let you check your email, browse the Web and connect with home or company intranets, all without wire.","answer":true,"reason":"ĐÚNG: Điện thoại di động cho phép lướt web, check mail hoàn toàn không dây.","clue":"mobile phones ... without wire","tip":"Điện thoại di động giúp kết nối mạng, đọc email hoàn toàn không dây (without wire)."},{"id":46,"text":"The analysis of large-size, unstructured information can’t be done very efficiently on several cloud virtual servers.","answer":false,"reason":"SAI: Bẫy từ 'can't'! Phân tích dữ liệu lớn CÓ THỂ thực hiện rất hiệu quả trên các máy chủ ảo đám mây.","clue":"can't be done very efficiently","tip":"Bẫy từ 'can't'! Phân tích dữ liệu lớn CÓ THỂ thực hiện rất hiệu quả trên các máy chủ ảo đám mây."},{"id":47,"text":"The connection between devices of WLAN and LAN are the same.","answer":false,"reason":"SAI: Khác nhau! WLAN dùng sóng vô tuyến không dây (wireless), LAN dùng dây cáp mạng (cables).","clue":"WLAN and LAN are the same","tip":"Bẫy từ 'the same'! Khác nhau hoàn toàn: WLAN dùng sóng vô tuyến (wireless), LAN dùng dây cáp."},{"id":48,"text":"The network starts with an input layer that receives output in the form of data.","answer":false,"reason":"SAI: Tầng đầu vào (input layer) thì nhận 'INPUT' (dữ liệu vào), không phải nhận 'output'!","clue":"input layer that receives output","tip":"Bẫy tráo từ đối lập! Tầng đầu vào (INPUT layer) thì phải nhận 'input', không thể nhận 'output'."},{"id":49,"text":"Vlogging and Blogging are similar in delivering informal styles, however, with Vlogging, Vloggers can post videos.","answer":true,"reason":"ĐÚNG: Vlogging và Blogging tương đồng, điểm khác biệt là Vlogging dùng video.","clue":"Vlogging ... post videos","tip":"Vlogging (Video Blogging) khác biệt ở chỗ chia sẻ nội dung qua định dạng video."},{"id":50,"text":"VOIP allows voice and multimedia data to be transferred across a data network.","answer":true,"reason":"ĐÚNG: VOIP cho phép truyền âm thanh giọng nói và đa phương tiện qua mạng dữ liệu.","clue":"VOIP ... voice and multimedia","tip":"VOIP truyền tải âm thanh giọng nói và dữ liệu đa phương tiện qua hạ tầng mạng IP."}]};
+  <script src="questions.js"></script>
+  <script src="app.js"></script>
+  <script src="study.js"></script>
 
-    let activeMode = 'part1';
-    let questions = [];
-    let curIdx = 0;
-    let correctCount = 0;
-    let wrongCount = 0;
-    let missedItems = [];
-    let isReviewingMissed = false;
-    let isAnswered = false;
-    let audioMuted = false;
-
-    // Web Audio Synthesizer
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function triggerChime(correct) {
-      if (audioMuted) return;
-      try {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        if (correct) {
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
-          osc.frequency.exponentialRampToValueAtTime(783.99, audioCtx.currentTime + 0.12); // G5
-          gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
-          osc.start();
-          osc.stop(audioCtx.currentTime + 0.25);
-        } else {
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(260, audioCtx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(180, audioCtx.currentTime + 0.14);
-          gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
-          osc.start();
-          osc.stop(audioCtx.currentTime + 0.25);
-        }
-      } catch (e) {}
-    }
-
-    function shuffle(arr) {
-      const out = [...arr];
-      for (let i = out.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [out[i], out[j]] = [out[j], out[i]];
-      }
-      return out;
-    }
-
-    function buildQuestionSet(mode) {
-      let pool = [];
-      if (mode === 'part1') {
-        const allTerms = DATASET.part1Data.map(d => d.term);
-        pool = DATASET.part1Data.map(item => {
-          const distractors = shuffle(allTerms.filter(t => t !== item.term)).slice(0, 3);
-          return {
-            type: 'choice',
-            phase: 'Phần I • Thuật Ngữ & Định Nghĩa',
-            prompt: item.def,
-            correctAnswer: item.term,
-            options: shuffle([item.term, ...distractors]),
-            explanation: item.vn,
-            clue: item.clue,
-            tip: item.tip
-          };
-        });
-      } else if (mode === 'part2') {
-        pool = DATASET.part2Data.map(item => ({
-          type: 'choice',
-          phase: 'Phần II • Điền Từ Vào Chỗ Trống',
-          prompt: item.sentence,
-          correctAnswer: item.answer,
-          options: shuffle(item.options),
-          explanation: item.vn,
-          clue: item.clue,
-          tip: 'Khi thấy xuất hiện cụm ' + item.clue + ' -> suy luận ngay ra ' + item.answer
-        }));
-      } else if (mode === 'part3') {
-        pool = DATASET.part3Data.map(item => ({
-          type: 'binary',
-          phase: 'Phần III • Đúng Hay Sai (True / False)',
-          prompt: item.text,
-          correctAnswer: item.answer,
-          explanation: item.reason,
-          clue: item.clue,
-          tip: item.tip
-        }));
-      } else if (mode === 'all') {
-        buildQuestionSet('part1');
-        const p1 = shuffle(questions).slice(0, 15);
-        buildQuestionSet('part2');
-        const p2 = shuffle(questions).slice(0, 15);
-        buildQuestionSet('part3');
-        const p3 = shuffle(questions).slice(0, 15);
-        pool = shuffle([...p1, ...p2, ...p3]);
-      }
-      questions = shuffle(pool);
-      curIdx = 0;
-      correctCount = 0;
-      wrongCount = 0;
-      missedItems = [];
-      isReviewingMissed = false;
-      isAnswered = false;
-      renderCurrentQuestion();
-    }
-
-    function syncMetrics() {
-      document.getElementById('metric-cur').innerText = Math.min(curIdx + 1, questions.length);
-      document.getElementById('metric-total').innerText = questions.length;
-      document.getElementById('metric-correct').innerText = correctCount;
-      document.getElementById('metric-wrong').innerText = wrongCount;
-      
-      const answeredTotal = correctCount + wrongCount;
-      const pct = answeredTotal > 0 ? Math.round((correctCount / answeredTotal) * 100) : 0;
-      document.getElementById('metric-pct').innerText = pct + '%';
-
-      const progressPct = questions.length > 0 ? (curIdx / questions.length) * 100 : 0;
-      document.getElementById('track-fill').style.width = progressPct + '%';
-
-      const reviewBtn = document.getElementById('btn-review-wrong');
-      if (missedItems.length > 0 && !isReviewingMissed) {
-        reviewBtn.style.display = 'inline-flex';
-        document.getElementById('wrong-badge-count').innerText = missedItems.length;
-      } else {
-        reviewBtn.style.display = 'none';
-      }
-    }
-
-    function renderCurrentQuestion() {
-      const container = document.getElementById('active-card-container');
-      isAnswered = false;
-
-      if (curIdx >= questions.length) {
-        renderSummary(container);
-        return;
-      }
-
-      syncMetrics();
-      const q = questions[curIdx];
-
-      let optionsMarkup = '';
-      if (q.type === 'choice') {
-        const letters = ['A', 'B', 'C', 'D'];
-        optionsMarkup = `
-          <div class="options-stack" role="group">
-            ${q.options.map((opt, i) => `
-              <button class="choice-row" data-value="${opt.replace(/"/g, '&quot;')}" onclick="submitChoice('${opt.replace(/'/g, "\\'")}', this)">
-                <div class="choice-leading">
-                  <span class="key-badge">${letters[i]}</span>
-                  <span>${opt}</span>
-                </div>
-                <kbd>${i + 1}</kbd>
-              </button>
-            `).join('')}
-          </div>
-        `;
-      } else if (q.type === 'binary') {
-        optionsMarkup = `
-          <div class="binary-stack">
-            <button class="binary-btn" data-value="true" onclick="submitBinary(true, this)">
-              <span class="key-badge">T</span>
-              <span>TRUE (ĐÚNG)</span>
-            </button>
-            <button class="binary-btn" data-value="false" onclick="submitBinary(false, this)">
-              <span class="key-badge">F</span>
-              <span>FALSE (SAI)</span>
-            </button>
-          </div>
-        `;
-      }
-
-      container.innerHTML = `
-        <article class="console-card">
-          <div class="card-meta">
-            <span class="meta-phase">${q.phase}</span>
-            <span class="meta-counter">CÂU ${curIdx + 1} TRÊN ${questions.length}</span>
-          </div>
-
-          <!-- Pure text without any hint highlights -->
-          <div class="question-prompt">${q.prompt}</div>
-
-          ${optionsMarkup}
-
-          <div id="feedback-anchor"></div>
-
-          <div class="controls-row" id="controls-row" style="display: none;">
-            <span style="font-size:0.82rem; color:var(--text-3);">Nhấn <kbd>Space</kbd> hoặc <kbd>Enter</kbd> để tiếp tục</span>
-            <button class="btn-primary" id="btn-next" onclick="stepNext()">
-              <span>Câu tiếp theo</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
-            </button>
-          </div>
-        </article>
-      `;
-    }
-
-    window.submitChoice = function(val, clickedEl) {
-      if (isAnswered) return;
-      isAnswered = true;
-
-      const q = questions[curIdx];
-      const allRows = document.querySelectorAll('.choice-row');
-      allRows.forEach(row => row.disabled = true);
-
-      const isCorrect = (val.trim().toLowerCase() === q.correctAnswer.trim().toLowerCase());
-      if (isCorrect) {
-        clickedEl.classList.add('state-correct');
-        correctCount++;
-        triggerChime(true);
-      } else {
-        clickedEl.classList.add('state-incorrect');
-        wrongCount++;
-        missedItems.push(q);
-        triggerChime(false);
-
-        allRows.forEach(row => {
-          if (row.getAttribute('data-value').trim().toLowerCase() === q.correctAnswer.trim().toLowerCase()) {
-            row.classList.add('state-correct');
-          }
-        });
-      }
-
-      showFeedback(isCorrect, q);
-    };
-
-    window.submitBinary = function(val, clickedEl) {
-      if (isAnswered) return;
-      isAnswered = true;
-
-      const q = questions[curIdx];
-      const allBtns = document.querySelectorAll('.binary-btn');
-      allBtns.forEach(btn => btn.disabled = true);
-
-      const isCorrect = (val === q.correctAnswer);
-      if (isCorrect) {
-        clickedEl.classList.add('state-correct');
-        correctCount++;
-        triggerChime(true);
-      } else {
-        clickedEl.classList.add('state-incorrect');
-        wrongCount++;
-        missedItems.push(q);
-        triggerChime(false);
-
-        allBtns.forEach(btn => {
-          if ((btn.getAttribute('data-value') === 'true') === q.correctAnswer) {
-            btn.classList.add('state-correct');
-          }
-        });
-      }
-
-      showFeedback(isCorrect, q);
-    };
-
-    function showFeedback(isCorrect, q) {
-      syncMetrics();
-
-      // Retroactively highlight clue words in the question prompt so the student can cross-reference
-      if (q.clue) {
-        const promptEl = document.querySelector('.question-prompt');
-        if (promptEl) {
-          let updatedText = q.prompt;
-          const stopWords = ['and', 'the', 'for', 'which', 'that', 'with', 'from', 'into', 'such', 'this', 'have', 'also', 'some'];
-          const tokens = q.clue.split(/[\s,.]+/).filter(w => w.length > 2 && !stopWords.includes(w.toLowerCase()));
-          tokens.forEach(tok => {
-            const reg = new RegExp('(\\b' + tok + '\\b)', 'gi');
-            updatedText = updatedText.replace(reg, '<span class="prompt-highlight">$1</span>');
-          });
-          promptEl.innerHTML = updatedText;
-        }
-      }
-
-      const anchor = document.getElementById('feedback-anchor');
-      const answerLabel = typeof q.correctAnswer === 'boolean' 
-        ? (q.correctAnswer ? 'TRUE (ĐÚNG)' : 'FALSE (SAI)')
-        : q.correctAnswer;
-
-      anchor.innerHTML = `
-        <div class="feedback-panel">
-          <div class="feedback-status ${isCorrect ? 'is-correct' : 'is-incorrect'}">
-            ${isCorrect ? '✓ Trả lời chính xác' : '✕ Chưa chính xác'} • Đáp án đúng: ${answerLabel}
-          </div>
-
-          ${q.clue ? `
-            <div class="clue-discovery-box">
-              <div class="clue-item">
-                <span class="clue-label">🎯 Dấu hiệu nhận diện trong đề:</span>
-                <span class="clue-val-keyword">${q.clue}</span>
-              </div>
-              <div class="clue-item">
-                <span class="clue-label">💡 Mẹo bắt bài (Không cần dịch):</span>
-                <span class="clue-val-tip">${q.tip || q.explanation}</span>
-              </div>
-            </div>
-          ` : ''}
-
-          <div class="feedback-vn">
-            <strong>Dịch nghĩa toàn câu:</strong> ${q.explanation}
-          </div>
-        </div>
-      `;
-
-      document.getElementById('controls-row').style.display = 'flex';
-    }
-
-    window.stepNext = function() {
-      curIdx++;
-      renderCurrentQuestion();
-    };
-
-    function renderSummary(container) {
-      document.getElementById('track-fill').style.width = '100%';
-      const total = questions.length;
-      const pct = total > 0 ? Math.round((correctCount / total) * 100) : 0;
-
-      container.innerHTML = `
-        <article class="console-card summary-card">
-          <div class="summary-numeral">${pct}%</div>
-          <h2 class="summary-heading">Hoàn thành phiên ôn tập</h2>
-          <p class="summary-desc">
-            Bạn đã trả lời đúng ${correctCount} trên ${total} câu hỏi mà không cần bất kỳ gợi ý nào.
-          </p>
-          <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:8px;">
-            <button class="btn-primary" onclick="buildQuestionSet(activeMode)">
-              Luyện lại phần này (Trộn ngẫu nhiên)
-            </button>
-            ${missedItems.length > 0 ? `
-              <button class="btn-quiet" onclick="reviewMissedQueue()">
-                Luyện riêng ${missedItems.length} câu làm sai
-              </button>
-            ` : ''}
-          </div>
-        </article>
-      `;
-    }
-
-    window.reviewMissedQueue = function() {
-      isReviewingMissed = true;
-      questions = shuffle([...missedItems]);
-      missedItems = [];
-      curIdx = 0;
-      correctCount = 0;
-      wrongCount = 0;
-      renderCurrentQuestion();
-    };
-
-    // Keyboard Shortcuts Navigation
-    window.addEventListener('keydown', (e) => {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-
-      const key = e.key.toLowerCase();
-
-      // Next question via Space or Enter
-      if ((e.key === ' ' || e.key === 'Enter') && isAnswered) {
-        e.preventDefault();
-        stepNext();
-        return;
-      }
-
-      // Shuffle via R
-      if (key === 'r') {
-        e.preventDefault();
-        buildQuestionSet(activeMode);
-        return;
-      }
-
-      // If already answered, don't trigger choices
-      if (isAnswered) return;
-
-      const q = questions[curIdx];
-      if (!q) return;
-
-      if (q.type === 'choice') {
-        const choiceBtns = document.querySelectorAll('.choice-row');
-        if (key === '1' || key === 'a') { choiceBtns[0]?.click(); }
-        else if (key === '2' || key === 'b') { choiceBtns[1]?.click(); }
-        else if (key === '3' || key === 'c') { choiceBtns[2]?.click(); }
-        else if (key === '4' || key === 'd') { choiceBtns[3]?.click(); }
-      } else if (q.type === 'binary') {
-        const tfBtns = document.querySelectorAll('.binary-btn');
-        if (key === 't' || key === '1') { tfBtns[0]?.click(); }
-        else if (key === 'f' || key === '2') { tfBtns[1]?.click(); }
-      }
-    });
-
-    // Navigation Tabs
-    document.querySelectorAll('.seg-item').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.seg-item').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        activeMode = btn.getAttribute('data-mode');
-        buildQuestionSet(activeMode);
-      });
-    });
-
-    // Top buttons
-    document.getElementById('btn-shuffle').addEventListener('click', () => buildQuestionSet(activeMode));
-    document.getElementById('btn-review-wrong').addEventListener('click', reviewMissedQueue);
-
-    document.getElementById('btn-audio').addEventListener('click', () => {
-      audioMuted = !audioMuted;
-      document.getElementById('audio-label').innerText = audioMuted ? 'Âm thanh: Tắt' : 'Âm thanh: Bật';
-    });
-
-    // Start
-    buildQuestionSet('part1');
-  </script>
 </body>
 </html>

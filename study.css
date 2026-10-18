@@ -1,0 +1,66 @@
+/* Preserve the dark study console, with quieter surfaces and clearer actions. */
+body { background-image:none; }
+.app-brand-mark { box-shadow:none; background:var(--surface-2); }
+.app-shell { gap:20px; }
+[hidden] { display:none !important; }
+button, input { font:inherit; }
+button { touch-action:manipulation; }
+button:disabled { opacity:.45; cursor:not-allowed; }
+:focus-visible { outline:2px solid var(--accent); outline-offset:4px; }
+.study-navigation { display:grid; gap:16px; }
+.study-tabs { display:flex; gap:4px; border-bottom:1px solid var(--border-hover); }
+.study-tabs button { color:var(--text-2); border:0; border-bottom:2px solid transparent; padding:12px 16px; background:none; cursor:pointer; font-weight:600; min-height:48px; }
+.study-tabs button.active { color:var(--accent); border-bottom-color:var(--accent); }
+#due-count { font-variant-numeric:tabular-nums; margin-left:4px; }
+#study-context strong { font-size:1.2rem; }
+#study-context p { color:var(--text-2); font-size:.88rem; margin-top:6px; max-width:68ch; line-height:1.7; }
+.session-tools { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+#save-status { color:var(--text-2); font-size:.76rem; }
+.console-card { border-radius:14px; box-shadow:none; }
+.metric-value { font-variant-numeric:tabular-nums; }
+.metric-label,.app-badge-gk,.app-brand-sub { font-size:.75rem !important; }
+.live-dot,.summary-badge-score,.track-fill { box-shadow:none; }
+.board-batches { display:flex; gap:12px; align-items:center; flex-wrap:wrap; color:var(--text-2); font-size:.85rem; margin:16px 0; }
+.board-batches select { color:var(--text-1); background:var(--bg-surface); border:1px solid var(--border-hover); border-radius:8px; min-height:44px; padding:8px 12px; }
+.board-batches span { font-size:.8rem; }
+.mode-switch { display:flex; align-items:center; gap:16px; margin-bottom:12px; font-size:.85rem; color:var(--text-2); }
+.matching-toolbar { position:sticky; top:0; z-index:20; background:var(--bg-surface); padding:14px; border-bottom:1px solid var(--border-hover); }
+.matching-actions { flex-wrap:wrap; }
+.matching-actions button,.btn-unpair { min-height:44px; }
+.term-paired-def-preview span { white-space:normal !important; }
+.def-search-input { min-height:44px; caret-color:var(--accent); }
+.def-search-input::placeholder { color:var(--text-2); }
+.def-item[role=button] { cursor:pointer; }
+.modal-sheet { background:var(--bg-surface); }
+.modal-header { position:sticky; top:0; background:var(--bg-surface); z-index:2; }
+.modal-overlay { z-index:100; }
+.exam-selected { border-color:var(--accent) !important; background:var(--accent-muted) !important; }
+.exam-map { margin-top:20px; padding-top:20px; border-top:1px solid var(--border-hover); }
+.exam-map p { color:var(--text-2); font-size:.85rem; margin-bottom:12px; }
+.exam-map>div { display:grid; grid-template-columns:repeat(auto-fit,minmax(42px,1fr)); gap:8px; margin-bottom:16px; }
+.exam-map button { min-height:44px; cursor:pointer; }
+.exam-map>div button { color:var(--text-2); background:var(--bg-surface); border:1px solid var(--border-hover); border-radius:8px; font-variant-numeric:tabular-nums; }
+.exam-map button.answered { color:var(--accent); background:var(--accent-muted); }
+.exam-map button.flagged { border-color:var(--amber); }
+.exam-map button.current { outline:2px solid var(--accent); outline-offset:2px; }
+.exam-review { margin-top:28px; }
+.exam-review h2 { font-size:1.2rem; margin-bottom:16px; }
+.exam-review details { border-bottom:1px solid var(--border-hover); padding:16px 0; }
+.exam-review summary { cursor:pointer; line-height:1.6; }
+.exam-review p { margin-top:12px; color:var(--text-2); }
+#study-notice { color:var(--text-2); font-size:.85rem; min-height:1.5em; }
+.feedback-panel { border-radius:12px; }
+mark.prompt-highlight { color:var(--accent); background:var(--accent-muted); }
+@media(max-width:640px) {
+  body { padding-top:12px; }
+  .study-tabs button { flex:1; padding:10px 6px; font-size:.88rem; }
+  .session-tools { align-items:flex-start; }
+  .session-tools .btn-quiet { white-space:nowrap; min-height:44px; }
+  .matching-toolbar { position:static; }
+  .controls-row { position:sticky; bottom:0; background:var(--bg-surface); padding:12px 0 max(12px,env(safe-area-inset-bottom)); z-index:4; }
+  .controls-row button { min-height:48px; }
+  .modal-sheet { width:100%; max-height:90dvh; }
+}
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after { animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+}
