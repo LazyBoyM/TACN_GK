@@ -5,5 +5,6 @@
 # Generated browser verification screenshots
 /.test-artifacts/
 
-# Microsoft Office working files (do not delete while Word is open)
+# Microsoft Office working and document files
 ~$*
+*.docx

@@ -505,7 +505,6 @@ let activeMode = 'part1';
 
     window.stepNext = function() {
       if (!isAnswered) return;
-      if (!isAnswered) return;
       curIdx++;
       renderCurrentQuestion();
     };
