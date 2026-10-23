@@ -5,6 +5,7 @@
 # Generated browser verification screenshots
 /.test-artifacts/
 
-# Microsoft Office working and document files
+# Microsoft Office and course materials
 ~$*
 *.docx
+*.pdf

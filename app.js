@@ -119,6 +119,9 @@ let activeMode = 'part1';
     for (let i = 0; i < 26; i++) {
       ALPHABET_KEYS.push('A' + String.fromCharCode(65 + i)); // AA..AZ
     }
+    for (let i = 0; i < 26; i++) {
+      ALPHABET_KEYS.push('B' + String.fromCharCode(65 + i)); // BA..BZ
+    }
 
     let part1SubMode = 'memory'; // memory | board | choice
     let matchingState = {
@@ -157,12 +160,16 @@ let activeMode = 'part1';
         defIdToLetterMap[d.id] = d.letter;
       });
 
-      // 2. Terms in original order 1..48 (or filtered wrong if onlyWrong)
+      // 2. Terms in original order 1..48 (or filtered wrong if onlyWrong, or shuffled when reviewing/restarting)
       const sourceList = matchingState.onlyWrong && matchingState.terms.length > 0
         ? matchingState.terms.filter(t => !t.isCorrect)
         : boardData;
 
-      matchingState.terms = (matchingState.onlyWrong && sourceList.length > 0 ? sourceList : boardData).map(d => ({
+      const rawTerms = matchingState.onlyWrong && sourceList.length > 0
+        ? shuffle(sourceList)
+        : (matchingState.keepTermOrder ? boardData : shuffle(boardData));
+
+      matchingState.terms = rawTerms.map(d => ({
         id: d.id,
         term: d.term,
         correctDefId: d.id,
@@ -556,12 +563,12 @@ let activeMode = 'part1';
           </div>
 
           <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:8px; width:100%;">
-            <button class="btn-primary" onclick="buildQuestionSet(activeMode)">
+            <button class="btn-primary" onclick="restartWithShuffle(activeMode)">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="23 4 23 10 17 10"></polyline>
                 <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
               </svg>
-              <span>Luyện lại phần này</span>
+              <span>Trộn đề & Luyện lại</span>
             </button>
             ${missedItems.length > 0 ? `
               <button class="btn-quiet" onclick="reviewMissedQueue()" style="padding:12px 20px; font-weight:600; min-height:46px;">
@@ -572,6 +579,14 @@ let activeMode = 'part1';
         </article>
       `;
     }
+
+    window.restartWithShuffle = function(mode) {
+      if (typeof window.startFreshShuffle === 'function') {
+        window.startFreshShuffle(mode || activeMode);
+        return;
+      }
+      buildQuestionSet(mode || activeMode);
+    };
 
     window.reviewMissedQueue = function() {
       isReviewingMissed = true;

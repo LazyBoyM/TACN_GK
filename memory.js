@@ -1,7 +1,7 @@
 // Learning state is separate from exam/matching state so changing modes is reversible.
 let memorySession = null;
 const MEMORY_DAY = 86400000;
-const MEMORY_GROUPS = [[16,23,37,39],[3,19,20,21],[4,5,6,7,35],[15,38,41,44],[13,27,34,43,45,46,48],[12,17,22,25,28,42,47],[1,2,18,24,26,29,33,36,40],[8,9,10,11,14,30]];
+const MEMORY_GROUPS = [[16,23,37,39],[3,19,20,21],[4,5,6,7,35],[15,38,41,44],[13,27,34,43,45,46,48],[12,17,22,25,28,42,47],[1,2,18,24,26,29,33,36,40],[8,9,10,11,14,30],[49,50],[51,52,53,54],[55,56,57,58],[59,60],[61,62,63],[64,65],[66,67,68]];
 function memoryItem(id) { return DATASET.part1Data.find(q=>q.id===id); }
 function memoryDay(now=Date.now()) { return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Ho_Chi_Minh',year:'numeric',month:'2-digit',day:'2-digit'}).format(now); }
 function memoryHistory(id) { return saved.history['part1:'+id]; }
@@ -21,11 +21,11 @@ function memoryCounts() {
 }
 function memoryCandidates(early=false) {
   const now=Date.now();
-  const due=DATASET.part1Data.filter(q=>memoryHistory(q.id)?.due<=now).sort((a,b)=>memoryHistory(a.id).due-memoryHistory(b.id).due);
+  const due=DATASET.part1Data.filter(q=>memoryHistory(q.id)?.due<=now);
   const fresh=DATASET.part1Data.filter(q=>memoryStatus(q.id)==='new');
-  const normal=[...due,...shuffle(fresh)];
+  const normal=[...shuffle(due),...shuffle(fresh)];
   if(normal.length || !early)return normal;
-  return [...DATASET.part1Data].sort((a,b)=>memoryHistory(a.id).due-memoryHistory(b.id).due);
+  return shuffle([...DATASET.part1Data]);
 }
 function makeMemoryEntry(id,reverse,repeat=false) {
   const group=MEMORY_GROUPS.find(g=>g.includes(id))||[];
@@ -51,7 +51,7 @@ function renderMemoryStudy() {
   document.querySelector('.shortcuts-footer').hidden=true;isAnswered=false;
   const container=document.getElementById('active-card-container');
   const s=memorySession, counts=memoryCounts(), e=escapeHTML;
-  const top=part1ModeNav()+`<div class="memory-heading"><h2>Nhớ được trước khi nhìn đáp án</h2><p>Tự nhẩm trước, kiểm tra sau. Một lượt gồm tối đa 6 thuật ngữ; câu yếu sẽ quay lại.</p></div><div class="memory-progress" aria-label="Tiến trình 48 thuật ngữ"><span><b>${counts.new}</b> chưa học</span><span><b>${counts.learning}</b> cần ôn</span><span><b>${counts.retained}</b> nhớ qua nhiều buổi</span></div>`;
+  const top=part1ModeNav()+`<div class="memory-heading"><h2>Nhớ được trước khi nhìn đáp án</h2><p>Tự nhẩm trước, kiểm tra sau. Một lượt gồm tối đa 6 thuật ngữ; câu yếu sẽ quay lại.</p></div><div class="memory-progress" aria-label="Tiến trình ${DATASET.part1Data.length} thuật ngữ"><span><b>${counts.new}</b> chưa học</span><span><b>${counts.learning}</b> cần ôn</span><span><b>${counts.retained}</b> nhớ qua nhiều buổi</span></div>`;
   if(s.stage==='complete') {
     const first=s.results.filter(r=>!r.repeat);
     const secure=first.filter(r=>r.correct&&r.confidence==='sure'&&!r.helped).length;
@@ -80,7 +80,7 @@ function renderMemoryStudy() {
 }
 function memoryOverview() {
   const labels={new:'Chưa học',learning:'Cần ôn',retained:'Nhớ qua nhiều buổi'};
-  return `<details class="memory-overview"><summary>Tiến trình của cả 48 thuật ngữ</summary><p>Ngày ôn được lưu trên trình duyệt này. Thuật ngữ từng làm đúng cũng quay lại khi đến lịch.</p><ul>${DATASET.part1Data.map(q=>{const h=memoryHistory(q.id),status=memoryStatus(q.id);return `<li><span>${escapeHTML(q.term)}</span><span>${labels[status]}${h?.due<=Date.now()?' · đến lịch':''}</span></li>`;}).join('')}</ul></details>`;
+  return `<details class="memory-overview"><summary>Tiến trình của cả ${DATASET.part1Data.length} thuật ngữ</summary><p>Ngày ôn được lưu trên trình duyệt này. Thuật ngữ từng làm đúng cũng quay lại khi đến lịch.</p><ul>${DATASET.part1Data.map(q=>{const h=memoryHistory(q.id),status=memoryStatus(q.id);return `<li><span>${escapeHTML(q.term)}</span><span>${labels[status]}${h?.due<=Date.now()?' · đến lịch':''}</span></li>`;}).join('')}</ul></details>`;
 }
 function revealMemory(helped) {
   if(memorySession?.stage!=='recall')return;

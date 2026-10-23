@@ -52,7 +52,47 @@ const WRITING_GUIDES=[
   ['vòng tròn','one direction … token → ring','Chỉ điền ring vào chỗ trống.'],
   ['công cụ tìm kiếm','feeding it to a search engine','Cần cả hai từ: search engine.'],
   ['các cuộc gọi','voice calls','Danh từ số nhiều: calls.'],
-  ['thuộc mạng di động tế bào','cellular networks','Chính tả cellular: có hai chữ l.']
+  ['thuộc mạng di động tế bào','cellular networks','Chính tả cellular: có hai chữ l.'],
+  ['lập trình viên','writing, testing, debugging source code → software developer','Danh từ chỉ người: software developer.'],
+  ['khối số học logic','control unit and ALU → arithmetic logic unit','Viết đầy đủ: arithmetic logic unit.'],
+  ['ổ cứng thể rắn','flash memory, much faster → solid-state drives','Số nhiều: solid-state drives.'],
+  ['khóa chính','uniquely identifies each record → primary key','Cần cả hai từ: primary key.'],
+  ['sự chuẩn hóa','eliminate redundancy, anomalies → normalization','Danh từ: normalization.'],
+  ['truy xuất','retrieve specific information → SELECT','Lệnh SQL: SELECT.'],
+  ['học sâu','multi-layered artificial neural networks → Deep learning','Cần cả cụm: Deep learning.'],
+  ['phép thử Turing','1950, human-equivalent intelligence → Turing test','Tên riêng viết hoa: Turing test.'],
+  ['hình sao','connected directly to central device → star','Chỉ điền star vào chỗ trống.'],
+  ['bộ chuyển mạch','forwards data only to designated port → switch','Danh từ số ít: switch.'],
+  ['bộ định tuyến','routes data packets between networks → router','Danh từ số ít: router.'],
+  ['băng thông','maximum volume of data → bandwidth','Chính tả: bandwidth.'],
+  ['độ trễ','time delay while packet travels → latency','Chính tả: latency.'],
+  ['thuộc kỹ thuật số','binary digits rather than continuous waves → digital','Tính từ: digital.'],
+  ['làm việc từ xa','elimination of daily commuting → teleworking','Danh từ: teleworking.'],
+  ['ngôn ngữ định dạng web','control visual appearance, styling → CSS','Viết tắt: CSS.'],
+  ['ngôn ngữ kịch bản tương tác','dynamic and interactive behaviors → JavaScript','Chính tả: JavaScript.'],
+  ['sâu máy tính','spread automatically without host file → worm','Khác virus: worm.'],
+  ['từ chối dịch vụ','flooding target server with bogus traffic → Denial of Service','Cần cả cụm: Denial of Service.'],
+  ['bản rõ','readable text before encryption → plaintext','Viết liền: plaintext.'],
+  ['bất đối xứng','public key and private key → Asymmetric','Tính từ: Asymmetric.'],
+  ['thuộc sinh trắc học','retinal scans, fingerprints → Biometric','Tính từ: Biometric.'],
+  ['Internet vạn vật','physical devices with sensors → Internet of Things','Cần cả cụm: Internet of Things.'],
+  ['bit lượng tử','quantum computers, both states simultaneously → qubits','Danh từ số nhiều: qubits.'],
+  ['phần mềm dạng dịch vụ','ready-to-use applications over web → Software as a Service','Cần cả cụm: Software as a Service.'],
+  ['thuộc cơ học','no moving mechanical parts → mechanical','Tính từ: mechanical.'],
+  ['triển khai','build, test, and deploy applications → deploy','Động từ nguyên mẫu: deploy.'],
+  ['phần mềm dạng dịch vụ','Gmail, Google Docs → SaaS','Viết tắt: SaaS.'],
+  ['mắt xích','weakest link in cybersecurity → link','Danh từ số ít: link.'],
+  ['sự xác thực','multi-factor authentication → authentication','Chính tả: authentication.'],
+  ['cấu hình','user accounts and access permissions → configuring','Dạng V-ing: configuring.'],
+  ['xử lý sự cố','hardware and software problems → troubleshoot','Động từ: troubleshoot.'],
+  ['sao lưu','files to prevent data loss → back up','Cụm động từ: back up.'],
+  ['thực thi','a query to extract specific records → execute','Động từ: execute.'],
+  ['mã hóa','sensitive information so third parties cannot read → encrypt','Động từ: encrypt.'],
+  ['giao tiếp','directly with peripheral hardware → communicate','Động từ: communicate.'],
+  ['áp dụng','styles and layout to HTML → apply','Động từ: apply.'],
+  ['bóp băng thông','data transmission speeds → throttle','Động từ: throttle.'],
+  ['không được phép','users from accessing databases → unauthorized','Tính từ: unauthorized.'],
+  ['ánh sáng','pulses of light through strands of glass → light','Danh từ: light.']
 ];
 function normalizeWritten(value) { return String(value??'').normalize('NFKC').trim().replace(/\s+/g,' ').toLowerCase(); }
 function isWrittenQuestion(q) { return q?.id?.startsWith('part2:') || q?.type==='written'; }
@@ -64,7 +104,10 @@ function writingItems() {
   return [...map.values()];
 }
 function writingItem(id) { return writingItems().find(q=>q.sourceIds.includes(id)); }
-function writingQuestion(item) { return {id:'part2:'+item.id,type:'written',phase:'Phần II · Tự điền từ',prompt:item.sentence,correctAnswer:item.answer,explanation:item.vn,clue:item.clue,tip:WRITING_GUIDES[item.id-1][1]}; }
+function writingQuestion(item) {
+  const guide = WRITING_GUIDES[item.id-1] || [item.vn, item.clue, 'Nhớ từ khóa: ' + item.clue];
+  return {id:'part2:'+item.id,type:'written',phase:'Phần II · Tự điền từ',prompt:item.sentence,correctAnswer:item.answer,explanation:item.vn,clue:item.clue,tip:guide[1]};
+}
 function writingHistory(id) {
   const item=writingItem(id);if(!item)return null;
   return item.sourceIds.map(id=>saved.history['part2:'+id]).filter(Boolean).sort((a,b)=>(b.writing?.lastSeen||0)-(a.writing?.lastSeen||0)||(a.due||0)-(b.due||0))[0]||null;
@@ -76,10 +119,10 @@ function writingCounts() {
 }
 function writingCandidates(early=false) {
   const items=writingItems(), now=Date.now();
-  const due=items.filter(q=>writingHistory(q.id)&&(!writingHistory(q.id).due||writingHistory(q.id).due<=now)).sort((a,b)=>(writingHistory(a.id).due||0)-(writingHistory(b.id).due||0));
+  const due=items.filter(q=>writingHistory(q.id)&&(!writingHistory(q.id).due||writingHistory(q.id).due<=now));
   const fresh=items.filter(q=>!writingHistory(q.id)||!(writingHistory(q.id).right+writingHistory(q.id).wrong));
-  const normal=[...due,...shuffle(fresh)];
-  return normal.length||!early?normal:[...items].sort((a,b)=>writingHistory(a.id).due-writingHistory(b.id).due);
+  const normal=[...shuffle(due),...shuffle(fresh)];
+  return normal.length||!early?normal:shuffle([...items]);
 }
 function createWritingSession(early=false) {
   const items=writingCandidates(early).slice(0,6);
@@ -103,7 +146,7 @@ function renderWritingStudy() {
     container.innerHTML=`<section class="memory-study">${top}<section class="memory-complete"><h3>${first.length?'Xong lượt điền từ':'Đã ôn hết câu đến lịch'}</h3>${first.length?`<p>Lần đầu: <strong>${independent} tự điền đúng</strong> · ${assisted} đúng có gợi ý · ${first.filter(r=>!r.correct).length} cần sửa.</p><p>Đã kiểm tra lại ${s.results.filter(r=>r.repeat).length} lần sau các câu khác. Việc chép lại đáp án không tăng điểm ghi nhớ.</p>`:''}<p>${c.due?`Còn ${c.due} mẫu câu đến lịch ôn.`:c.fresh?`Còn ${c.fresh} mẫu câu mới.`:'Các câu đã học sẽ quay lại khi đến lịch. Bạn có thể nghỉ hoặc chọn ôn sớm.'}</p><button class="btn-primary" onclick="newWritingRound(${!c.due&&!c.fresh})">${c.due?'Ôn câu đến lịch':c.fresh?'Học thêm 6 câu':'Ôn sớm 6 câu'}</button></section>${writingOverview()}</section>`;
     saveWriting();return;
   }
-  const entry=s.queue[s.index],q=writingItem(entry.id),guide=WRITING_GUIDES[q.id-1];
+  const entry=s.queue[s.index],q=writingItem(entry.id),guide=WRITING_GUIDES[q.id-1] || [q.vn, q.clue, 'Nhớ từ khóa: ' + q.clue];
   let content='';
   if(s.stage==='answer') {
     content=`<form id="writing-form" class="writing-form" onsubmit="submitWriting(event)"><label for="writing-answer">Từ hoặc cụm từ còn thiếu</label><input id="writing-answer" class="writing-input" type="text" lang="en" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="200" placeholder="Tự gõ bằng tiếng Anh…" value="${e(s.draft)}" oninput="updateWritingDraft(this.value)" aria-describedby="writing-input-note writing-error"><p id="writing-input-note" class="memory-note">Nhấn Enter để kiểm tra. Không phân biệt hoa/thường; khoảng trắng thừa được bỏ qua.</p><p id="writing-error" role="alert"></p><div class="memory-actions"><button type="submit" class="btn-primary">Kiểm tra</button><button type="button" class="btn-quiet" onclick="writingHint()">${s.hint===0?'Gợi ý nghĩa':s.hint===1?'Gợi ý chữ đầu':'Xem đáp án'}</button></div></form>${s.hint?`<section class="writing-hint" role="status"><p><b>Ý nghĩa:</b> ${e(guide[0])}</p>${s.hint>=2?`<p><b>Chữ đầu:</b> ${e(q.answer.split(/\s+/).map(w=>w[0]+'…').join(' '))}</p>`:''}<p class="memory-note">Đã dùng gợi ý · câu này vẫn cần kiểm tra lại không có trợ giúp.</p></section>`:''}`;
@@ -117,7 +160,7 @@ function renderWritingStudy() {
   saveWriting();
 }
 function writingOverview() {
-  return `<details class="memory-overview"><summary>Theo dõi toàn bộ Bài 2</summary><p>50 câu đề cương có ${writingItems().length} mẫu khác nhau; câu trùng nội dung được học chung. Thi viết vẫn giữ đủ 50 câu. Chỉ tự điền đúng, không dùng gợi ý ở ít nhất 3 ngày khác nhau mới đạt “Nhớ qua nhiều buổi”.</p><ul>${writingItems().map(q=>{const h=writingHistory(q.id);return `<li><span>Câu ${q.sourceIds.join(', ')}</span><span>${!h?'Chưa học':h.due<=Date.now()?'Đến lịch ôn':(h.writing?.days?.length||0)>=3?'Nhớ qua nhiều buổi':'Đã học · chờ ôn'}</span></li>`;}).join('')}</ul></details>`;
+  return `<details class="memory-overview"><summary>Theo dõi toàn bộ Bài 2</summary><p>Toàn bộ ${DATASET.part2Data.length} câu có ${writingItems().length} mẫu khác nhau; câu trùng nội dung được học chung. Thi viết vẫn giữ đủ ${DATASET.part2Data.length} câu. Chỉ tự điền đúng, không dùng gợi ý ở ít nhất 3 ngày khác nhau mới đạt “Nhớ qua nhiều buổi”.</p><ul>${writingItems().map(q=>{const h=writingHistory(q.id);return `<li><span>Câu ${q.sourceIds.join(', ')}</span><span>${!h?'Chưa học':h.due<=Date.now()?'Đến lịch ôn':(h.writing?.days?.length||0)>=3?'Nhớ qua nhiều buổi':'Đã học · chờ ôn'}</span></li>`;}).join('')}</ul></details>`;
 }
 function updateWritingDraft(value) { if(writingSession?.stage!=='answer')return;writingSession.draft=value;document.getElementById('writing-error').textContent='';saveWriting(); }
 function writingHint() {
@@ -196,14 +239,14 @@ function writtenDiff(input,answer) {
 }
 function renderWritingExam() {
   prepareWritingSurface();const s=writingExam,e=escapeHTML,container=document.getElementById('active-card-container');
-  const top=writingModes()+`<div class="memory-heading"><h2>Thi viết · 50 câu</h2><p>Không có từ cho sẵn hoặc gợi ý. Bạn có thể sửa, đánh dấu và quay lại trước khi nộp.</p></div>`;
+  const top=writingModes()+`<div class="memory-heading"><h2>Thi viết · ${s.ids.length} câu</h2><p>Không có từ cho sẵn hoặc gợi ý. Bạn có thể sửa, đánh dấu và quay lại trước khi nộp.</p></div>`;
   if(s.stage==='complete') {
     const score=s.results.filter(r=>r.correct).length;
-    container.innerHTML=`<section class="memory-study">${top}<section class="memory-complete"><h3>Đúng ${score}/${s.ids.length} câu</h3><p>Chấm theo đáp án đề cương; bỏ qua hoa/thường và khoảng trắng thừa, giữ yêu cầu về chính tả và dạng từ.</p><div class="memory-actions"><button class="btn-primary" onclick="setPart2Mode('learn')">Về học điền từ</button><button class="btn-quiet" onclick="restartWritingExam()">Thi lượt mới</button></div></section><section class="exam-review"><h3>Xem lại bài viết</h3>${s.results.map((r,i)=>{const q=DATASET.part2Data.find(q=>q.id===r.id);return `<details><summary>${i+1}. ${e(q.sentence)} <span>${r.correct?'✓ Đúng':'✕ Cần sửa'}</span></summary><p>Bạn điền: ${e(r.answer||'Chưa điền')}</p><p>Đáp án: <strong>${e(q.answer)}</strong></p><p>${e(q.vn)}</p><p>${e(WRITING_GUIDES[q.id-1][2])}</p></details>`;}).join('')}</section></section>`;
+    container.innerHTML=`<section class="memory-study">${top}<section class="memory-complete"><h3>Đúng ${score}/${s.ids.length} câu</h3><p>Chấm theo đáp án đề cương; bỏ qua hoa/thường và khoảng trắng thừa, giữ yêu cầu về chính tả và dạng từ.</p><div class="memory-actions"><button class="btn-primary" onclick="setPart2Mode('learn')">Về học điền từ</button><button class="btn-quiet" onclick="restartWritingExam()">Thi lượt mới</button></div></section><section class="exam-review"><h3>Xem lại bài viết</h3>${s.results.map((r,i)=>{const q=DATASET.part2Data.find(q=>q.id===r.id);const guide=WRITING_GUIDES[q.id-1]||[q.vn,q.clue,'Nhớ từ khóa: '+q.clue];return `<details><summary>${i+1}. ${e(q.sentence)} <span>${r.correct?'✓ Đúng':'✕ Cần sửa'}</span></summary><p>Bạn điền: ${e(r.answer||'Chưa điền')}</p><p>Đáp án: <strong>${e(q.answer)}</strong></p><p>${e(q.vn)}</p><p>${e(guide[2])}</p></details>`;}).join('')}</section></section>`;
     saveWriting();return;
   }
   const q=DATASET.part2Data.find(q=>q.id===s.ids[s.index]);
-  container.innerHTML=`<section class="memory-study writing-study">${top}<p id="writing-exam-status" class="memory-note">Đã điền ${Object.keys(s.answers).length}/${s.ids.length} câu</p><div class="memory-session-meta"><span>Câu ${s.index+1}/${s.ids.length}</span><span>Chấm khi nộp bài</span></div><h3 class="writing-sentence">${e(q.sentence)}</h3><form class="writing-form" onsubmit="event.preventDefault();moveWritingExam(1)"><label for="writing-exam-answer">Điền từ hoặc cụm từ</label><input id="writing-exam-answer" class="writing-input" lang="en" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="200" value="${e(s.answers[s.index]||'')}" oninput="updateWritingExamAnswer(this.value)"><p class="memory-note">Nhấn Enter để sang câu tiếp theo. Ở câu cuối, dùng nút Nộp bài.</p></form><div class="writing-exam-controls"><button class="btn-quiet" onclick="moveWritingExam(-1)" ${s.index===0?'disabled':''}>Câu trước</button><button id="writing-exam-flag" class="btn-quiet" onclick="flagWritingExam()" aria-pressed="${!!s.flags[s.index]}">${s.flags[s.index]?'Đã đánh dấu':'Đánh dấu'}</button>${s.index<s.ids.length-1?'<button class="btn-primary" onclick="moveWritingExam(1)">Câu tiếp theo</button>':'<button class="btn-primary" onclick="submitWritingExam()">Nộp bài</button>'}</div><details class="writing-exam-map"><summary>Xem tất cả 50 câu</summary><div class="exam-map"><p>Viền vàng: cần xem lại</p><div>${s.ids.map((id,i)=>`<button data-writing-index="${i}" class="${i===s.index?'current ':''}${Object.hasOwn(s.answers,i)?'answered ':''}${s.flags[i]?'flagged':''}" onclick="goWritingExam(${i})" aria-label="Câu ${i+1}" aria-current="${i===s.index?'step':'false'}">${i+1}</button>`).join('')}</div></div></details><div class="guided-finish"><span>Đáp án và điểm chỉ hiện sau khi nộp.</span><button class="btn-quiet" onclick="submitWritingExam()">Nộp bài thi viết</button></div></section>`;
+  container.innerHTML=`<section class="memory-study writing-study">${top}<p id="writing-exam-status" class="memory-note">Đã điền ${Object.keys(s.answers).length}/${s.ids.length} câu</p><div class="memory-session-meta"><span>Câu ${s.index+1}/${s.ids.length}</span><span>Chấm khi nộp bài</span></div><h3 class="writing-sentence">${e(q.sentence)}</h3><form class="writing-form" onsubmit="event.preventDefault();moveWritingExam(1)"><label for="writing-exam-answer">Điền từ hoặc cụm từ</label><input id="writing-exam-answer" class="writing-input" lang="en" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="200" value="${e(s.answers[s.index]||'')}" oninput="updateWritingExamAnswer(this.value)"><p class="memory-note">Nhấn Enter để sang câu tiếp theo. Ở câu cuối, dùng nút Nộp bài.</p></form><div class="writing-exam-controls"><button class="btn-quiet" onclick="moveWritingExam(-1)" ${s.index===0?'disabled':''}>Câu trước</button><button id="writing-exam-flag" class="btn-quiet" onclick="flagWritingExam()" aria-pressed="${!!s.flags[s.index]}">${s.flags[s.index]?'Đã đánh dấu':'Đánh dấu'}</button>${s.index<s.ids.length-1?'<button class="btn-primary" onclick="moveWritingExam(1)">Câu tiếp theo</button>':'<button class="btn-primary" onclick="submitWritingExam()">Nộp bài</button>'}</div><details class="writing-exam-map"><summary>Xem tất cả ${s.ids.length} câu</summary><div class="exam-map"><p>Viền vàng: cần xem lại</p><div>${s.ids.map((id,i)=>`<button data-writing-index="${i}" class="${i===s.index?'current ':''}${Object.hasOwn(s.answers,i)?'answered ':''}${s.flags[i]?'flagged':''}" onclick="goWritingExam(${i})" aria-label="Câu ${i+1}" aria-current="${i===s.index?'step':'false'}">${i+1}</button>`).join('')}</div></div></details><div class="guided-finish"><span>Đáp án và điểm chỉ hiện sau khi nộp.</span><button class="btn-quiet" onclick="submitWritingExam()">Nộp bài thi viết</button></div></section>`;
   saveWriting();
 }
 function updateWritingExamAnswer(value) {

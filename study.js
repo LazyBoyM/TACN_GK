@@ -41,7 +41,7 @@ const originalFeedback = showFeedback;
 const shell = document.querySelector('.app-shell');
 const bar = document.createElement('section');
 bar.className = 'study-navigation';
-bar.innerHTML = `<div class="study-tabs" aria-label="Mục đích học"><button data-workspace="practice">Luyện tập</button><button data-workspace="exam">Thi thử</button><button data-workspace="review">Cần ôn <span id="due-count">0</span></button></div><div id="study-context"></div><div class="session-tools"><span id="save-status" role="status">Tự động lưu trên thiết bị này</span><button class="btn-quiet" id="new-session">Bắt đầu mới</button></div>`;
+bar.innerHTML = `<div class="study-tabs" aria-label="Mục đích học"><button data-workspace="practice">Luyện tập</button><button data-workspace="exam">Thi thử</button><button data-workspace="review">Cần ôn <span id="due-count">0</span></button></div><div id="study-context" style="display:none;"></div><div class="session-tools" style="display:none;"><span id="save-status" role="status">Tự động lưu trên thiết bị này</span><button class="btn-quiet" id="new-session">Bắt đầu mới</button></div>`;
 document.querySelector('.top-bar').after(bar);
 const live = document.createElement('div');
 live.id = 'study-notice'; live.setAttribute('role','status'); shell.append(live);
@@ -130,24 +130,43 @@ function enter(mode, fresh=false) {
   }
   restoring=false; snapshot();
 }
+window.startFreshShuffle = function(mode) {
+  mode = mode || activeMode;
+  currentKey = workspace + ':' + mode;
+  delete saved.sessions[currentKey];
+  if(workspace==='practice'&&mode==='part2') {
+    if(part2Mode==='exam'){restartWritingExam();notice('Đã xáo trộn ngẫu nhiên đề thi viết!');return;}
+    newWritingRound(true);notice('Đã xáo trộn ngẫu nhiên lượt điền từ!');return;
+  }
+  if(workspace==='practice'&&mode==='part1'&&part1SubMode==='memory') {
+    newMemoryRound(true);notice('Đã xáo trộn ngẫu nhiên lượt học nhớ!');return;
+  }
+  if(workspace==='practice'&&mode==='part1'&&part1SubMode==='board') {
+    matchingState.keepTermOrder = false;
+    initMatchingBoard();notice('Đã xáo trộn ngẫu nhiên thuật ngữ & định nghĩa!');snapshot();return;
+  }
+  enter(mode, true);
+  notice('Đã xáo trộn ngẫu nhiên toàn bộ câu hỏi!');
+};
 buildQuestionSet = function(mode) {
   if (mode === 'all') workspace='exam';
-  enter(mode, mode === activeMode && currentKey === workspace + ':' + mode);
+  window.startFreshShuffle(mode);
 };
 function startFresh() {
   if(workspace==='practice'&&activeMode==='part2') {
     if(part2Mode==='exam'){restartWritingExam();return;}
     if(writingSession?.stage!=='complete'&&!confirm('Bắt đầu lượt điền từ mới? Các kết quả và lịch ôn đã ghi vẫn được giữ.'))return;
-    newWritingRound();return;
+    newWritingRound(true);return;
   }
   if(workspace==='practice'&&activeMode==='part1'&&part1SubMode==='memory') {
     if(memorySession?.stage!=='complete'&&!confirm('Bắt đầu lượt học mới? Lịch ôn và kết quả đã ghi vẫn được giữ.'))return;
-    newMemoryRound();return;
+    newMemoryRound(true);return;
   }
-  if ((questions.length && curIdx < questions.length) || (matchingState.terms.length && !matchingState.isGraded)) {
-    if (!confirm('Bắt đầu phiên mới? Kết quả đang làm của phiên này sẽ được thay thế.')) return;
+  const isFinished = (curIdx >= questions.length) || (matchingState.terms.length && matchingState.isGraded);
+  if (!isFinished && ((questions.length && curIdx < questions.length) || (matchingState.terms.length && !matchingState.isGraded))) {
+    if (!confirm('Bắt đầu phiên mới? Câu hỏi sẽ được xáo trộn ngẫu nhiên.')) return;
   }
-  enter(workspace === 'practice' ? activeMode : 'all',true);
+  window.startFreshShuffle(workspace === 'practice' ? activeMode : 'all');
 }
 document.getElementById('new-session').onclick=startFresh;
 bar.querySelectorAll('[data-workspace]').forEach(b => b.onclick=()=>{

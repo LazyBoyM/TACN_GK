@@ -22,12 +22,13 @@ function renderGuidedMatching() {
       <span class="guided-letter">${d.letter}</span><span class="guided-definition">${e(d.def)}<span class="guided-option-state">${correct ? '✓ Đáp án đúng' : wrong ? '✕ Bạn đã chọn' : selected ? '✓ Đang chọn' : owner ? 'Đã ghép với: ' + e(owner.term) : ''}</span></span>
     </button>`;
   }).join('');
-  const batches = [6,12].map(size => `<optgroup label="Mỗi lượt ${size} câu">${Array.from({length:48/size},(_,i)=>`<option value="${size}:${i}" ${boardSize===size&&boardPage===i?'selected':''}>Câu ${i*size+1}–${(i+1)*size}</option>`).join('')}</optgroup>`).join('');
+  const maxTerms = DATASET.part1Data.length;
+  const batches = [6,12].map(size => `<optgroup label="Mỗi lượt ${size} câu">${Array.from({length:Math.ceil(maxTerms/size)},(_,i)=>`<option value="${size}:${i}" ${boardSize===size&&boardPage===i?'selected':''}>Câu ${i*size+1}–${Math.min((i+1)*size, maxTerms)}</option>`).join('')}</optgroup>`).join('');
   const feedback = state.isGraded ? `<section class="guided-feedback ${term.isCorrect?'is-right':'is-wrong'}" role="status"><strong>${term.isCorrect?'Đúng rồi':'Chưa đúng'}${!term.userLetter?' · Bạn chưa chọn định nghĩa':''}</strong><p><b>Đáp án:</b> ${e(correctDef?.def)}</p><details><summary>Giải thích và cách nhớ</summary><p>${e(term.vn)}</p><p><b>Dấu hiệu:</b> ${e(term.clue)}</p><p><b>Cách nhớ:</b> ${e(term.tip)}</p></details></section>` : '';
   document.getElementById('active-card-container').innerHTML = `<section class="guided-matching" aria-label="Ghép thuật ngữ từng câu">${part1ModeNav()}
     <div class="guided-intro"><div><h2>Ghép thuật ngữ với định nghĩa</h2><p>Chọn từng cặp như bài thi. Đáp án hiện sau khi chấm lượt.</p></div></div>
-    <div class="guided-settings"><label for="board-batch">Lượt học</label><select id="board-batch" onchange="changeGuidedBatch(this.value)">${batches}<option value="48:0" ${boardSize===48?'selected':''}>Toàn bộ 48 câu</option></select><span>${paired}/${total} câu đã chọn</span></div>
-    ${state.isGraded?`<section id="matching-summary-banner" class="guided-result"><h3>Đúng ${state.score}/${total} câu</h3><p>Chọn từng câu bên dưới để xem lại đáp án và giải thích.</p><div>${state.score<total?'<button class="btn-primary" onclick="reviewOnlyWrongTerms()">Luyện lại câu sai</button>':''}<button class="btn-quiet" onclick="nextGuidedBatch()">${boardSize===48?'Làm lượt mới':'Học lượt tiếp theo'}</button></div></section>`:''}
+    <div class="guided-settings"><label for="board-batch">Lượt học</label><select id="board-batch" onchange="changeGuidedBatch(this.value)">${batches}<option value="48:0" ${boardSize===48?'selected':''}>48 câu đề cương</option><option value="${maxTerms}:0" ${boardSize===maxTerms?'selected':''}>Toàn bộ ${maxTerms} câu</option></select><span>${paired}/${total} câu đã chọn</span></div>
+    ${state.isGraded?`<section id="matching-summary-banner" class="guided-result"><h3>Đúng ${state.score}/${total} câu</h3><p>Chọn từng câu bên dưới để xem lại đáp án và giải thích.</p><div>${state.score<total?'<button class="btn-primary" onclick="reviewOnlyWrongTerms()">Luyện lại câu sai</button>':''}<button class="btn-quiet" onclick="nextGuidedBatch()">${boardSize===maxTerms||boardSize===48?'Làm lượt mới':'Học lượt tiếp theo'}</button></div></section>`:''}
     <div class="guided-question" id="guided-question"><div class="guided-question-meta"><span>Câu ${index+1} / ${total}</span><span>${state.isGraded ? term.isCorrect?'✓ Đúng':'✕ Cần ôn' : currentDef?'Đã chọn '+term.userLetter:'Chưa chọn định nghĩa'}</span></div><h3 tabindex="-1" id="guided-term">${e(term.term)}</h3>${!state.isGraded?'<p>Mỗi định nghĩa dùng cho một thuật ngữ trong lượt này.</p>':''}</div>
     <div class="guided-filters"><label class="guided-search-label" for="guided-search">Tìm định nghĩa<input id="guided-search" class="def-search-input" type="search" placeholder="Nhập từ có trong định nghĩa…" value="${e(state.searchQuery)}" oninput="filterGuidedDefinitions(this.value)"></label>${!state.isGraded?`<label class="guided-hide-used"><input type="checkbox" ${hideUsed?'checked':''} onchange="setGuidedHideUsed(this.checked)"> Ẩn đáp án đã dùng</label>`:''}</div>
     <div class="guided-options" role="group" aria-labelledby="guided-term">${options}</div><p id="guided-empty" hidden>Không có định nghĩa phù hợp. Thử từ khác hoặc bỏ chọn “Ẩn đáp án đã dùng”.</p>
@@ -76,6 +77,7 @@ function changeGuidedBatch(value) {
   boardSize=size;boardPage=page;undoPair=null;initMatchingBoard();snapshot();
 }
 function nextGuidedBatch() {
-  if(boardSize===48){undoPair=null;initMatchingBoard();snapshot();return;}
-  changeGuidedBatch(`${boardSize}:${(boardPage+1)%(48/boardSize)}`);
+  const maxTerms = DATASET.part1Data.length;
+  if(boardSize===maxTerms || boardSize===48){undoPair=null;matchingState.keepTermOrder=false;initMatchingBoard();snapshot();return;}
+  changeGuidedBatch(`${boardSize}:${(boardPage+1)%(Math.ceil(maxTerms/boardSize))}`);
 }
