@@ -124,7 +124,7 @@ function rateMemory(confidence) {
   recordMemory(entry,correct,confidence,s.helped);
   s.results.push({id:entry.id,correct,confidence,helped:s.helped,repeat:entry.repeat,reverse:entry.reverse,at:Date.now()});
   if(!correct||confidence==='unsure'||s.helped)scheduleMemoryRepeat(entry);
-  s.stage='feedback';renderMemoryStudy();triggerChime(correct);
+  s.stage='feedback';renderMemoryStudy();triggerChime(correct, document.querySelector('.memory-feedback'));
   document.getElementById('memory-next')?.focus({preventScroll:true});
   scrollMemorySection('.memory-feedback');
 }

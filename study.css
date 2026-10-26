@@ -287,12 +287,16 @@ button:disabled { opacity: .45; cursor: not-allowed; }
   background: var(--emerald-muted) !important;
   border-color: var(--emerald) !important;
   color: #ffffff !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.35);
+  animation: correctBounce 0.36s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .guided-option.is-wrong {
   background: var(--rose-muted) !important;
   border-color: var(--rose) !important;
   color: #ffffff !important;
+  box-shadow: 0 0 16px rgba(244, 63, 94, 0.35);
+  animation: shakeIncorrect 0.38s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
 .guided-letter {
@@ -340,12 +344,16 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 
 .memory-feedback.is-right {
   border-color: var(--emerald-border);
-  background: rgba(16, 185, 129, 0.08);
+  background: rgba(16, 185, 129, 0.1);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.15);
+  animation: feedbackSlideIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .memory-feedback.is-wrong {
   border-color: var(--rose-border);
-  background: rgba(244, 63, 94, 0.08);
+  background: rgba(244, 63, 94, 0.1);
+  box-shadow: 0 8px 24px rgba(244, 63, 94, 0.15);
+  animation: feedbackSlideIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .memory-feedback h3 {

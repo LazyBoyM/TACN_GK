@@ -206,8 +206,200 @@ let activeMode = 'part1';
       } catch (e) {}
     }
 
-    function triggerChime(correct) {
-      playSfx(correct ? 'correct' : 'wrong');
+    function triggerAnswerEffect(isCorrect, targetEl) {
+      if (isCorrect) {
+        if (streakCount >= 3) playSfx('streak');
+        else playSfx('correct');
+      } else {
+        playSfx('wrong');
+      }
+
+      // Haptic feedback on supported mobile devices
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        try {
+          if (isCorrect) navigator.vibrate([22, 30, 20]);
+          else navigator.vibrate([45, 35, 45]);
+        } catch (e) {}
+      }
+
+      const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Calculate anchor coordinates for floating badge & particles
+      let originX = window.innerWidth / 2;
+      let originY = window.innerHeight * 0.45;
+      if (targetEl && targetEl.getBoundingClientRect) {
+        const rect = targetEl.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          originX = rect.left + rect.width / 2;
+          originY = rect.top + rect.height / 2;
+        }
+      } else {
+        const card = document.querySelector('.console-card, .memory-study, .guided-question');
+        if (card) {
+          const rect = card.getBoundingClientRect();
+          originX = rect.left + rect.width / 2;
+          originY = rect.top + rect.height * 0.45;
+        }
+      }
+
+      // Active card reaction
+      const cardEl = document.querySelector('.console-card, .memory-study, .guided-question');
+      if (cardEl) {
+        cardEl.classList.remove('card-pulse-correct', 'card-shake-wrong');
+        void cardEl.offsetWidth; // force reflow
+        cardEl.classList.add(isCorrect ? 'card-pulse-correct' : 'card-shake-wrong');
+        setTimeout(() => {
+          cardEl.classList.remove('card-pulse-correct', 'card-shake-wrong');
+        }, 650);
+      }
+
+      spawnFloatingFeedback(originX, originY, isCorrect, streakCount);
+      spawnAnswerParticles(originX, originY, isCorrect, streakCount);
+    }
+
+    function spawnFloatingFeedback(x, y, isCorrect, streak) {
+      document.querySelectorAll('.fx-floating-pill').forEach(p => p.remove());
+      const badge = document.createElement('div');
+      badge.className = 'fx-floating-pill ' + (isCorrect ? 'fx-correct' : 'fx-wrong');
+      if (isCorrect && streak >= 3) badge.classList.add('fx-fire');
+
+      let icon = '✨';
+      let text = 'Chính xác! +1';
+      if (isCorrect) {
+        if (streak <= 1) {
+          icon = '✨';
+          text = 'Chính xác! +1';
+        } else if (streak === 2) {
+          icon = '⚡';
+          text = 'Chuẩn xác! x2';
+        } else if (streak === 3) {
+          icon = '🔥';
+          text = 'Streak x3! Quá mượt!';
+        } else if (streak === 4) {
+          icon = '🔥';
+          text = 'Nóng máy! x4';
+        } else {
+          icon = '🌟';
+          text = 'Đỉnh cao! x' + streak;
+        }
+      } else {
+        icon = '✕';
+        text = 'Chưa chính xác · Cố lên!';
+      }
+
+      badge.innerHTML = `<span class="fx-icon">${icon}</span><span class="fx-text">${text}</span>`;
+      const left = Math.max(90, Math.min(window.innerWidth - 90, x));
+      const top = Math.max(70, Math.min(window.innerHeight - 70, y - 18));
+      badge.style.left = left + 'px';
+      badge.style.top = top + 'px';
+
+      document.body.appendChild(badge);
+      setTimeout(() => { badge.remove(); }, 1050);
+    }
+
+    function spawnAnswerParticles(x, y, isCorrect, streak) {
+      const canvas = document.createElement('canvas');
+      canvas.className = 'fx-particle-canvas';
+      canvas.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:99999;';
+      document.body.appendChild(canvas);
+
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      ctx.scale(dpr, dpr);
+
+      const count = isCorrect ? (streak >= 3 ? 50 : 32) : 18;
+      const colors = isCorrect
+        ? ['#10b981', '#34d399', '#38bdf8', '#67e8f9', '#f59e0b', '#fbbf24', '#a855f7', '#ffffff']
+        : ['#f43f5e', '#fb7185', '#fda4af', '#cbd5e1'];
+
+      const particles = [];
+      for (let i = 0; i < count; i++) {
+        const angle = isCorrect ? Math.random() * Math.PI * 2 : (Math.PI * 0.75 + Math.random() * Math.PI * 1.5);
+        const speed = isCorrect ? (3.2 + Math.random() * 8.2) : (1.8 + Math.random() * 4.2);
+        particles.push({
+          x: x,
+          y: y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - (isCorrect ? (2 + Math.random() * 2.8) : 0.8),
+          size: 4 + Math.random() * (isCorrect ? 6 : 4),
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          vr: (Math.random() - 0.5) * 16,
+          gravity: isCorrect ? 0.28 : 0.2,
+          drag: 0.965,
+          shape: isCorrect && Math.random() > 0.65 ? 'star' : (Math.random() > 0.5 ? 'circle' : 'rect')
+        });
+      }
+
+      const startTime = performance.now();
+      const maxDuration = isCorrect ? 1000 : 650;
+
+      function drawStar(c, cx, cy, spikes, outerRadius, innerRadius) {
+        let rot = Math.PI / 2 * 3;
+        let sx = cx;
+        let sy = cy;
+        const step = Math.PI / spikes;
+        c.beginPath();
+        c.moveTo(cx, cy - outerRadius);
+        for (let i = 0; i < spikes; i++) {
+          sx = cx + Math.cos(rot) * outerRadius;
+          sy = cy + Math.sin(rot) * outerRadius;
+          c.lineTo(sx, sy);
+          rot += step;
+          sx = cx + Math.cos(rot) * innerRadius;
+          sy = cy + Math.sin(rot) * innerRadius;
+          c.lineTo(sx, sy);
+          rot += step;
+        }
+        c.lineTo(cx, cy - outerRadius);
+        c.closePath();
+        c.fill();
+      }
+
+      function frame(now) {
+        const elapsed = now - startTime;
+        if (elapsed > maxDuration) {
+          canvas.remove();
+          return;
+        }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const progress = elapsed / maxDuration;
+        const alpha = Math.max(0, 1 - Math.pow(progress, 1.4));
+
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += p.gravity;
+          p.vx *= p.drag;
+          p.vy *= p.drag;
+          p.rotation += p.vr;
+
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rotation * Math.PI / 180);
+          ctx.fillStyle = p.color;
+
+          if (p.shape === 'star') {
+            drawStar(ctx, 0, 0, 4, p.size, p.size * 0.4);
+          } else if (p.shape === 'circle') {
+            ctx.beginPath();
+            ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+            ctx.fill();
+          } else {
+            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.65);
+          }
+          ctx.restore();
+        });
+        requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    }
+
+    function triggerChime(correct, targetEl) {
+      triggerAnswerEffect(correct, targetEl);
     }
 
     // Lightweight Celebratory Confetti Burst (Vanilla Canvas, Self-cleaning)
@@ -265,6 +457,8 @@ let activeMode = 'part1';
 
     window.playSfx = playSfx;
     window.triggerChime = triggerChime;
+    window.triggerAnswerEffect = triggerAnswerEffect;
+    window.triggerAnswerFX = triggerAnswerEffect;
     window.triggerConfetti = triggerConfetti;
 
     function shuffle(arr) {
@@ -424,6 +618,9 @@ let activeMode = 'part1';
         document.getElementById('track-fill').style.width = pct + '%';
       }
 
+      const streakEl = document.getElementById('metric-streak');
+      if (streakEl) streakEl.innerText = streakCount + ' 🔥';
+
       const reviewWrap = document.getElementById('review-alert-wrap');
       if (matchingState.isGraded && matchingState.score < total) {
         reviewWrap.style.display = 'block';
@@ -516,6 +713,16 @@ let activeMode = 'part1';
       const answeredTotal = correctCount + wrongCount;
       const pct = answeredTotal > 0 ? Math.round((correctCount / answeredTotal) * 100) : 0;
       document.getElementById('metric-pct').innerText = pct + '%';
+
+      const streakEl = document.getElementById('metric-streak');
+      if (streakEl) {
+        streakEl.innerText = streakCount + (streakCount >= 3 ? ' 🔥' : ' ⚡');
+        const wrap = document.getElementById('metric-streak-wrap');
+        if (wrap) {
+          wrap.classList.toggle('has-streak', streakCount > 0);
+          wrap.classList.toggle('streak-fire', streakCount >= 3);
+        }
+      }
 
       const progressPct = questions.length > 0 ? (answeredTotal / questions.length) * 100 : 0;
       document.getElementById('track-fill').style.width = progressPct + '%';
@@ -620,18 +827,18 @@ let activeMode = 'part1';
         clickedEl.classList.add('state-correct');
         correctCount++;
         streakCount++; window.streakCount = streakCount;
-        if (streakCount >= 3) playSfx('streak');
-        else triggerChime(true);
+        triggerAnswerEffect(true, clickedEl);
       } else {
         clickedEl.classList.add('state-incorrect');
         wrongCount++;
         streakCount = 0; window.streakCount = streakCount;
         missedItems.push(q);
-        triggerChime(false);
+        triggerAnswerEffect(false, clickedEl);
 
         allRows.forEach(row => {
           if (row.getAttribute('data-value').trim().toLowerCase() === q.correctAnswer.trim().toLowerCase()) {
             row.classList.add('state-correct');
+            row.classList.add('beacon-guide');
           }
         });
       }
@@ -653,18 +860,18 @@ let activeMode = 'part1';
         clickedEl.classList.add('state-correct');
         correctCount++;
         streakCount++; window.streakCount = streakCount;
-        if (streakCount >= 3) playSfx('streak');
-        else triggerChime(true);
+        triggerAnswerEffect(true, clickedEl);
       } else {
         clickedEl.classList.add('state-incorrect');
         wrongCount++;
         streakCount = 0; window.streakCount = streakCount;
         missedItems.push(q);
-        triggerChime(false);
+        triggerAnswerEffect(false, clickedEl);
 
         allBtns.forEach(btn => {
           if ((btn.getAttribute('data-value') === 'true') === q.correctAnswer) {
             btn.classList.add('state-correct');
+            btn.classList.add('beacon-guide');
           }
         });
       }

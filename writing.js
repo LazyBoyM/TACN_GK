@@ -180,7 +180,7 @@ function finishWritingAttempt(revealed) {
   recordWriting(q,s.draft,correct,assisted,revealed?'revealed':classifyWritten(s.draft,q.answer));
   s.results.push({id:entry.id,correct,assisted,revealed,repeat:entry.repeat,answer:s.draft,hints:s.hint,at:Date.now()});
   if(!correct||assisted)scheduleWritingRepeat(entry);
-  s.stage='feedback';s.copy='';s.copied=false;renderWritingStudy();triggerChime(correct);
+  s.stage='feedback';s.copy='';s.copied=false;renderWritingStudy();triggerChime(correct, document.querySelector('.memory-feedback'));
   document.getElementById(correct?'writing-next':'writing-copy')?.focus({preventScroll:true});
   document.querySelector('.memory-feedback')?.scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
 }
@@ -300,5 +300,5 @@ function submitMixedWriting(event) {
   if(correct)correctCount++;else{wrongCount++;missedItems.push(q);}
   recordWriting(writingItem(Number(q.id.split(':')[1])),value,correct,false,classifyWritten(value,q.correctAnswer));
   document.querySelectorAll('#mixed-writing-form input,#mixed-writing-form button').forEach(el=>el.disabled=true);
-  originalFeedback(correct,q);triggerChime(correct);snapshot();document.getElementById('btn-next')?.focus({preventScroll:true});
+  originalFeedback(correct,q);triggerChime(correct, document.getElementById('mixed-written-answer'));snapshot();document.getElementById('btn-next')?.focus({preventScroll:true});
 }
