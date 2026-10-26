@@ -264,6 +264,8 @@ function submitWritingExam() {
   if(!confirm(left?`Còn ${left} câu chưa điền. Nộp bài thi viết?`:'Nộp bài thi viết và xem kết quả?'))return;
   s.results=s.ids.map((id,i)=>{const q=DATASET.part2Data.find(q=>q.id===id),answer=s.answers[i]||'',correct=writtenCorrect(q,answer);recordWriting(writingItem(id),answer,correct,false,classifyWritten(answer,q.answer));return {id,answer,correct};});
   s.stage='complete';s.submitted=Date.now();renderWritingExam();
+  const writingScore=s.results.filter(r=>r.correct).length;
+  if(writingScore>=Math.round(s.ids.length*0.6)){triggerConfetti();playSfx('complete');}else playSfx('wrong');
 }
 function restartWritingExam() { if(writingExam?.stage==='active'&&!confirm('Bắt đầu bài thi viết mới? Bài đang làm sẽ được thay thế.'))return;writingExam=createWritingExam();renderWritingExam(); }
 // Written questions also replace multiple choice in mixed exams and the review queue.

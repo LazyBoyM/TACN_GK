@@ -8,8 +8,10 @@ let activeMode = 'part1';
     let isAnswered = false;
     let audioMuted = false;
 
-    // Web Audio Synthesizer
+    // Web Audio Synthesizer & Sound Effects Engine
     let audioCtx = null;
+    let streakCount = 0; window.streakCount = streakCount;
+
     function getAudioContext() {
       if (!audioCtx) {
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -23,34 +25,202 @@ let activeMode = 'part1';
       return audioCtx;
     }
 
-    function triggerChime(correct) {
+    function playSfx(type) {
       if (audioMuted) return;
       try {
         const ctx = getAudioContext();
         if (!ctx) return;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        if (correct) {
+        const now = ctx.currentTime;
+
+        if (type === 'select') {
+          // Crispy pleasant bubble tap / pop
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
           osc.type = 'sine';
-          osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
-          osc.frequency.exponentialRampToValueAtTime(783.99, ctx.currentTime + 0.12); // G5
-          gain.gain.setValueAtTime(0.18, ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.28);
-          osc.start();
-          osc.stop(ctx.currentTime + 0.28);
-        } else {
+          osc.frequency.setValueAtTime(420, now);
+          osc.frequency.exponentialRampToValueAtTime(760, now + 0.04);
+          gain.gain.setValueAtTime(0.09, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.05);
+        } else if (type === 'correct') {
+          // Lush, uplifting major arpeggio chime (C5 -> E5 -> G5 -> C6)
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          notes.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const start = now + idx * 0.055;
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, start);
+            gain.gain.setValueAtTime(0, start);
+            gain.gain.linearRampToValueAtTime(0.13, start + 0.015);
+            gain.gain.exponentialRampToValueAtTime(0.001, start + 0.32);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(start);
+            osc.stop(start + 0.32);
+          });
+        } else if (type === 'wrong') {
+          // Gentle low wobble thud, friendly and non-harsh
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
           osc.type = 'triangle';
-          osc.frequency.setValueAtTime(260, ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.15);
-          gain.gain.setValueAtTime(0.22, ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.28);
-          osc.start();
-          osc.stop(ctx.currentTime + 0.28);
+          osc.frequency.setValueAtTime(240, now);
+          osc.frequency.exponentialRampToValueAtTime(140, now + 0.2);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.22);
+        } else if (type === 'next') {
+          // Airy whoosh / card slide
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(320, now);
+          osc.frequency.exponentialRampToValueAtTime(620, now + 0.06);
+          gain.gain.setValueAtTime(0.05, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.07);
+        } else if (type === 'streak') {
+          // Sparkly combo bell chime
+          const notes = [659.25, 830.61, 987.77, 1318.51];
+          notes.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const start = now + idx * 0.045;
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, start);
+            gain.gain.setValueAtTime(0, start);
+            gain.gain.linearRampToValueAtTime(0.14, start + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.001, start + 0.36);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(start);
+            osc.stop(start + 0.36);
+          });
+        } else if (type === 'complete') {
+          // Grand celebratory victory fanfare
+          const chords = [
+            { t: 0.00, f: [523.25, 659.25, 783.99], d: 0.2 },
+            { t: 0.20, f: [587.33, 739.99, 880.00], d: 0.2 },
+            { t: 0.42, f: [659.25, 830.61, 987.77], d: 0.22 },
+            { t: 0.65, f: [523.25, 659.25, 783.99, 1046.50], d: 0.65 }
+          ];
+          chords.forEach(chord => {
+            chord.f.forEach(freq => {
+              const osc = ctx.createOscillator();
+              const gain = ctx.createGain();
+              const start = now + chord.t;
+              osc.type = 'sine';
+              osc.frequency.setValueAtTime(freq, start);
+              gain.gain.setValueAtTime(0, start);
+              gain.gain.linearRampToValueAtTime(0.08, start + 0.02);
+              gain.gain.exponentialRampToValueAtTime(0.001, start + chord.d);
+              osc.connect(gain);
+              gain.connect(ctx.destination);
+              osc.start(start);
+              osc.stop(start + chord.d);
+            });
+          });
+        } else if (type === 'shuffle') {
+          // Playful dice roll / card shuffle tick
+          [480, 560, 640].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const start = now + i * 0.04;
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, start);
+            gain.gain.setValueAtTime(0.08, start);
+            gain.gain.exponentialRampToValueAtTime(0.001, start + 0.05);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(start);
+            osc.stop(start + 0.05);
+          });
+        } else if (type === 'flag') {
+          // Crisp bell ping
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(880, now);
+          osc.frequency.exponentialRampToValueAtTime(987.77, now + 0.04);
+          gain.gain.setValueAtTime(0.11, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.22);
         }
       } catch (e) {}
     }
+
+    function triggerChime(correct) {
+      playSfx(correct ? 'correct' : 'wrong');
+    }
+
+    // Lightweight Celebratory Confetti Burst (Vanilla Canvas, Self-cleaning)
+    function triggerConfetti() {
+      const canvas = document.createElement('canvas');
+      canvas.id = 'confetti-canvas';
+      canvas.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:9999;';
+      document.body.appendChild(canvas);
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      ctx.scale(dpr, dpr);
+
+      const colors = ['#38bdf8', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#67e8f9'];
+      const particles = Array.from({ length: 65 }, () => ({
+        x: window.innerWidth * (0.2 + Math.random() * 0.6),
+        y: window.innerHeight * 0.45,
+        vx: (Math.random() - 0.5) * 15,
+        vy: (Math.random() - 0.75) * 17,
+        size: 6 + Math.random() * 7,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rotation: Math.random() * 360,
+        vr: (Math.random() - 0.5) * 12,
+        alpha: 1
+      }));
+
+      const start = performance.now();
+      function loop(now) {
+        const elapsed = (now - start) / 1000;
+        if (elapsed > 2.2) {
+          canvas.remove();
+          return;
+        }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.42; // gravity
+          p.vx *= 0.985; // air drag
+          p.rotation += p.vr;
+          if (elapsed > 1.3) p.alpha = Math.max(0, 1 - (elapsed - 1.3) / 0.9);
+          ctx.save();
+          ctx.globalAlpha = p.alpha;
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rotation * Math.PI / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.65);
+          ctx.restore();
+        });
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+    }
+
+    window.playSfx = playSfx;
+    window.triggerChime = triggerChime;
+    window.triggerConfetti = triggerConfetti;
 
     function shuffle(arr) {
       const out = [...arr];
@@ -404,10 +574,13 @@ let activeMode = 'part1';
       if (isCorrect) {
         clickedEl.classList.add('state-correct');
         correctCount++;
-        triggerChime(true);
+        streakCount++; window.streakCount = streakCount;
+        if (streakCount >= 3) playSfx('streak');
+        else triggerChime(true);
       } else {
         clickedEl.classList.add('state-incorrect');
         wrongCount++;
+        streakCount = 0; window.streakCount = streakCount;
         missedItems.push(q);
         triggerChime(false);
 
@@ -434,10 +607,13 @@ let activeMode = 'part1';
       if (isCorrect) {
         clickedEl.classList.add('state-correct');
         correctCount++;
-        triggerChime(true);
+        streakCount++; window.streakCount = streakCount;
+        if (streakCount >= 3) playSfx('streak');
+        else triggerChime(true);
       } else {
         clickedEl.classList.add('state-incorrect');
         wrongCount++;
+        streakCount = 0; window.streakCount = streakCount;
         missedItems.push(q);
         triggerChime(false);
 
@@ -477,6 +653,7 @@ let activeMode = 'part1';
           <div class="feedback-status ${isCorrect ? 'is-correct' : 'is-incorrect'}">
             <span class="status-icon-pill">${isCorrect ? '✓' : '✕'}</span>
             <span>${isCorrect ? 'Chính xác!' : 'Chưa chính xác'} • Đáp án đúng: <strong style="color:var(--text-1);">${answerLabel}</strong></span>
+            ${isCorrect && streakCount >= 2 ? `<span class="streak-badge">🔥 ${streakCount} COMBO!</span>` : ''}
           </div>
 
           ${q.clue ? `
@@ -512,6 +689,7 @@ let activeMode = 'part1';
 
     window.stepNext = function() {
       if (!isAnswered) return;
+      playSfx('next');
       curIdx++;
       renderCurrentQuestion();
     };
@@ -520,6 +698,12 @@ let activeMode = 'part1';
       document.getElementById('track-fill').style.width = '100%';
       const total = questions.length;
       const pct = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+      if (pct >= 60) {
+        triggerConfetti();
+        playSfx('complete');
+      } else {
+        playSfx('wrong');
+      }
 
       let tierClass = 'tier-high';
       let tierText = '🏆 Đạt Chuẩn Xuất Sắc';
@@ -605,8 +789,8 @@ let activeMode = 'part1';
 
       const key = e.key.toLowerCase();
 
-      // Next question via Space or Enter
-      if ((e.key === ' ' || e.key === 'Enter') && isAnswered) {
+      // Next question via Space or Enter or ArrowRight
+      if ((e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowRight') && isAnswered) {
         e.preventDefault();
         stepNext();
         return;
@@ -653,6 +837,7 @@ let activeMode = 'part1';
       const btn = document.getElementById('btn-audio');
       btn.classList.toggle('is-active', !audioMuted);
       document.getElementById('audio-label').innerText = audioMuted ? 'Tắt âm' : 'Âm thanh';
+      if (!audioMuted) playSfx('select');
     });
 
     // Start

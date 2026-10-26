@@ -131,6 +131,7 @@ function enter(mode, fresh=false) {
   restoring=false; snapshot();
 }
 window.startFreshShuffle = function(mode) {
+  playSfx('shuffle');
   mode = mode || activeMode;
   currentKey = workspace + ':' + mode;
   delete saved.sessions[currentKey];
@@ -182,6 +183,19 @@ document.addEventListener('click', e => {
   if (e.target.closest('#btn-audio')) setTimeout(snapshot,0);
 },true);
 window.addEventListener('keydown',e=>{
+  if (exam && !exam.submitted && !e.target.matches('input,textarea,select') && !e.target.isContentEditable) {
+    if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowRight') {
+      e.preventDefault();
+      if (curIdx === questions.length - 1) submitExam();
+      else examMove(1);
+      return;
+    }
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      examMove(-1);
+      return;
+    }
+  }
   if(workspace==='practice'&&activeMode==='part1'&&part1SubMode==='memory'&&e.key.toLowerCase()!=='r') {handleMemoryKey(e);return;}
   if (e.key.toLowerCase()==='r' && !e.ctrlKey && !e.metaKey && !e.altKey && !e.repeat && !e.target.matches('input,textarea,select') && !e.target.isContentEditable) {
     e.preventDefault(); e.stopImmediatePropagation(); startFresh();
@@ -219,7 +233,30 @@ showFeedback = function(correct,q) {
 const choiceSubmit=window.submitChoice, binarySubmit=window.submitBinary;
 window.submitChoice=function(value,el) { if (exam && !exam.submitted) chooseExam(value); else choiceSubmit(value,el); };
 window.submitBinary=function(value,el) { if (exam && !exam.submitted) chooseExam(value); else binarySubmit(value,el); };
-function chooseExam(value) { exam.answers[curIdx]=value; renderCurrentQuestion(); }
+function chooseExam(value) {
+  exam.answers[curIdx]=value;
+  playSfx('select');
+  document.querySelectorAll('.choice-row,.binary-btn').forEach(b=>{
+    const selected=String(value)===b.dataset.value;
+    b.classList.toggle('exam-selected',selected);
+    b.setAttribute('aria-pressed',selected);
+  });
+  const count=Object.keys(exam.answers).length;
+  const map=document.querySelector('.exam-map');
+  if(map){
+    const p=map.querySelector('p');
+    if(p)p.textContent=`Đã chọn ${count}/${questions.length} · Viền vàng: cần xem lại`;
+    const mapBtns=map.querySelectorAll('div>button');
+    if(mapBtns[curIdx])mapBtns[curIdx].classList.add('answered');
+  }
+  const curEl=document.getElementById('metric-cur');
+  if(curEl)curEl.textContent=count;
+  const trackFill=document.getElementById('track-fill');
+  if(trackFill)trackFill.style.width=(count/questions.length*100)+'%';
+  const trackLine=document.querySelector('.track-line');
+  if(trackLine)trackLine.setAttribute('aria-valuenow',(count/questions.length*100).toFixed(0));
+  snapshot();
+}
 function renderExamControls() {
   const answer=exam.answers[curIdx];
   isAnswered=false;
@@ -237,8 +274,8 @@ function renderExamControls() {
   document.getElementById('track-fill').style.width=Object.keys(exam.answers).length/questions.length*100+'%';
 }
 window.examGo=i=>{curIdx=i;renderCurrentQuestion();};
-window.examMove=delta=>examGo(Math.max(0,Math.min(questions.length-1,curIdx+delta)));
-window.examFlag=()=>{exam.flags[curIdx]=!exam.flags[curIdx];renderCurrentQuestion();};
+window.examMove=delta=>{playSfx('next');examGo(Math.max(0,Math.min(questions.length-1,curIdx+delta)));};
+window.examFlag=()=>{playSfx('flag');exam.flags[curIdx]=!exam.flags[curIdx];renderCurrentQuestion();};
 window.submitExam=()=>{
   const left=questions.length-Object.keys(exam.answers).length;
   if (!confirm(left?`Còn ${left} câu chưa trả lời. Nộp bài ngay?`:'Nộp bài và xem kết quả?')) return;
@@ -246,6 +283,12 @@ window.submitExam=()=>{
   questions.forEach((q,i)=>{const value=exam.answers[i]??'',correct=writtenCorrect(q,value);if(correct)correctCount++;else {wrongCount++;missedItems.push(q);} if(isWrittenQuestion(q)){const item=writingItem(Number(q.id.split(':')[1]));recordWriting(item,String(value),correct,false,classifyWritten(value,q.correctAnswer));}else record(q,correct);});
   exam.submitted=true; curIdx=questions.length; renderCurrentQuestion();
   snapshot();
+  if (correctCount >= Math.round(questions.length * 0.6)) {
+    triggerConfetti();
+    playSfx('complete');
+  } else {
+    playSfx('wrong');
+  }
 };
 function renderExamReview() {
   const review=document.createElement('section'); review.className='exam-review';
