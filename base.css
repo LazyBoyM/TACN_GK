@@ -1,11 +1,11 @@
 :root {
   /* Surface & Base Palette - Deep Midnight Slate */
-  --bg: #070b14;
-  --bg-surface: #0e1526;
-  --surface-1: rgba(14, 22, 38, 0.88);
-  --surface-2: rgba(20, 31, 54, 0.82);
-  --surface-3: rgba(28, 43, 74, 0.85);
-  --surface-hover: rgba(36, 54, 92, 0.9);
+  --bg: #080c18;
+  --bg-surface: #0f162c;
+  --surface-1: rgba(15, 23, 44, 0.88);
+  --surface-2: rgba(20, 32, 60, 0.82);
+  --surface-3: rgba(28, 44, 82, 0.85);
+  --surface-hover: rgba(36, 58, 108, 0.9);
   
   /* Borders */
   --border-subtle: rgba(255, 255, 255, 0.08);
@@ -94,13 +94,13 @@
 }
 
 body {
-  background-color: var(--bg);
+  background-color: #080c18;
   background-image:
-    radial-gradient(ellipse 85% 55% at 50% -18%, rgba(56, 189, 248, 0.18), transparent 75%),
-    radial-gradient(ellipse 65% 50% at 100% 100%, rgba(99, 102, 241, 0.15), transparent 70%),
-    radial-gradient(ellipse 50% 40% at 0% 50%, rgba(14, 165, 233, 0.08), transparent 60%),
-    radial-gradient(rgba(56, 189, 248, 0.06) 1.2px, transparent 1.2px);
-  background-size: 100% 100%, 100% 100%, 100% 100%, 24px 24px;
+    radial-gradient(ellipse 90% 60% at 50% -10%, rgba(14, 165, 233, 0.22), transparent 72%),
+    radial-gradient(ellipse 70% 50% at 100% 25%, rgba(99, 102, 241, 0.18), transparent 65%),
+    radial-gradient(ellipse 60% 45% at 0% 70%, rgba(16, 185, 129, 0.12), transparent 60%),
+    radial-gradient(rgba(56, 189, 248, 0.08) 1.2px, transparent 1.2px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 28px 28px;
   background-attachment: fixed;
   position: relative;
   overflow-x: hidden;
@@ -134,7 +134,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(7, 11, 20, 0.82);
+  background: rgba(8, 12, 24, 0.86);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   margin: -16px -14px 0 -14px;
@@ -335,11 +335,11 @@ kbd {
 }
 
 .seg-item.active {
-  background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.24), rgba(99, 102, 241, 0.24));
   color: #ffffff;
   font-weight: 700;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 4px 18px rgba(14, 165, 233, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  box-shadow: 0 4px 16px rgba(56, 189, 248, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.35);
 }
 
 .seg-item .count {
@@ -375,22 +375,22 @@ kbd {
 }
 
 .metric-chip {
-  background: rgba(14, 22, 38, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(14, 22, 42, 0.8);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-md);
-  padding: 8px 10px;
+  border-radius: var(--radius-lg);
+  padding: 10px 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: 2px;
+  gap: 3px;
   transition: all var(--transition);
   position: relative;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.07);
 }
 
 .metric-chip::before {
@@ -399,7 +399,22 @@ kbd {
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
+  height: 2.5px;
+  background: transparent;
+  transition: background var(--transition);
+}
+
+.metric-chip:nth-child(1)::before { background: #38bdf8; }
+.metric-chip:nth-child(2)::before { background: #10b981; }
+.metric-chip:nth-child(3)::before { background: #f43f5e; }
+.metric-chip:nth-child(4)::before { background: #818cf8; }
+.metric-chip:nth-child(5)::before { background: #f59e0b; }
+
+.metric-chip:hover {
+  border-color: rgba(56, 189, 248, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
   background: transparent;
   transition: background var(--transition);
 }
@@ -491,7 +506,7 @@ kbd {
    Main Console Surface (Hero Card)
    ========================================================================== */
 .console-card {
-  background: rgba(13, 20, 36, 0.88);
+  background: rgba(14, 21, 40, 0.9);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.08);
