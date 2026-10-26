@@ -165,6 +165,7 @@ function writingOverview() {
 function updateWritingDraft(value) { if(writingSession?.stage!=='answer')return;writingSession.draft=value;document.getElementById('writing-error').textContent='';saveWriting(); }
 function writingHint() {
   const s=writingSession;if(s?.stage!=='answer')return;
+  playSfx('btn');
   if(s.hint>=2){finishWritingAttempt(true);return;}
   s.hint++;renderWritingStudy();document.getElementById('writing-answer')?.focus({preventScroll:true});
 }
@@ -211,12 +212,14 @@ function confirmWritingCopy(event) { event?.preventDefault();if(writingSession?.
 function nextWriting(skipCopy=false) {
   const s=writingSession;if(s?.stage!=='feedback')return;
   if(!s.results.at(-1).correct&&!s.copied&&!skipCopy)return;
+  playSfx('next');
   s.index++;s.stage=s.index>=s.queue.length?'complete':'answer';s.draft='';s.copy='';s.hint=0;s.copied=false;
   renderWritingStudy();document.getElementById('writing-answer')?.focus();
 }
 function newWritingRound(early=false) { writingSession=createWritingSession(early);renderWritingStudy(); }
 function setPart2Mode(mode) {
   if(!['learn','exam'].includes(mode)||mode===part2Mode)return;
+  playSfx('btn');
   saveWriting();part2Mode=mode;
   if(mode==='exam'){if(!validWritingExam(writingExam))writingExam=createWritingExam();renderWritingExam();}
   else{if(!validWritingSession(writingSession))writingSession=createWritingSession();renderWritingStudy();}

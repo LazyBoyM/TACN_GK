@@ -21,12 +21,13 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .study-tabs {
   display: flex;
   gap: 6px;
-  background: var(--surface-1);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
+  background: rgba(12, 19, 34, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: var(--radius-xl);
   padding: 4px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .study-tabs button {
@@ -48,14 +49,19 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 
 .study-tabs button:hover {
   color: var(--text-1);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-1px);
+}
+
+.study-tabs button:active {
+  transform: scale(0.97);
 }
 
 .study-tabs button.active {
   color: #ffffff;
-  background: var(--surface-3);
-  border-color: rgba(56, 189, 248, 0.4);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.85), rgba(56, 189, 248, 0.95));
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 
 #due-count {
@@ -700,8 +706,8 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 }
 
 .exam-map button {
-  background: var(--surface-2);
-  border: 1px solid var(--border-subtle);
+  background: rgba(18, 28, 50, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--text-2);
   height: 38px;
   border-radius: var(--radius-sm);
@@ -710,23 +716,39 @@ button:disabled { opacity: .45; cursor: not-allowed; }
   font-weight: 700;
   cursor: pointer;
   transition: all var(--transition);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.exam-map button:hover {
+  background: rgba(28, 44, 76, 0.9);
+  border-color: rgba(56, 189, 248, 0.45);
+  color: #ffffff;
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+}
+
+.exam-map button:active {
+  transform: scale(0.93) translateY(0);
 }
 
 .exam-map button.current {
-  border-color: var(--accent);
-  box-shadow: 0 0 10px var(--accent-glow);
+  border-color: #38bdf8;
+  background: rgba(14, 165, 233, 0.25);
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.45);
 }
 
 .exam-map button.answered {
-  background: rgba(16, 185, 129, 0.2);
-  border-color: var(--emerald-border);
-  color: var(--emerald-light);
+  background: rgba(16, 185, 129, 0.22);
+  border-color: rgba(16, 185, 129, 0.5);
+  color: #34d399;
 }
 
 .exam-map button.flagged {
-  border-color: var(--amber);
-  color: var(--amber-light);
-  box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.45);
 }
 
 .exam-review {

@@ -54,6 +54,7 @@ function filterGuidedDefinitions(query) {
 function setGuidedHideUsed(value) { matchingState.hideUsed=value;filterGuidedDefinitions(matchingState.searchQuery||'');snapshot(); }
 function pickGuidedDefinition(letter) {
   if(matchingState.isGraded)return;
+  playSfx('select');
   const id=matchingState.focusTermId;
   const old=matchingState.terms.find(t=>t.id!==id&&t.userLetter===letter);
   if(old&&!confirm(`Định nghĩa ${letter} đang ghép với “${old.term}”. Chuyển sang câu này?`))return;
@@ -62,12 +63,14 @@ function pickGuidedDefinition(letter) {
 }
 function goGuidedTerm(id) {
   if(!matchingState.terms.some(t=>t.id===id))return;
+  playSfx('btn');
   matchingState.focusTermId=id;matchingState.searchQuery='';
   renderMatchingBoard();
   const heading=document.getElementById('guided-term');heading?.focus({preventScroll:true});
   document.getElementById('guided-question')?.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
 }
 function moveGuidedTerm(delta) {
+  playSfx('next');
   const index=matchingState.terms.findIndex(t=>t.id===matchingState.focusTermId);
   const term=matchingState.terms[index+delta];if(term)goGuidedTerm(term.id);
 }

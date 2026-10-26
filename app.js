@@ -33,130 +33,175 @@ let activeMode = 'part1';
         const now = ctx.currentTime;
 
         if (type === 'select') {
-          // Crispy pleasant bubble tap / pop
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(420, now);
-          osc.frequency.exponentialRampToValueAtTime(760, now + 0.04);
-          gain.gain.setValueAtTime(0.09, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(now);
-          osc.stop(now + 0.05);
+          // Satisfying tactile pop / wooden bubble tap with organic micro-pitch variation
+          const pitchVariation = 0.96 + Math.random() * 0.08;
+          const osc1 = ctx.createOscillator();
+          const osc2 = ctx.createOscillator();
+          const gain1 = ctx.createGain();
+          const gain2 = ctx.createGain();
+
+          // Body: fast pitch-drop sine
+          osc1.type = 'sine';
+          osc1.frequency.setValueAtTime(780 * pitchVariation, now);
+          osc1.frequency.exponentialRampToValueAtTime(210 * pitchVariation, now + 0.055);
+          gain1.gain.setValueAtTime(0.12, now);
+          gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+
+          // Click transient: triangle micro-snap
+          osc2.type = 'triangle';
+          osc2.frequency.setValueAtTime(1400 * pitchVariation, now);
+          osc2.frequency.exponentialRampToValueAtTime(400 * pitchVariation, now + 0.02);
+          gain2.gain.setValueAtTime(0.06, now);
+          gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.022);
+
+          osc1.connect(gain1); gain1.connect(ctx.destination);
+          osc2.connect(gain2); gain2.connect(ctx.destination);
+          osc1.start(now); osc1.stop(now + 0.065);
+          osc2.start(now); osc2.stop(now + 0.025);
+        } else if (type === 'btn') {
+          // Soft mechanical switch click (tactile key thock)
+          const osc1 = ctx.createOscillator();
+          const osc2 = ctx.createOscillator();
+          const gain1 = ctx.createGain();
+          const gain2 = ctx.createGain();
+
+          // Transient micro-click
+          osc1.type = 'triangle';
+          osc1.frequency.setValueAtTime(1200, now);
+          osc1.frequency.exponentialRampToValueAtTime(380, now + 0.015);
+          gain1.gain.setValueAtTime(0.06, now);
+          gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.018);
+
+          // Warm bottom thock
+          osc2.type = 'sine';
+          osc2.frequency.setValueAtTime(220, now);
+          osc2.frequency.exponentialRampToValueAtTime(90, now + 0.038);
+          gain2.gain.setValueAtTime(0.09, now);
+          gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+
+          osc1.connect(gain1); gain1.connect(ctx.destination);
+          osc2.connect(gain2); gain2.connect(ctx.destination);
+          osc1.start(now); osc1.stop(now + 0.02);
+          osc2.start(now); osc2.stop(now + 0.045);
         } else if (type === 'correct') {
-          // Lush, uplifting major arpeggio chime (C5 -> E5 -> G5 -> C6)
-          const notes = [523.25, 659.25, 783.99, 1046.50];
+          // Lush, sparkling marimba-bell chime chord (F5 -> A5 -> C6 -> E6)
+          const notes = [698.46, 880.00, 1046.50, 1318.51];
           notes.forEach((freq, idx) => {
+            const start = now + idx * 0.048;
+            // Fundamental tone
+            const osc1 = ctx.createOscillator();
+            const gain1 = ctx.createGain();
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(freq, start);
+            gain1.gain.setValueAtTime(0, start);
+            gain1.gain.linearRampToValueAtTime(0.12, start + 0.012);
+            gain1.gain.exponentialRampToValueAtTime(0.001, start + 0.38);
+            osc1.connect(gain1); gain1.connect(ctx.destination);
+            osc1.start(start); osc1.stop(start + 0.38);
+
+            // Shimmer overtone
+            const osc2 = ctx.createOscillator();
+            const gain2 = ctx.createGain();
+            osc2.type = 'triangle';
+            osc2.frequency.setValueAtTime(freq * 2, start);
+            gain2.gain.setValueAtTime(0, start);
+            gain2.gain.linearRampToValueAtTime(0.028, start + 0.01);
+            gain2.gain.exponentialRampToValueAtTime(0.001, start + 0.24);
+            osc2.connect(gain2); gain2.connect(ctx.destination);
+            osc2.start(start); osc2.stop(start + 0.24);
+          });
+        } else if (type === 'wrong') {
+          // Gentle warm double wooden-knock (acoustic marimba knock)
+          [
+            { t: 0.00, f1: 240, f2: 130, g: 0.15, d: 0.06 },
+            { t: 0.075, f1: 185, f2: 95, g: 0.12, d: 0.08 }
+          ].forEach(k => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
-            const start = now + idx * 0.055;
+            const start = now + k.t;
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(k.f1, start);
+            osc.frequency.exponentialRampToValueAtTime(k.f2, start + k.d);
+            gain.gain.setValueAtTime(k.g, start);
+            gain.gain.exponentialRampToValueAtTime(0.001, start + k.d + 0.02);
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.start(start); osc.stop(start + k.d + 0.02);
+          });
+        } else if (type === 'streak') {
+          // Exciting magical powerup cascade (G5 -> C6 -> D6 -> E6 -> G6)
+          const notes = [783.99, 1046.50, 1174.66, 1318.51, 1567.98];
+          notes.forEach((freq, idx) => {
+            const start = now + idx * 0.038;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
             osc.type = 'sine';
             osc.frequency.setValueAtTime(freq, start);
             gain.gain.setValueAtTime(0, start);
-            gain.gain.linearRampToValueAtTime(0.13, start + 0.015);
-            gain.gain.exponentialRampToValueAtTime(0.001, start + 0.32);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start(start);
-            osc.stop(start + 0.32);
+            gain.gain.linearRampToValueAtTime(0.12, start + 0.008);
+            gain.gain.exponentialRampToValueAtTime(0.001, start + 0.35);
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.start(start); osc.stop(start + 0.35);
           });
-        } else if (type === 'wrong') {
-          // Gentle low wobble thud, friendly and non-harsh
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(240, now);
-          osc.frequency.exponentialRampToValueAtTime(140, now + 0.2);
-          gain.gain.setValueAtTime(0.18, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(now);
-          osc.stop(now + 0.22);
+        } else if (type === 'complete') {
+          // Grand victorious fanfare chords
+          const chords = [
+            { t: 0.00, f: [523.25, 659.25, 783.99], d: 0.18, g: 0.08 },
+            { t: 0.19, f: [587.33, 739.99, 880.00], d: 0.18, g: 0.08 },
+            { t: 0.39, f: [659.25, 830.61, 987.77], d: 0.20, g: 0.09 },
+            { t: 0.60, f: [523.25, 659.25, 783.99, 1046.50, 1318.51], d: 0.75, g: 0.11 }
+          ];
+          chords.forEach(c => {
+            c.f.forEach(freq => {
+              const start = now + c.t;
+              const osc = ctx.createOscillator();
+              const gain = ctx.createGain();
+              osc.type = 'sine';
+              osc.frequency.setValueAtTime(freq, start);
+              gain.gain.setValueAtTime(0, start);
+              gain.gain.linearRampToValueAtTime(c.g, start + 0.015);
+              gain.gain.exponentialRampToValueAtTime(0.001, start + c.d);
+              osc.connect(gain); gain.connect(ctx.destination);
+              osc.start(start); osc.stop(start + c.d);
+            });
+          });
         } else if (type === 'next') {
-          // Airy whoosh / card slide
+          // Smooth card swoop
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'sine';
           osc.frequency.setValueAtTime(320, now);
-          osc.frequency.exponentialRampToValueAtTime(620, now + 0.06);
-          gain.gain.setValueAtTime(0.05, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(now);
-          osc.stop(now + 0.07);
-        } else if (type === 'streak') {
-          // Sparkly combo bell chime
-          const notes = [659.25, 830.61, 987.77, 1318.51];
-          notes.forEach((freq, idx) => {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            const start = now + idx * 0.045;
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(freq, start);
-            gain.gain.setValueAtTime(0, start);
-            gain.gain.linearRampToValueAtTime(0.14, start + 0.01);
-            gain.gain.exponentialRampToValueAtTime(0.001, start + 0.36);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start(start);
-            osc.stop(start + 0.36);
-          });
-        } else if (type === 'complete') {
-          // Grand celebratory victory fanfare
-          const chords = [
-            { t: 0.00, f: [523.25, 659.25, 783.99], d: 0.2 },
-            { t: 0.20, f: [587.33, 739.99, 880.00], d: 0.2 },
-            { t: 0.42, f: [659.25, 830.61, 987.77], d: 0.22 },
-            { t: 0.65, f: [523.25, 659.25, 783.99, 1046.50], d: 0.65 }
-          ];
-          chords.forEach(chord => {
-            chord.f.forEach(freq => {
-              const osc = ctx.createOscillator();
-              const gain = ctx.createGain();
-              const start = now + chord.t;
-              osc.type = 'sine';
-              osc.frequency.setValueAtTime(freq, start);
-              gain.gain.setValueAtTime(0, start);
-              gain.gain.linearRampToValueAtTime(0.08, start + 0.02);
-              gain.gain.exponentialRampToValueAtTime(0.001, start + chord.d);
-              osc.connect(gain);
-              gain.connect(ctx.destination);
-              osc.start(start);
-              osc.stop(start + chord.d);
-            });
-          });
-        } else if (type === 'shuffle') {
-          // Playful dice roll / card shuffle tick
-          [480, 560, 640].forEach((freq, i) => {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            const start = now + i * 0.04;
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(freq, start);
-            gain.gain.setValueAtTime(0.08, start);
-            gain.gain.exponentialRampToValueAtTime(0.001, start + 0.05);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start(start);
-            osc.stop(start + 0.05);
-          });
+          osc.frequency.exponentialRampToValueAtTime(680, now + 0.065);
+          gain.gain.setValueAtTime(0.045, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.075);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(now); osc.stop(now + 0.075);
         } else if (type === 'flag') {
-          // Crisp bell ping
-          const osc = ctx.createOscillator();
+          // High crystal bell ping
+          const osc1 = ctx.createOscillator();
+          const osc2 = ctx.createOscillator();
           const gain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(880, now);
-          osc.frequency.exponentialRampToValueAtTime(987.77, now + 0.04);
-          gain.gain.setValueAtTime(0.11, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(now);
-          osc.stop(now + 0.22);
+          osc1.type = 'sine';
+          osc1.frequency.setValueAtTime(987.77, now);
+          osc2.type = 'triangle';
+          osc2.frequency.setValueAtTime(1975.54, now);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+          osc1.connect(gain); osc2.connect(gain); gain.connect(ctx.destination);
+          osc1.start(now); osc1.stop(now + 0.28);
+          osc2.start(now); osc2.stop(now + 0.28);
+        } else if (type === 'shuffle') {
+          // Playful rolling dice arpeggio
+          [440, 554.37, 659.25, 880].forEach((freq, idx) => {
+            const start = now + idx * 0.038;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, start);
+            gain.gain.setValueAtTime(0.07, start);
+            gain.gain.exponentialRampToValueAtTime(0.001, start + 0.06);
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.start(start); osc.stop(start + 0.06);
+          });
         }
       } catch (e) {}
     }
@@ -824,6 +869,7 @@ let activeMode = 'part1';
 
     // Utility controls; study.js handles navigation and fresh sessions.
     document.getElementById('btn-review-wrong').addEventListener('click', () => {
+      playSfx('btn');
       if (activeMode === 'part1' && part1SubMode === 'board') {
         reviewOnlyWrongTerms();
       } else {

@@ -96,10 +96,11 @@
 body {
   background-color: var(--bg);
   background-image:
-    radial-gradient(ellipse 90% 55% at 50% -15%, rgba(56, 189, 248, 0.12), transparent 75%),
-    radial-gradient(ellipse 70% 45% at 100% 100%, rgba(99, 102, 241, 0.08), transparent 65%),
-    radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 28px 28px;
+    radial-gradient(ellipse 85% 55% at 50% -18%, rgba(56, 189, 248, 0.16), transparent 75%),
+    radial-gradient(ellipse 65% 50% at 100% 100%, rgba(99, 102, 241, 0.12), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 0% 50%, rgba(14, 165, 233, 0.07), transparent 60%),
+    radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 28px 28px;
   background-attachment: fixed;
   color: var(--text-2);
   font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -127,18 +128,17 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border-subtle);
   gap: 12px;
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(7, 11, 20, 0.88);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(7, 11, 20, 0.82);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   margin: -16px -14px 0 -14px;
-  padding: 12px 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.14);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
 }
 
 .app-brand {
@@ -151,15 +151,15 @@ body {
 .app-brand-mark {
   width: 38px;
   height: 38px;
-  background: linear-gradient(135deg, rgba(14, 165, 233, 0.22), rgba(99, 102, 241, 0.2));
-  border: 1px solid rgba(56, 189, 248, 0.38);
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(99, 102, 241, 0.22));
+  border: 1px solid rgba(56, 189, 248, 0.45);
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--accent);
+  color: #38bdf8;
   flex-shrink: 0;
-  box-shadow: 0 0 16px rgba(14, 165, 233, 0.2);
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.25);
   transition: all var(--transition);
 }
 
@@ -184,6 +184,12 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.app-brand-title span:first-child {
+  background: linear-gradient(135deg, #ffffff 45%, #bae6fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .app-badge-gk {
@@ -231,10 +237,11 @@ body {
 }
 
 .btn-quiet {
-  background: var(--surface-1);
-  border: 1px solid var(--border-subtle);
+  background: rgba(18, 28, 50, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
   color: var(--text-2);
-  padding: 7px 12px;
+  padding: 7px 13px;
   border-radius: var(--radius-sm);
   font-size: 0.82rem;
   font-weight: 600;
@@ -245,17 +252,19 @@ body {
   transition: all var(--transition);
   touch-action: manipulation;
   min-height: 38px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .btn-quiet:hover {
-  background: var(--surface-2);
-  color: var(--text-1);
-  border-color: var(--border-hover);
-  transform: translateY(-1px);
+  background: rgba(28, 44, 76, 0.9);
+  color: #ffffff;
+  border-color: rgba(56, 189, 248, 0.4);
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 0 12px rgba(56, 189, 248, 0.18);
 }
 
 .btn-quiet:active {
-  transform: scale(0.97);
+  transform: scale(0.96) translateY(0);
 }
 
 .btn-quiet:focus-visible {
@@ -285,15 +294,15 @@ kbd {
    Segmented Navigation (Part I / II / III / Exam)
    ========================================================================== */
 .segmented-control {
-  background: var(--surface-1);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: 4px;
+  background: rgba(12, 19, 34, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: var(--radius-xl);
+  padding: 5px;
   display: flex;
-  gap: 5px;
-  box-shadow: var(--shadow-sm);
+  gap: 6px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35), inset 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 .seg-item {
@@ -318,15 +327,17 @@ kbd {
 }
 
 .seg-item:hover {
-  color: var(--text-1);
-  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-1px);
 }
 
 .seg-item.active {
-  background: linear-gradient(135deg, rgba(2, 132, 199, 0.9) 0%, rgba(56, 189, 248, 0.95) 100%);
+  background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
   color: #ffffff;
-  border: 1px solid rgba(56, 189, 248, 0.5);
-  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.35);
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 18px rgba(14, 165, 233, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.35);
 }
 
 .seg-item .count {
@@ -362,10 +373,10 @@ kbd {
 }
 
 .metric-chip {
-  background: var(--surface-1);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid var(--border-subtle);
+  background: rgba(14, 22, 38, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-md);
   padding: 8px 10px;
   display: flex;
@@ -377,6 +388,7 @@ kbd {
   transition: all var(--transition);
   position: relative;
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .metric-chip::before {
@@ -477,19 +489,18 @@ kbd {
    Main Console Surface (Hero Card)
    ========================================================================== */
 .console-card {
-  background: var(--surface-1);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border-subtle);
-  border-top: 1px solid var(--border-card-top);
-  border-radius: var(--radius-xl);
-  padding: 24px;
+  background: rgba(13, 20, 36, 0.88);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius-2xl);
+  padding: 26px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  box-shadow: var(--shadow-card);
+  gap: 20px;
+  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.1);
   position: relative;
-  animation: cardIn 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes cardIn {
@@ -912,32 +923,32 @@ kbd {
 }
 
 .btn-primary {
-  background: var(--accent-gradient);
-  border: 1px solid rgba(56, 189, 248, 0.4);
+  background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   color: #ffffff;
   font-weight: 700;
   font-size: 0.95rem;
-  padding: 12px 24px;
-  border-radius: var(--radius-md);
+  padding: 12px 26px;
+  border-radius: var(--radius-lg);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   transition: all var(--transition);
-  box-shadow: 0 4px 18px rgba(14, 165, 233, 0.35);
+  box-shadow: 0 4px 20px rgba(14, 165, 233, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.35);
   min-height: 48px;
   touch-action: manipulation;
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(56, 189, 248, 0.5);
-  border-color: #7dd3fc;
+  box-shadow: 0 6px 28px rgba(56, 189, 248, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  border-color: #ffffff;
 }
 
 .btn-primary:active {
-  transform: translateY(0);
+  transform: scale(0.97) translateY(0);
 }
 
 .btn-primary:focus-visible {

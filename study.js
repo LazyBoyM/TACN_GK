@@ -96,6 +96,8 @@ function updateNavigation() {
 }
 function enter(mode, fresh=false) {
   snapshot();
+  if (mode === 'all') workspace = 'exam';
+  else if (workspace === 'exam') workspace = 'practice';
   currentKey = workspace + ':' + mode;
   const state = fresh ? null : saved.sessions[currentKey];
   if(workspace==='practice'&&mode==='part1'&&!state)part1SubMode=saved.part1Preference||'memory';
@@ -112,6 +114,7 @@ function enter(mode, fresh=false) {
     renderMemoryStudy();
   } else if (state && Array.isArray(state.questions) && state.matchingState && Number.isInteger(state.curIdx)) {
     ({part1SubMode,questions,curIdx,correctCount,wrongCount,missedItems,isReviewingMissed,matchingState,exam} = JSON.parse(JSON.stringify(state)));
+    if (workspace === 'exam' && !exam) exam = {answers:{},flags:{},started:Date.now(),submitted:false};
     if (workspace === 'practice' && mode === 'part1' && part1SubMode === 'board') renderMatchingBoard();
     else {
       renderCurrentQuestion();
@@ -172,6 +175,7 @@ function startFresh() {
 document.getElementById('new-session').onclick=startFresh;
 bar.querySelectorAll('[data-workspace]').forEach(b => b.onclick=()=>{
   if (workspace === b.dataset.workspace) return;
+  playSfx('btn');
   snapshot(); workspace=b.dataset.workspace;
   enter(workspace === 'practice' ? 'part1' : 'all');
 });
@@ -179,11 +183,14 @@ bar.querySelectorAll('[data-workspace]').forEach(b => b.onclick=()=>{
 document.addEventListener('click', e => {
   if (e.target.closest('#btn-shuffle')) { e.preventDefault(); e.stopImmediatePropagation(); startFresh(); }
   const tab=e.target.closest('.segmented-control [data-mode]');
-  if (tab) { e.preventDefault(); e.stopImmediatePropagation(); enter(tab.dataset.mode); }
+  if (tab) { e.preventDefault(); e.stopImmediatePropagation(); playSfx('btn'); enter(tab.dataset.mode); }
   if (e.target.closest('#btn-audio')) setTimeout(snapshot,0);
 },true);
 window.addEventListener('keydown',e=>{
-  if (exam && !exam.submitted && !e.target.matches('input,textarea,select') && !e.target.isContentEditable) {
+  const isInput = e.target && typeof e.target.matches === 'function' && (e.target.matches('input,textarea,select') || e.target.isContentEditable);
+  if (isInput) return;
+
+  if (exam && !exam.submitted) {
     if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowRight') {
       e.preventDefault();
       if (curIdx === questions.length - 1) submitExam();
@@ -195,12 +202,27 @@ window.addEventListener('keydown',e=>{
       examMove(-1);
       return;
     }
+    const key = e.key.toLowerCase();
+    const q = questions[curIdx];
+    if (q) {
+      if (q.type === 'choice') {
+        const choiceBtns = document.querySelectorAll('.choice-row');
+        if (key === '1' || key === 'a') { e.preventDefault(); choiceBtns[0]?.click(); return; }
+        if (key === '2' || key === 'b') { e.preventDefault(); choiceBtns[1]?.click(); return; }
+        if (key === '3' || key === 'c') { e.preventDefault(); choiceBtns[2]?.click(); return; }
+        if (key === '4' || key === 'd') { e.preventDefault(); choiceBtns[3]?.click(); return; }
+      } else if (q.type === 'binary') {
+        const tfBtns = document.querySelectorAll('.binary-btn');
+        if (key === 't' || key === '1') { e.preventDefault(); tfBtns[0]?.click(); return; }
+        if (key === 'f' || key === '2') { e.preventDefault(); tfBtns[1]?.click(); return; }
+      }
+    }
   }
   if(workspace==='practice'&&activeMode==='part1'&&part1SubMode==='memory'&&e.key.toLowerCase()!=='r') {handleMemoryKey(e);return;}
-  if (e.key.toLowerCase()==='r' && !e.ctrlKey && !e.metaKey && !e.altKey && !e.repeat && !e.target.matches('input,textarea,select') && !e.target.isContentEditable) {
+  if (e.key.toLowerCase()==='r' && !e.ctrlKey && !e.metaKey && !e.altKey && !e.repeat) {
     e.preventDefault(); e.stopImmediatePropagation(); startFresh();
   }
-  if(workspace==='practice'&&activeMode==='part1'&&part1SubMode==='board'&&!e.target.matches('input,textarea,select')&&!e.target.isContentEditable) {
+  if(workspace==='practice'&&activeMode==='part1'&&part1SubMode==='board') {
     if(e.key==='ArrowRight'||e.key==='ArrowLeft') {e.preventDefault();moveGuidedTerm(e.key==='ArrowRight'?1:-1);}
     e.stopImmediatePropagation();
   }
@@ -273,7 +295,7 @@ function renderExamControls() {
   document.getElementById('metric-correct').textContent='—'; document.getElementById('metric-wrong').textContent='—'; document.getElementById('metric-pct').textContent='Chưa chấm';
   document.getElementById('track-fill').style.width=Object.keys(exam.answers).length/questions.length*100+'%';
 }
-window.examGo=i=>{curIdx=i;renderCurrentQuestion();};
+window.examGo=i=>{playSfx('btn');curIdx=i;window.curIdx=i;renderCurrentQuestion();};
 window.examMove=delta=>{playSfx('next');examGo(Math.max(0,Math.min(questions.length-1,curIdx+delta)));};
 window.examFlag=()=>{playSfx('flag');exam.flags[curIdx]=!exam.flags[curIdx];renderCurrentQuestion();};
 window.submitExam=()=>{
@@ -330,6 +352,7 @@ window.gradeMatchingBoard=()=>{
 };
 window.setPart1SubMode=subMode=>{
   if(subMode===part1SubMode)return;
+  playSfx('btn');
   snapshot();
   saved.part1Modes ||= {};
   saved.part1Modes[part1SubMode]=JSON.parse(JSON.stringify(saved.sessions['practice:part1']));
