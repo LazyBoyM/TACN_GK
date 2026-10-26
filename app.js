@@ -1036,82 +1036,109 @@ let activeMode = 'part1';
 
 
     // =============================================================
-    // Background Music (BGM) YouTube Engine (Winning Game - MKMS)
+    // Background Music (BGM) Engine (Winning Game - MKMS)
+    // Hybrid: High-Performance Native HTML5 Audio with YouTube Fallback
     // =============================================================
-    let bgmPlayer = null;
+    let bgmAudio = null;
     let bgmPlaying = false;
-    let bgmVolume = 50;
-    let bgmReady = false;
+    let bgmVolume = 0.55;
 
-    (function loadYouTubeAPI() {
-      const tag = document.createElement('script');
-      tag.src = 'https://www.youtube.com/iframe_api';
-      const firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-    })();
-
-    window.onYouTubeIframeAPIReady = function() {
-      const container = document.createElement('div');
-      container.id = 'youtube-audio-player';
-      container.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:200px;height:200px;opacity:0;pointer-events:none;z-index:-9999;';
-      document.body.appendChild(container);
-
-      bgmPlayer = new YT.Player('youtube-audio-player', {
-        height: '200',
-        width: '200',
-        videoId: 'OLP6QDvDaso',
-        playerVars: {
-          autoplay: 0,
-          loop: 1,
-          playlist: 'OLP6QDvDaso',
-          controls: 0,
-          disablekb: 1,
-          fs: 0,
-          modestbranding: 1,
-          playsinline: 1,
-          rel: 0
-        },
-        events: {
-          onReady: function(event) {
-            bgmReady = true;
-            event.target.setVolume(bgmVolume);
-            updateBgmUI();
-          },
-          onStateChange: function(event) {
-            if (event.data === YT.PlayerState.PLAYING) {
-              bgmPlaying = true;
-            } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
-              bgmPlaying = false;
-            }
-            updateBgmUI();
-          },
-          onError: function(err) {
-            console.warn('YouTube BGM Player error:', err);
-          }
+    function getBgmAudio() {
+      if (!bgmAudio) {
+        bgmAudio = document.getElementById('bgm-audio');
+        if (!bgmAudio) {
+          bgmAudio = new Audio('bgm.m4a');
+          bgmAudio.id = 'bgm-audio';
+          bgmAudio.loop = true;
+          bgmAudio.preload = 'auto';
+          document.body.appendChild(bgmAudio);
         }
-      });
-    };
+        bgmAudio.volume = bgmVolume;
+        bgmAudio.addEventListener('play', () => {
+          bgmPlaying = true;
+          updateBgmUI();
+        });
+        bgmAudio.addEventListener('pause', () => {
+          bgmPlaying = false;
+          updateBgmUI();
+        });
+        bgmAudio.addEventListener('ended', () => {
+          bgmPlaying = false;
+          updateBgmUI();
+        });
+        bgmAudio.addEventListener('error', (e) => {
+          console.warn('Local bgm.m4a load error, falling back to YouTube API...', e);
+          fallbackToYouTube();
+        });
+      }
+      return bgmAudio;
+    }
 
     function toggleBgm() {
-      if (!bgmPlayer || !bgmReady) {
-        if (typeof notice === 'function') {
-          notice('Đang kết nối bài nhạc Winning Game (MKMS)... Vui lòng bấm lại sau 2 giây.');
+      const audio = getBgmAudio();
+      if (!audio) return;
+
+      if (bgmPlaying) {
+        audio.pause();
+        bgmPlaying = false;
+        if (typeof notice === 'function') notice('Đã tạm dừng nhạc nền.');
+        updateBgmUI();
+      } else {
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            bgmPlaying = true;
+            if (typeof notice === 'function') notice('🔥 Đang phát: Winning Game (MKMS) - Chúc bạn thi bứt phá!');
+            updateBgmUI();
+          }).catch(err => {
+            console.warn('Audio play failed, falling back to YouTube:', err);
+            fallbackToYouTube();
+          });
         }
+      }
+    }
+
+    // Fallback YouTube stream if local audio cannot be loaded
+    let ytPlayer = null;
+    let ytReady = false;
+    function fallbackToYouTube() {
+      if (ytPlayer && ytReady) {
+        ytPlayer.playVideo();
+        bgmPlaying = true;
+        updateBgmUI();
         return;
       }
-      try {
-        if (bgmPlaying) {
-          bgmPlayer.pauseVideo();
-          bgmPlaying = false;
-          if (typeof notice === 'function') notice('Đã tạm dừng nhạc nền.');
-        } else {
-          bgmPlayer.playVideo();
-          bgmPlaying = true;
-          if (typeof notice === 'function') notice('🔥 Đang phát: Winning Game (MKMS) - Chúc bạn thi bứt phá!');
+      if (!window.YT) {
+        const tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        document.head.appendChild(tag);
+      }
+      window.onYouTubeIframeAPIReady = function() {
+        let container = document.getElementById('youtube-audio-player');
+        if (!container) {
+          container = document.createElement('div');
+          container.id = 'youtube-audio-player';
+          container.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:200px;height:200px;opacity:0;pointer-events:none;z-index:-9999;';
+          document.body.appendChild(container);
         }
-        updateBgmUI();
-      } catch (e) {
-        console.error(e);
+        ytPlayer = new YT.Player('youtube-audio-player', {
+          height: '200',
+          width: '200',
+          videoId: 'OLP6QDvDaso',
+          playerVars: { autoplay: 1, loop: 1, playlist: 'OLP6QDvDaso', controls: 0 },
+          events: {
+            onReady: (e) => { ytReady = true; e.target.setVolume(bgmVolume * 100); e.target.playVideo(); bgmPlaying = true; updateBgmUI(); },
+            onStateChange: (e) => { bgmPlaying = (e.data === YT.PlayerState.PLAYING); updateBgmUI(); }
+          }
+        });
+      };
+    }
+
+    function setBgmVolume(val) {
+      bgmVolume = Math.max(0, Math.min(1, val));
+      if (bgmAudio) bgmAudio.volume = bgmVolume;
+      if (ytPlayer && ytReady && typeof ytPlayer.setVolume === 'function') {
+        ytPlayer.setVolume(bgmVolume * 100);
       }
     }
 
@@ -1126,6 +1153,7 @@ let activeMode = 'part1';
     }
 
     window.toggleBgm = toggleBgm;
+    window.setBgmVolume = setBgmVolume;
     // Keyboard Shortcuts Navigation
     window.addEventListener('keydown', (e) => {
       if (e.ctrlKey || e.metaKey || e.altKey || e.repeat || e.target.isContentEditable) return;
