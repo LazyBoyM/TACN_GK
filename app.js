@@ -1034,6 +1034,98 @@ let activeMode = 'part1';
       renderCurrentQuestion();
     };
 
+
+    // =============================================================
+    // Background Music (BGM) YouTube Engine (Winning Game - MKMS)
+    // =============================================================
+    let bgmPlayer = null;
+    let bgmPlaying = false;
+    let bgmVolume = 50;
+    let bgmReady = false;
+
+    (function loadYouTubeAPI() {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    })();
+
+    window.onYouTubeIframeAPIReady = function() {
+      const container = document.createElement('div');
+      container.id = 'youtube-audio-player';
+      container.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:200px;height:200px;opacity:0;pointer-events:none;z-index:-9999;';
+      document.body.appendChild(container);
+
+      bgmPlayer = new YT.Player('youtube-audio-player', {
+        height: '200',
+        width: '200',
+        videoId: 'OLP6QDvDaso',
+        playerVars: {
+          autoplay: 0,
+          loop: 1,
+          playlist: 'OLP6QDvDaso',
+          controls: 0,
+          disablekb: 1,
+          fs: 0,
+          modestbranding: 1,
+          playsinline: 1,
+          rel: 0
+        },
+        events: {
+          onReady: function(event) {
+            bgmReady = true;
+            event.target.setVolume(bgmVolume);
+            updateBgmUI();
+          },
+          onStateChange: function(event) {
+            if (event.data === YT.PlayerState.PLAYING) {
+              bgmPlaying = true;
+            } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+              bgmPlaying = false;
+            }
+            updateBgmUI();
+          },
+          onError: function(err) {
+            console.warn('YouTube BGM Player error:', err);
+          }
+        }
+      });
+    };
+
+    function toggleBgm() {
+      if (!bgmPlayer || !bgmReady) {
+        if (typeof notice === 'function') {
+          notice('Đang kết nối bài nhạc Winning Game (MKMS)... Vui lòng bấm lại sau 2 giây.');
+        }
+        return;
+      }
+      try {
+        if (bgmPlaying) {
+          bgmPlayer.pauseVideo();
+          bgmPlaying = false;
+          if (typeof notice === 'function') notice('Đã tạm dừng nhạc nền.');
+        } else {
+          bgmPlayer.playVideo();
+          bgmPlaying = true;
+          if (typeof notice === 'function') notice('🔥 Đang phát: Winning Game (MKMS) - Chúc bạn thi bứt phá!');
+        }
+        updateBgmUI();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function updateBgmUI() {
+      const btn = document.getElementById('btn-bgm');
+      const label = document.getElementById('bgm-label');
+      if (!btn) return;
+      btn.classList.toggle('is-active', bgmPlaying);
+      btn.setAttribute('aria-pressed', bgmPlaying);
+      if (label) label.textContent = bgmPlaying ? 'Bật nhạc' : 'Nhạc nền';
+      btn.title = bgmPlaying ? 'Đang phát: Winning Game (MKMS) - Bấm để tạm dừng' : 'Nhạc nền động lực (Winning Game - MKMS)';
+    }
+
+    window.toggleBgm = toggleBgm;
     // Keyboard Shortcuts Navigation
     window.addEventListener('keydown', (e) => {
       if (e.ctrlKey || e.metaKey || e.altKey || e.repeat || e.target.isContentEditable) return;
@@ -1083,6 +1175,14 @@ let activeMode = 'part1';
         reviewMissedQueue();
       }
     });
+
+    const btnBgm = document.getElementById('btn-bgm');
+    if (btnBgm) {
+      btnBgm.addEventListener('click', () => {
+        playSfx('btn');
+        toggleBgm();
+      });
+    }
 
     document.getElementById('btn-audio').addEventListener('click', () => {
       getAudioContext();
