@@ -206,260 +206,15 @@ let activeMode = 'part1';
       } catch (e) {}
     }
 
-    function triggerAnswerEffect(isCorrect, targetEl) {
-      if (isCorrect) {
-        if (streakCount >= 3) playSfx('streak');
-        else playSfx('correct');
-      } else {
-        playSfx('wrong');
-      }
-
-      // Haptic feedback on supported mobile devices
-      if (typeof navigator !== 'undefined' && navigator.vibrate) {
-        try {
-          if (isCorrect) navigator.vibrate([22, 30, 20]);
-          else navigator.vibrate([45, 35, 45]);
-        } catch (e) {}
-      }
-
-      const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      // Calculate anchor coordinates for floating badge & particles
-      let originX = window.innerWidth / 2;
-      let originY = window.innerHeight * 0.45;
-      if (targetEl && targetEl.getBoundingClientRect) {
-        const rect = targetEl.getBoundingClientRect();
-        if (rect.width > 0 && rect.height > 0) {
-          originX = rect.left + rect.width / 2;
-          originY = rect.top + rect.height / 2;
-        }
-      } else {
-        const card = document.querySelector('.console-card, .memory-study, .guided-question');
-        if (card) {
-          const rect = card.getBoundingClientRect();
-          originX = rect.left + rect.width / 2;
-          originY = rect.top + rect.height * 0.45;
-        }
-      }
-
-      // Active card reaction
-      const cardEl = document.querySelector('.console-card, .memory-study, .guided-question');
-      if (cardEl) {
-        cardEl.classList.remove('card-pulse-correct', 'card-shake-wrong');
-        void cardEl.offsetWidth; // force reflow
-        cardEl.classList.add(isCorrect ? 'card-pulse-correct' : 'card-shake-wrong');
-        setTimeout(() => {
-          cardEl.classList.remove('card-pulse-correct', 'card-shake-wrong');
-        }, 650);
-      }
-
-      spawnFloatingFeedback(originX, originY, isCorrect, streakCount);
-      spawnAnswerParticles(originX, originY, isCorrect, streakCount);
+    // Sound feedback stays separate from the short UI transitions in motion.css.
+    function triggerAnswerEffect(isCorrect) {
+      playSfx(isCorrect ? 'correct' : 'wrong');
     }
-
-    function spawnFloatingFeedback(x, y, isCorrect, streak) {
-      document.querySelectorAll('.fx-floating-pill').forEach(p => p.remove());
-      const badge = document.createElement('div');
-      badge.className = 'fx-floating-pill ' + (isCorrect ? 'fx-correct' : 'fx-wrong');
-      if (isCorrect && streak >= 3) badge.classList.add('fx-fire');
-
-      let icon = '✨';
-      let text = 'Chính xác! +1';
-      if (isCorrect) {
-        if (streak <= 1) {
-          icon = '✨';
-          text = 'Chính xác! +1';
-        } else if (streak === 2) {
-          icon = '⚡';
-          text = 'Chuẩn xác! x2';
-        } else if (streak === 3) {
-          icon = '🔥';
-          text = 'Streak x3! Quá mượt!';
-        } else if (streak === 4) {
-          icon = '🔥';
-          text = 'Nóng máy! x4';
-        } else {
-          icon = '🌟';
-          text = 'Đỉnh cao! x' + streak;
-        }
-      } else {
-        icon = '✕';
-        text = 'Chưa chính xác · Cố lên!';
-      }
-
-      badge.innerHTML = `<span class="fx-icon">${icon}</span><span class="fx-text">${text}</span>`;
-      const left = Math.max(90, Math.min(window.innerWidth - 90, x));
-      const top = Math.max(70, Math.min(window.innerHeight - 70, y - 18));
-      badge.style.left = left + 'px';
-      badge.style.top = top + 'px';
-
-      document.body.appendChild(badge);
-      setTimeout(() => { badge.remove(); }, 1050);
-    }
-
-    function spawnAnswerParticles(x, y, isCorrect, streak) {
-      const canvas = document.createElement('canvas');
-      canvas.className = 'fx-particle-canvas';
-      canvas.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:99999;';
-      document.body.appendChild(canvas);
-
-      const ctx = canvas.getContext('2d');
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
-      ctx.scale(dpr, dpr);
-
-      const count = isCorrect ? (streak >= 3 ? 50 : 32) : 18;
-      const colors = isCorrect
-        ? ['#10b981', '#34d399', '#38bdf8', '#67e8f9', '#f59e0b', '#fbbf24', '#a855f7', '#ffffff']
-        : ['#f43f5e', '#fb7185', '#fda4af', '#cbd5e1'];
-
-      const particles = [];
-      for (let i = 0; i < count; i++) {
-        const angle = isCorrect ? Math.random() * Math.PI * 2 : (Math.PI * 0.75 + Math.random() * Math.PI * 1.5);
-        const speed = isCorrect ? (3.2 + Math.random() * 8.2) : (1.8 + Math.random() * 4.2);
-        particles.push({
-          x: x,
-          y: y,
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed - (isCorrect ? (2 + Math.random() * 2.8) : 0.8),
-          size: 4 + Math.random() * (isCorrect ? 6 : 4),
-          color: colors[Math.floor(Math.random() * colors.length)],
-          rotation: Math.random() * 360,
-          vr: (Math.random() - 0.5) * 16,
-          gravity: isCorrect ? 0.28 : 0.2,
-          drag: 0.965,
-          shape: isCorrect && Math.random() > 0.65 ? 'star' : (Math.random() > 0.5 ? 'circle' : 'rect')
-        });
-      }
-
-      const startTime = performance.now();
-      const maxDuration = isCorrect ? 1000 : 650;
-
-      function drawStar(c, cx, cy, spikes, outerRadius, innerRadius) {
-        let rot = Math.PI / 2 * 3;
-        let sx = cx;
-        let sy = cy;
-        const step = Math.PI / spikes;
-        c.beginPath();
-        c.moveTo(cx, cy - outerRadius);
-        for (let i = 0; i < spikes; i++) {
-          sx = cx + Math.cos(rot) * outerRadius;
-          sy = cy + Math.sin(rot) * outerRadius;
-          c.lineTo(sx, sy);
-          rot += step;
-          sx = cx + Math.cos(rot) * innerRadius;
-          sy = cy + Math.sin(rot) * innerRadius;
-          c.lineTo(sx, sy);
-          rot += step;
-        }
-        c.lineTo(cx, cy - outerRadius);
-        c.closePath();
-        c.fill();
-      }
-
-      function frame(now) {
-        const elapsed = now - startTime;
-        if (elapsed > maxDuration) {
-          canvas.remove();
-          return;
-        }
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const progress = elapsed / maxDuration;
-        const alpha = Math.max(0, 1 - Math.pow(progress, 1.4));
-
-        particles.forEach(p => {
-          p.x += p.vx;
-          p.y += p.vy;
-          p.vy += p.gravity;
-          p.vx *= p.drag;
-          p.vy *= p.drag;
-          p.rotation += p.vr;
-
-          ctx.save();
-          ctx.globalAlpha = alpha;
-          ctx.translate(p.x, p.y);
-          ctx.rotate(p.rotation * Math.PI / 180);
-          ctx.fillStyle = p.color;
-
-          if (p.shape === 'star') {
-            drawStar(ctx, 0, 0, 4, p.size, p.size * 0.4);
-          } else if (p.shape === 'circle') {
-            ctx.beginPath();
-            ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
-            ctx.fill();
-          } else {
-            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.65);
-          }
-          ctx.restore();
-        });
-        requestAnimationFrame(frame);
-      }
-      requestAnimationFrame(frame);
-    }
-
-    function triggerChime(correct, targetEl) {
-      triggerAnswerEffect(correct, targetEl);
-    }
-
-    // Lightweight Celebratory Confetti Burst (Vanilla Canvas, Self-cleaning)
-    function triggerConfetti() {
-      const canvas = document.createElement('canvas');
-      canvas.id = 'confetti-canvas';
-      canvas.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:9999;';
-      document.body.appendChild(canvas);
-      const ctx = canvas.getContext('2d');
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
-      ctx.scale(dpr, dpr);
-
-      const colors = ['#38bdf8', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#67e8f9'];
-      const particles = Array.from({ length: 65 }, () => ({
-        x: window.innerWidth * (0.2 + Math.random() * 0.6),
-        y: window.innerHeight * 0.45,
-        vx: (Math.random() - 0.5) * 15,
-        vy: (Math.random() - 0.75) * 17,
-        size: 6 + Math.random() * 7,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        rotation: Math.random() * 360,
-        vr: (Math.random() - 0.5) * 12,
-        alpha: 1
-      }));
-
-      const start = performance.now();
-      function loop(now) {
-        const elapsed = (now - start) / 1000;
-        if (elapsed > 2.2) {
-          canvas.remove();
-          return;
-        }
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        particles.forEach(p => {
-          p.x += p.vx;
-          p.y += p.vy;
-          p.vy += 0.42; // gravity
-          p.vx *= 0.985; // air drag
-          p.rotation += p.vr;
-          if (elapsed > 1.3) p.alpha = Math.max(0, 1 - (elapsed - 1.3) / 0.9);
-          ctx.save();
-          ctx.globalAlpha = p.alpha;
-          ctx.translate(p.x, p.y);
-          ctx.rotate(p.rotation * Math.PI / 180);
-          ctx.fillStyle = p.color;
-          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.65);
-          ctx.restore();
-        });
-        requestAnimationFrame(loop);
-      }
-      requestAnimationFrame(loop);
-    }
-
+    function triggerChime(correct) { triggerAnswerEffect(correct); }
     window.playSfx = playSfx;
     window.triggerChime = triggerChime;
     window.triggerAnswerEffect = triggerAnswerEffect;
     window.triggerAnswerFX = triggerAnswerEffect;
-    window.triggerConfetti = triggerConfetti;
 
     function shuffle(arr) {
       const out = [...arr];
@@ -951,7 +706,6 @@ let activeMode = 'part1';
       const total = questions.length;
       const pct = total > 0 ? Math.round((correctCount / total) * 100) : 0;
       if (pct >= 60) {
-        triggerConfetti();
         playSfx('complete');
       } else {
         playSfx('wrong');
@@ -1036,8 +790,8 @@ let activeMode = 'part1';
 
 
     // =============================================================
-    // Background Music (BGM) Engine (Winning Game - MKMS)
-    // Hybrid: High-Performance Native HTML5 Audio with YouTube Fallback
+    // Background Music (BGM) Engine (bai1.mp3)
+    // Native HTML5 Audio
     // =============================================================
     let bgmAudio = null;
     let bgmPlaying = false;
@@ -1047,10 +801,10 @@ let activeMode = 'part1';
       if (!bgmAudio) {
         bgmAudio = document.getElementById('bgm-audio');
         if (!bgmAudio) {
-          bgmAudio = new Audio('bgm.m4a');
+          bgmAudio = new Audio('bai1.mp3');
           bgmAudio.id = 'bgm-audio';
           bgmAudio.loop = true;
-          bgmAudio.preload = 'auto';
+          bgmAudio.preload = 'metadata';
           document.body.appendChild(bgmAudio);
         }
         bgmAudio.volume = bgmVolume;
@@ -1067,8 +821,8 @@ let activeMode = 'part1';
           updateBgmUI();
         });
         bgmAudio.addEventListener('error', (e) => {
-          console.warn('Local bgm.m4a load error, falling back to YouTube API...', e);
-          fallbackToYouTube();
+          console.warn('Không tải được bai1.mp3:', e);
+          reportBgmError();
         });
       }
       return bgmAudio;
@@ -1088,58 +842,25 @@ let activeMode = 'part1';
         if (playPromise !== undefined) {
           playPromise.then(() => {
             bgmPlaying = true;
-            if (typeof notice === 'function') notice('🔥 Đang phát: Winning Game (MKMS) - Chúc bạn thi bứt phá!');
+            if (typeof notice === 'function') notice('Đang phát bai1.mp3.');
             updateBgmUI();
           }).catch(err => {
-            console.warn('Audio play failed, falling back to YouTube:', err);
-            fallbackToYouTube();
+            console.warn('Không phát được bai1.mp3:', err);
+            reportBgmError();
           });
         }
       }
     }
 
-    // Fallback YouTube stream if local audio cannot be loaded
-    let ytPlayer = null;
-    let ytReady = false;
-    function fallbackToYouTube() {
-      if (ytPlayer && ytReady) {
-        ytPlayer.playVideo();
-        bgmPlaying = true;
-        updateBgmUI();
-        return;
-      }
-      if (!window.YT) {
-        const tag = document.createElement('script');
-        tag.src = 'https://www.youtube.com/iframe_api';
-        document.head.appendChild(tag);
-      }
-      window.onYouTubeIframeAPIReady = function() {
-        let container = document.getElementById('youtube-audio-player');
-        if (!container) {
-          container = document.createElement('div');
-          container.id = 'youtube-audio-player';
-          container.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:200px;height:200px;opacity:0;pointer-events:none;z-index:-9999;';
-          document.body.appendChild(container);
-        }
-        ytPlayer = new YT.Player('youtube-audio-player', {
-          height: '200',
-          width: '200',
-          videoId: 'OLP6QDvDaso',
-          playerVars: { autoplay: 1, loop: 1, playlist: 'OLP6QDvDaso', controls: 0 },
-          events: {
-            onReady: (e) => { ytReady = true; e.target.setVolume(bgmVolume * 100); e.target.playVideo(); bgmPlaying = true; updateBgmUI(); },
-            onStateChange: (e) => { bgmPlaying = (e.data === YT.PlayerState.PLAYING); updateBgmUI(); }
-          }
-        });
-      };
+    function reportBgmError() {
+      bgmPlaying = false;
+      updateBgmUI();
+      if (typeof notice === 'function') notice('Không phát được bai1.mp3. Hãy thử bật nhạc lại hoặc tải lại trang.');
     }
 
     function setBgmVolume(val) {
       bgmVolume = Math.max(0, Math.min(1, val));
       if (bgmAudio) bgmAudio.volume = bgmVolume;
-      if (ytPlayer && ytReady && typeof ytPlayer.setVolume === 'function') {
-        ytPlayer.setVolume(bgmVolume * 100);
-      }
     }
 
     function updateBgmUI() {
@@ -1148,8 +869,8 @@ let activeMode = 'part1';
       if (!btn) return;
       btn.classList.toggle('is-active', bgmPlaying);
       btn.setAttribute('aria-pressed', bgmPlaying);
-      if (label) label.textContent = bgmPlaying ? 'Bật nhạc' : 'Nhạc nền';
-      btn.title = bgmPlaying ? 'Đang phát: Winning Game (MKMS) - Bấm để tạm dừng' : 'Nhạc nền động lực (Winning Game - MKMS)';
+      if (label) label.textContent = bgmPlaying ? 'Tắt nhạc' : 'Nhạc nền';
+      btn.title = bgmPlaying ? 'Đang phát: bai1.mp3 - Bấm để tạm dừng' : 'Nhạc nền: bai1.mp3';
     }
 
     window.toggleBgm = toggleBgm;

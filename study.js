@@ -51,6 +51,7 @@ function persist() {
   catch { const message='Không lưu được trên thiết bị này; hãy giữ trang đang mở.';document.getElementById('save-status').textContent=message;notice(message); }
 }
 function snapshot() {
+  if(document.body.dataset.subject==='pm')return;
   if (restoring || !currentKey) return;
   saved.sessions[currentKey] = {activeMode,part1SubMode,questions,curIdx,correctCount,wrongCount,missedItems,isReviewingMissed,isAnswered,matchingState,exam};
   if(workspace==='practice'&&activeMode==='part1')saved.part1Preference=part1SubMode;
@@ -77,6 +78,7 @@ function record(q, correct) {
   saved.history[q.id] = h;
 }
 function updateNavigation() {
+  if(document.body.dataset.subject==='pm')return;
   bar.querySelectorAll('[data-workspace]').forEach(b => { b.classList.toggle('active', b.dataset.workspace === workspace); b.setAttribute('aria-pressed',b.dataset.workspace === workspace); });
   document.getElementById('due-count').textContent = weakQuestions().length;
   document.querySelector('.segmented-control').hidden = workspace !== 'practice';
@@ -96,7 +98,7 @@ function updateNavigation() {
 }
 function enter(mode, fresh=false) {
   snapshot();
-  if (mode === 'all') workspace = 'exam';
+  if (mode === 'all' && workspace !== 'review') workspace = 'exam';
   else if (workspace === 'exam') workspace = 'practice';
   currentKey = workspace + ':' + mode;
   const state = fresh ? null : saved.sessions[currentKey];
@@ -181,12 +183,14 @@ bar.querySelectorAll('[data-workspace]').forEach(b => b.onclick=()=>{
 });
 // Intercept destructive restart and mode controls before the original listeners.
 document.addEventListener('click', e => {
+  if(document.body.dataset.subject==='pm')return;
   if (e.target.closest('#btn-shuffle')) { e.preventDefault(); e.stopImmediatePropagation(); startFresh(); }
   const tab=e.target.closest('.segmented-control [data-mode]');
   if (tab) { e.preventDefault(); e.stopImmediatePropagation(); playSfx('btn'); enter(tab.dataset.mode); }
   if (e.target.closest('#btn-audio')) setTimeout(snapshot,0);
 },true);
 window.addEventListener('keydown',e=>{
+  if(document.body.dataset.subject==='pm')return;
   const isInput = e.target && typeof e.target.matches === 'function' && (e.target.matches('input,textarea,select') || e.target.isContentEditable);
   if (isInput) return;
 
@@ -306,7 +310,6 @@ window.submitExam=()=>{
   exam.submitted=true; curIdx=questions.length; renderCurrentQuestion();
   snapshot();
   if (correctCount >= Math.round(questions.length * 0.6)) {
-    triggerConfetti();
     playSfx('complete');
   } else {
     playSfx('wrong');

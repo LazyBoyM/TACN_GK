@@ -101,18 +101,7 @@ button:disabled { opacity: .45; cursor: not-allowed; }
   font-size: 0.88rem;
   font-weight: 700;
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 24px rgba(56, 189, 248, 0.35);
-  animation: toastSlideUp 260ms cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
-}
-
-@keyframes toastSlideUp {
-  from { opacity: 0; transform: translate(-50%, 18px) scale(0.95); }
-  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
-}
-
-@keyframes slideDown {
-  from { opacity: 0; transform: translate(-50%, -10px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
 }
 
 /* ==========================================================================
@@ -298,7 +287,6 @@ button:disabled { opacity: .45; cursor: not-allowed; }
   border-color: var(--emerald) !important;
   color: #ffffff !important;
   box-shadow: 0 0 16px rgba(16, 185, 129, 0.35);
-  animation: correctBounce 0.36s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .guided-option.is-wrong {
@@ -306,7 +294,6 @@ button:disabled { opacity: .45; cursor: not-allowed; }
   border-color: var(--rose) !important;
   color: #ffffff !important;
   box-shadow: 0 0 16px rgba(244, 63, 94, 0.35);
-  animation: shakeIncorrect 0.38s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
 .guided-letter {
@@ -356,14 +343,12 @@ button:disabled { opacity: .45; cursor: not-allowed; }
   border-color: var(--emerald-border);
   background: rgba(16, 185, 129, 0.1);
   box-shadow: 0 8px 24px rgba(16, 185, 129, 0.15);
-  animation: feedbackSlideIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .memory-feedback.is-wrong {
   border-color: var(--rose-border);
   background: rgba(244, 63, 94, 0.1);
   box-shadow: 0 8px 24px rgba(244, 63, 94, 0.15);
-  animation: feedbackSlideIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .memory-feedback h3 {

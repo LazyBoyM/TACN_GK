@@ -1,0 +1,66 @@
+/* Animate UI's subtle interaction roles, implemented in CSS for the static app. */
+:root {
+  --motion-fast: 120ms;
+  --motion-enter: 180ms;
+  --motion-ease: cubic-bezier(.16, 1, .3, 1);
+  --text-3:#a4b2c7;
+}
+.app-brand-title,.summary-numeral,.memory-question h3 {
+  background-image:none; -webkit-text-fill-color:var(--text-1); color:var(--text-1);
+}
+.metric-label,.seg-item .count,.shortcut-pill { font-size:.75rem !important; }
+body::before, body::after { display:none; }
+body { background-image:none; }
+.top-bar { position:relative; top:auto; }
+.guided-study .metrics-dashboard { display:none !important; }
+.memory-heading { display:none; }
+.app-brand-mark { box-shadow:none; }
+.bgm-bars { display:none; }
+button, a, input, select, summary {
+  transition: color var(--motion-fast) ease, background-color var(--motion-fast) ease,
+    border-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease,
+    transform var(--motion-fast) var(--motion-ease);
+}
+button:not(:disabled):active { transform:scale(.98); }
+.console-card,.guided-option,.memory-question,.writing-sentence,.guided-question,
+.feedback-panel,.memory-feedback,.btn-primary,.seg-item,.metric-chip {
+  animation:none; box-shadow:none;
+}
+.console-card:hover { transform:none; }
+.track-fill { transition:width 220ms var(--motion-ease); }
+.lesson-enter { animation:lesson-enter var(--motion-enter) var(--motion-ease); }
+@keyframes lesson-enter {
+  from { opacity:.65; transform:translateY(5px); }
+  to { opacity:1; transform:translateY(0); }
+}
+details[open] > :not(summary) { animation:detail-enter 150ms var(--motion-ease); }
+@keyframes detail-enter {
+  from { opacity:.5; transform:translateY(-3px); }
+  to { opacity:1; transform:translateY(0); }
+}
+.memory-study,.guided-matching { gap:20px; }
+.memory-heading h2,.guided-intro h2 { font-size:1.05rem; color:var(--text-2); }
+.memory-progress { padding-bottom:12px; }
+.memory-session-meta { font-size:.8rem; }
+.memory-question,.writing-sentence { background:var(--bg-surface); border:1px solid var(--border-subtle); }
+.memory-feedback,.writing-copy { box-shadow:none !important; }
+.writing-form .memory-note { font-size:.78rem; }
+.memory-note:empty,.guided-finish>span:empty,#study-notice:empty { display:none; }
+.guided-study .top-bar { padding-bottom:8px; }
+.guided-controls { flex-wrap:nowrap; }
+.guided-controls .btn-primary { width:auto; }
+.app-brand-title { white-space:nowrap; }
+@media(hover:hover) and (pointer:fine) {
+  button:not(:disabled):hover { filter:brightness(1.06); }
+}
+@media(max-width:640px) {
+  .top-bar { flex-wrap:wrap; gap:10px; }
+  .top-actions { margin-left:auto; }
+  .memory-study,.guided-matching { gap:16px; }
+  .memory-question,.writing-sentence { padding:16px; }
+  .guided-controls .btn-primary { flex:1; }
+}
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after { animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+  button:not(:disabled):active { transform:none; }
+}

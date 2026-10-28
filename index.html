@@ -11,6 +11,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="base.css">
   <link rel="stylesheet" href="study.css">
+  <link rel="stylesheet" href="motion.css">
+  <link rel="stylesheet" href="pm.css">
 </head>
 <body>
 
@@ -27,13 +29,8 @@
         </div>
         <div class="brand-text">
           <h1 class="app-brand-title">
-            <span>IT English Console</span>
-            <span class="app-badge-gk">GK</span>
+            <span>IT English</span>
           </h1>
-          <div class="app-brand-sub">
-            <span class="live-dot" aria-hidden="true"></span>
-            <span>Active Recall • Bắt bài nhanh</span>
-          </div>
         </div>
       </div>
 
@@ -50,7 +47,7 @@
           <kbd>R</kbd>
         </button>
 
-        <button id="btn-bgm" class="btn-quiet" title="Nhạc nền động lực (Winning Game - MKMS)" aria-label="Bật hoặc tắt nhạc nền">
+        <button id="btn-bgm" class="btn-quiet" title="Nhạc nền: bai1.mp3" aria-label="Bật hoặc tắt nhạc nền">
           <span id="bgm-icon-wrap">
             <svg class="bgm-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 18V5l12-2v13"></path>
@@ -145,13 +142,16 @@
 
   </div>
 
-  <audio id="bgm-audio" src="bgm.m4a" preload="auto" loop></audio>
+  <audio id="bgm-audio" src="bai1.mp3" preload="metadata" loop></audio>
   <script src="questions.js"></script>
   <script src="app.js"></script>
   <script src="part1.js"></script>
   <script src="memory.js"></script>
   <script src="writing.js"></script>
   <script src="study.js"></script>
+  <script src="pm-data.js"></script>
+  <script src="pm.js"></script>
+  <script src="motion.js"></script>
 
 </body>
 </html>
