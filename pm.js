@@ -125,7 +125,11 @@
   function note(q) {return q.sourceNote?`<aside class="pm-note"><strong>Lưu ý tài liệu</strong><p>${e(q.sourceNote)}</p><p>Danh sách đối chiếu chỉ gồm các ý có trong tài liệu; chưa dùng để kết luận đã đủ toàn bộ yêu cầu đề.</p></aside>`:'';}
   function questionHeading(q,meta='') {return `<div class="pm-meta">Câu ${q.id} · ${e(q.topic)}${meta?' · '+e(meta):''}</div><section class="pm-question"><h3 tabindex="-1">${e(q.prompt)}</h3></section>`;}
   function draftField(value,label='Tự viết dàn ý hoặc câu trả lời',field='draft',readOnly=false) {return `<label class="pm-draft">${label}<textarea data-pm-field="${field}" spellcheck="false" maxlength="30000" ${readOnly?'readonly':''} placeholder="Viết các ý bạn nhớ bằng lời của mình…">${e(value)}</textarea></label>`;}
-  function outline(q) {return `<section class="pm-outline"><div class="pm-outline-header"><h4>Khung trả lời</h4></div><ol>${q.sections.map(section=>`<li>${e(section.label)} <span>(${section.points.length} ý)</span></li>`).join('')}</ol><p class="pm-helper">Khung được chia từ đáp án trong tài liệu.</p></section>`;}
+  function outline(q) {
+    const kw=Array.isArray(q.keywords)&&q.keywords.length?`<div class="pm-keywords-wrap"><span class="pm-keywords-label">🔑 Từ khóa cốt lõi:</span><div class="pm-keywords-list">${q.keywords.map(k=>`<span class="pm-keyword-tag">${e(k)}</span>`).join('')}</div></div>`:'';
+    const mn=q.mnemonic?`<div class="pm-mnemonic-box"><span class="pm-mnemonic-icon">💡</span><div><strong>Mẹo nhớ vấn đáp:</strong> <em>${e(q.mnemonic)}</em></div></div>`:'';
+    return `<section class="pm-outline"><div class="pm-outline-header"><h4>Khung trả lời</h4></div><ol>${q.sections.map(section=>`<li>${e(section.label)} <span>(${section.points.length} ý)</span></li>`).join('')}</ol>${kw}${mn}<p class="pm-helper">Khung được chia từ đáp án trong tài liệu.</p></section>`;
+  }
   function readView() {
     const list=selectedQuestions(),r=state.reading;
     if(!list.some(q=>q.id===r.questionId)){r.questionId=list[0].id;r.hiddenSections=[];}

@@ -61,7 +61,14 @@ const PM_BANK = {
       ],
       "topic": "Tổng quan và hợp đồng",
       "title": "Khái niệm và đặc trưng dự án",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "Chuỗi công việc",
+        "Mục tiêu & 3 Ràng buộc (Phạm vi - Thời gian - Chi phí)",
+        "4 Đặc trưng cơ bản",
+        "Đặc thù phần mềm: Logic cao, phụ thuộc con người, dễ đổi yêu cầu"
+      ],
+      "mnemonic": "Dự án = Mục tiêu + Ràng buộc. 4 Đặc trưng = Rõ - Hạn - Nhất - Buộc. Phần mềm = Logic cao + Dễ đổi yêu cầu."
     },
     {
       "id": 2,
@@ -110,7 +117,16 @@ const PM_BANK = {
       ],
       "topic": "Tổng quan và hợp đồng",
       "title": "Phẩm chất người quản lý",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "Kỹ năng công nghệ & quản lý",
+        "Khả năng chịu áp lực",
+        "Giao tiếp & thuyết phục",
+        "Giải quyết xung đột",
+        "Kỹ năng mềm (Lãnh đạo, Giao tiếp)",
+        "Quản lý chuyên môn (Rủi ro, Chất lượng)"
+      ],
+      "mnemonic": "Phẩm chất = Kỹ thuật - Áp lực - Giao tiếp - Xung đột. Khóa học = Kỹ năng mềm + Quản lý chuyên môn."
     },
     {
       "id": 3,
@@ -158,7 +174,17 @@ const PM_BANK = {
       ],
       "topic": "Tổng quan và hợp đồng",
       "title": "Vấn đề trong dự án phần mềm",
-      "sourceNote": "Đáp án trong tài liệu chỉ liệt kê các vấn đề; chưa trả lời phần phân tích ảnh hưởng của thay đổi yêu cầu không kiểm soát. Phần thiếu chưa được tính trong khung tự đánh giá."
+      "sourceNote": "Đáp án trong tài liệu chỉ liệt kê các vấn đề; chưa trả lời phần phân tích ảnh hưởng của thay đổi yêu cầu không kiểm soát. Phần thiếu chưa được tính trong khung tự đánh giá.",
+      "keywords": [
+        "Yêu cầu thiếu",
+        "Thay đổi yêu cầu mất kiểm soát (Scope creep)",
+        "Ước lượng sai",
+        "Phụ thuộc bên ngoài",
+        "Khó kết thúc",
+        "Xáo trộn nhân sự",
+        "Giám sát kém"
+      ],
+      "mnemonic": "7 Vấn đề: Thiếu yêu cầu - Đổi yêu cầu - Sai dự toán - Lệ thuộc ngoài - Khó kết thúc - Đổi người - Kém giám sát."
     },
     {
       "id": 4,
@@ -199,7 +225,14 @@ const PM_BANK = {
       ],
       "topic": "Tổng quan và hợp đồng",
       "title": "Hai loại hợp đồng",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "Hợp đồng chi phí cộng thêm (Cost-Plus)",
+        "Hợp đồng giá cố định (Fixed-Price)",
+        "Khách hàng chịu rủi ro",
+        "Nhà phát triển chịu rủi ro"
+      ],
+      "mnemonic": "Cost-Plus: Yêu cầu mở, chi phí biết sau, khách chịu rủi ro chi phí. Fixed-Price: Yêu cầu rõ, giá chốt trước, dev chịu bù lỗ."
     },
     {
       "id": 5,
@@ -236,7 +269,14 @@ const PM_BANK = {
       ],
       "topic": "Tổng quan và hợp đồng",
       "title": "Hai loại kiến nghị",
-      "sourceNote": "Tài liệu nêu khác nhau ở nhu cầu cạnh tranh nhưng chưa giải thích cụ thể sự khác biệt đó. Cần đối chiếu giáo trình hoặc hỏi giảng viên."
+      "sourceNote": "Tài liệu nêu khác nhau ở nhu cầu cạnh tranh nhưng chưa giải thích cụ thể sự khác biệt đó. Cần đối chiếu giáo trình hoặc hỏi giảng viên.",
+      "keywords": [
+        "Kiến nghị do yêu cầu (Solicited)",
+        "Kiến nghị không do yêu cầu (Unsolicited)",
+        "Cạnh tranh đấu thầu",
+        "Thương thảo ban đầu"
+      ],
+      "mnemonic": "Solicited = Khách đặt hàng, chi tiết, cạnh tranh cao. Unsolicited = Nhà thầu chủ động đề xuất, mở đầu thương thảo."
     },
     {
       "id": 6,
@@ -295,7 +335,18 @@ const PM_BANK = {
       ],
       "topic": "Tiến trình và tri thức",
       "title": "Cơ sở dữ liệu tiến trình",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "CSDL tiến trình",
+        "Kho lưu trữ lâu dài",
+        "Lập kế hoạch dự án mới",
+        "Đặc trưng",
+        "Thời gian biểu",
+        "Nỗ lực",
+        "Kích thước",
+        "Lỗi"
+      ],
+      "mnemonic": "CSDL tiến trình = Kho tri thức quá khứ. 5 Dữ liệu: Đặc trưng - Lịch - Nỗ lực - Kích thước - Lỗi."
     },
     {
       "id": 7,
@@ -354,7 +405,14 @@ const PM_BANK = {
       ],
       "topic": "Tiến trình và tri thức",
       "title": "Baseline của tiến trình",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "Baseline tiến trình",
+        "Kết quả định lượng dự kiến",
+        "Ước lượng chi phí & nhân công",
+        "5 loại Baseline: Chất lượng - Năng suất - Lịch biểu - Nỗ lực - Phân phối"
+      ],
+      "mnemonic": "Baseline = Chuẩn định lượng dự kiến. 5 loại: Chất - Năng - Lịch - Nỗ lực - Phân phối."
     },
     {
       "id": 8,
@@ -433,7 +491,14 @@ const PM_BANK = {
       ],
       "topic": "Tiến trình và tri thức",
       "title": "BOK và nguồn tri thức",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "BOK (Body of Knowledge)",
+        "Cốt lõi tri thức đóng gói kinh nghiệm",
+        "10 chủ đề chính",
+        "Bài học thực tế toàn cầu"
+      ],
+      "mnemonic": "BOK = Cốt lõi tri thức đóng gói kinh nghiệm. Nguồn gốc = Bài học thực tế thành công & thất bại toàn cầu."
     },
     {
       "id": 9,
@@ -491,7 +556,12 @@ const PM_BANK = {
       ],
       "topic": "Tiến trình và tri thức",
       "title": "Mô hình công nghệ phần mềm",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "5 Mô hình CNPM (Thác nước, Bản mẫu, Lặp & tăng dần, Xoắn ốc, Agile/Scrum)",
+        "Tiến trình Infosys: Tích lũy dữ liệu → Tính Baseline → Đóng gói tri thức"
+      ],
+      "mnemonic": "5 Mô hình chuẩn. 3 Bước Infosys = Tích lũy dữ liệu → Tính Baseline → Đóng gói tri thức."
     },
     {
       "id": 10,
@@ -540,7 +610,16 @@ const PM_BANK = {
       ],
       "topic": "Tiến trình và tri thức",
       "title": "Điều chỉnh tiến trình",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "Điều chỉnh tiến trình",
+        "Kỹ năng đội ngũ",
+        "Quy mô cao điểm",
+        "Độ rõ yêu cầu",
+        "Thời gian",
+        "Độ quan trọng ứng dụng"
+      ],
+      "mnemonic": "Cần chỉnh vì mỗi dự án khác nhau. 5 Căn cứ: Kỹ năng - Quy mô - Yêu cầu - Thời gian - Độ quan trọng."
     },
     {
       "id": 11,
@@ -602,7 +681,13 @@ const PM_BANK = {
       ],
       "topic": "Lập kế hoạch và yêu cầu",
       "title": "Quản lý thay đổi yêu cầu",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "Quản lý thay đổi yêu cầu",
+        "8 bước quy trình Infosys",
+        "Ghi nhận → Tác động → Nỗ lực → Giao hàng → Chi phí → Cấp cao → Khách ký → Thực hiện"
+      ],
+      "mnemonic": "8 Bước thay đổi: Ghi nhận → Tác động việc → Nỗ lực → Giao hàng → Chi phí → Báo cấp cao → Khách ký → Thực hiện."
     },
     {
       "id": 12,
@@ -645,7 +730,16 @@ const PM_BANK = {
       ],
       "topic": "Lập kế hoạch và yêu cầu",
       "title": "Ước lượng từ dưới lên",
-      "sourceNote": "Tài liệu không nêu riêng trường hợp tìm được dự án tương tự nhưng không có baseline riêng. Giữ các bước đã có; cần đối chiếu giáo trình để làm rõ nhánh này."
+      "sourceNote": "Tài liệu không nêu riêng trường hợp tìm được dự án tương tự nhưng không có baseline riêng. Giữ các bước đã có; cần đối chiếu giáo trình để làm rõ nhánh này.",
+      "keywords": [
+        "Ước lượng từ dưới lên (Bottom-up)",
+        "Đơn vị chương trình",
+        "Baseline dự án / Baseline chung",
+        "Tổng nỗ lực",
+        "Phân phối nỗ lực",
+        "Tinh chỉnh đặc trưng"
+      ],
+      "mnemonic": "Bottom-up: Chia nhỏ mô-đun → Nhân baseline → Tổng nỗ lực → Phân phối theo tỷ lệ → Tinh chỉnh."
     },
     {
       "id": 13,
@@ -684,7 +778,15 @@ const PM_BANK = {
       ],
       "topic": "Lập kế hoạch và yêu cầu",
       "title": "Ước lượng từ trên xuống",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "Ước lượng từ trên xuống (Top-down)",
+        "Điểm chức năng (Function Points)",
+        "Năng suất từ Baseline",
+        "Nỗ lực = Kích thước / Năng suất",
+        "Phân phối nỗ lực"
+      ],
+      "mnemonic": "Top-down: Điểm chức năng → Năng suất baseline → Nỗ lực tổng thể → Chỉnh đặc thù → Phân phối."
     },
     {
       "id": 14,
@@ -741,7 +843,15 @@ const PM_BANK = {
       ],
       "topic": "Lập kế hoạch và yêu cầu",
       "title": "Lịch biểu và kích cỡ đội dự án",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "Yếu tố ảnh hưởng lịch biểu",
+        "Đường cong Rayleigh",
+        "Đầu ít (Phân tích, Thiết kế)",
+        "Giữa cực đại (Cài đặt, Kiểm thử đơn vị)",
+        "Cuối giảm (Tích hợp, Kiểm thử HT)"
+      ],
+      "mnemonic": "Rayleigh: Đầu ít (thiết kế) → Giữa đỉnh (code & unit test) → Cuối giảm (tích hợp)."
     },
     {
       "id": 15,
@@ -792,7 +902,15 @@ const PM_BANK = {
       ],
       "topic": "Chất lượng và lỗi",
       "title": "Lỗi và hoạt động loại bỏ lỗi",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "Lỗi phần mềm (Defect)",
+        "Hành vi tiêm lỗi của con người",
+        "Xem xét lại (Review)",
+        "Kiểm thử (Testing)",
+        "Sửa lỗi (Fixing)"
+      ],
+      "mnemonic": "Lỗi do người tạo ra. 3 bước diệt lỗi: Review (Xem lại) → Testing (Kiểm tra) → Fixing (Sửa)."
     },
     {
       "id": 16,
@@ -833,7 +951,15 @@ const PM_BANK = {
       ],
       "topic": "Chất lượng và lỗi",
       "title": "Quản lý chất lượng định lượng",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "Quản lý chất lượng định lượng",
+        "Cảnh báo sớm",
+        "Dự đoán mật độ lỗi",
+        "Hiệu quả loại bỏ lỗi (DRE)",
+        "Kiểm soát thống kê (SPC)"
+      ],
+      "mnemonic": "Định lượng = Cảnh báo sớm. 3 Kỹ thuật: Mật độ lỗi dự đoán + DRE (% loại bỏ lỗi) + Giới hạn SPC."
     },
     {
       "id": 17,
@@ -873,7 +999,16 @@ const PM_BANK = {
       ],
       "topic": "Chất lượng và lỗi",
       "title": "Phòng ngừa lỗi mức dự án",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "5 bước phòng ngừa lỗi mức dự án",
+        "Lập nhóm",
+        "Họp giải pháp",
+        "Lập kế hoạch",
+        "Thực hiện",
+        "Rút kinh nghiệm"
+      ],
+      "mnemonic": "5 Bước ngừa lỗi: Lập nhóm → Họp giải pháp → Lập kế hoạch → Thực hiện → Rút kinh nghiệm."
     },
     {
       "id": 18,
@@ -900,7 +1035,13 @@ const PM_BANK = {
       ],
       "topic": "Quản lý rủi ro",
       "title": "Rủi ro và quản lý rủi ro",
-      "sourceNote": "Ví dụ trong tài liệu chỉ viết “1 chương trình máy tính cung cấp dịch vụ không bị gián đoạn”, chưa nêu sự kiện rủi ro và tác động. Ví dụ này được giữ ở đáp án gốc nhưng không tính là ý cần thuộc."
+      "sourceNote": "Ví dụ trong tài liệu chỉ viết “1 chương trình máy tính cung cấp dịch vụ không bị gián đoạn”, chưa nêu sự kiện rủi ro và tác động. Ví dụ này được giữ ở đáp án gốc nhưng không tính là ý cần thuộc.",
+      "keywords": [
+        "Rủi ro (Sự kiện tiêu cực tiềm ẩn)",
+        "Quản lý rủi ro (Hạn chế nguy cơ thất bại)",
+        "Ví dụ: Máy chủ dự phòng chống gián đoạn dịch vụ"
+      ],
+      "mnemonic": "Rủi ro = Sự kiện bất ngờ gây hại. Quản lý = Chủ động phòng ngừa để không vỡ trận."
     },
     {
       "id": 19,
@@ -950,7 +1091,12 @@ const PM_BANK = {
       "topic": "Quản lý rủi ro",
       "title": "Hoạt động quản lý rủi ro",
       "sourceNote": "Câu hỏi yêu cầu trình bày theo hình vẽ nhưng trang tài liệu không có hình; chỉ có danh sách các hoạt động. Hai nhóm dưới đây là cách tổ chức khung học từ danh sách, không phải bản sao sơ đồ gốc.",
-      "studyNote": "Khung học chia danh sách thành “Đánh giá” và “Kiểm soát”; cần đối chiếu hình trong giáo trình."
+      "studyNote": "Khung học chia danh sách thành “Đánh giá” và “Kiểm soát”; cần đối chiếu hình trong giáo trình.",
+      "keywords": [
+        "Đánh giá rủi ro: Xác định → Phân tích → Xếp ưu tiên",
+        "Kiểm soát rủi ro: Kế hoạch → Giải quyết → Giám sát"
+      ],
+      "mnemonic": "Quản lý rủi ro: Đánh giá (Xác định → Phân tích → Ưu tiên) + Kiểm soát (Kế hoạch → Giải quyết → Giám sát)."
     },
     {
       "id": 20,
@@ -995,7 +1141,12 @@ const PM_BANK = {
       ],
       "topic": "Quản lý rủi ro",
       "title": "Đánh giá và xác định rủi ro",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "Đánh giá rủi ro",
+        "3 Phương pháp xác định: Danh sách rủi ro (Checklist), Khảo sát, Soát xét kế hoạch & sản phẩm"
+      ],
+      "mnemonic": "3 Cách tìm rủi ro: Danh sách mẫu (Checklist) + Khảo sát ý kiến + Soát lại kế hoạch/sản phẩm."
     },
     {
       "id": 21,
@@ -1040,7 +1191,12 @@ const PM_BANK = {
       ],
       "topic": "Đo lường và giám sát",
       "title": "Số đo cơ bản của dự án",
-      "sourceNote": "Câu hỏi hỏi số đo của tiến trình hoặc sản phẩm, nhưng đáp án chỉ nêu định nghĩa số đo của sản phẩm và bốn số đo cơ bản. Cần đối chiếu phần định nghĩa số đo tiến trình."
+      "sourceNote": "Câu hỏi hỏi số đo của tiến trình hoặc sản phẩm, nhưng đáp án chỉ nêu định nghĩa số đo của sản phẩm và bốn số đo cơ bản. Cần đối chiếu phần định nghĩa số đo tiến trình.",
+      "keywords": [
+        "Số đo sản phẩm phần mềm",
+        "4 số đo cơ bản: Thời gian biểu (Schedule), Kích thước (Size), Nỗ lực (Effort), Lỗi (Defects)"
+      ],
+      "mnemonic": "4 Số đo vàng = Lịch - Kích - Nỗ - Lỗi (Schedule, Size, Effort, Defects)."
     },
     {
       "id": 22,
@@ -1071,7 +1227,14 @@ const PM_BANK = {
       ],
       "topic": "Chất lượng và lỗi",
       "title": "Vòng đời phát hiện và sửa lỗi",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "Tiến trình xử lý lỗi",
+        "Submitted (Đã gửi)",
+        "Fixed (Đã sửa)",
+        "Closed (Đã đóng)"
+      ],
+      "mnemonic": "Submitted (Tìm thấy & báo lỗi) → Fixed (Phân công & sửa xong) → Closed (Test lại & đóng)."
     },
     {
       "id": 23,
@@ -1106,7 +1269,15 @@ const PM_BANK = {
       ],
       "topic": "Đo lường và giám sát",
       "title": "Kiểm soát tiến độ bằng SPC",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "Kiểm soát tiến độ & nỗ lực bằng SPC",
+        "Tính chênh lệch",
+        "Giới hạn kiểm soát (Control Limits)",
+        "Biểu đồ kiểm soát SPC",
+        "Hành động khắc phục / phòng ngừa"
+      ],
+      "mnemonic": "SPC: Đo chênh lệch → Đặt ngưỡng giới hạn → Vẽ biểu đồ theo dõi → Khắc phục khi lệch."
     },
     {
       "id": 24,
@@ -1159,7 +1330,12 @@ const PM_BANK = {
       ],
       "topic": "Đội dự án và cấu hình",
       "title": "Đội dự án và phân công",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "4 Vai trò đội dự án: PM, Dev, Người kiểm soát cấu hình (CC), Quản trị CSDL (DBA)",
+        "3 Yếu tố phân công: Năng lực, Nguyện vọng, Phát triển con người"
+      ],
+      "mnemonic": "4 Vai trò = PM + Dev + CC + DBA. 3 Tiêu chí phân công = Năng lực - Nguyện vọng - Phát triển."
     },
     {
       "id": 25,
@@ -1204,7 +1380,12 @@ const PM_BANK = {
       ],
       "topic": "Đội dự án và cấu hình",
       "title": "Giao tiếp trong đội dự án",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "Giao tiếp công việc: Tiến độ, Vấn đề phát sinh, Ý kiến phản hồi",
+        "Giao tiếp xã hội: Giảm căng thẳng (Stress relief)"
+      ],
+      "mnemonic": "Giao tiếp công việc (Tiến độ, Sự cố, Feedback) + Giao tiếp tinh thần (Xả stress, gắn kết)."
     },
     {
       "id": 26,
@@ -1240,7 +1421,11 @@ const PM_BANK = {
       ],
       "topic": "Lập kế hoạch và yêu cầu",
       "title": "Cấu trúc kế hoạch quản lý dự án",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "4 Phần cấu trúc kế hoạch QLDA: Tóm tắt dự án, Lập kế hoạch dự án, Theo dõi dự án, Đội dự án"
+      ],
+      "mnemonic": "4 Phần kế hoạch: Tóm tắt tổng quan → Kế hoạch chi tiết → Đo đạc theo dõi → Nhân sự đội ngũ."
     },
     {
       "id": 27,
@@ -1295,7 +1480,16 @@ const PM_BANK = {
       ],
       "topic": "Đội dự án và cấu hình",
       "title": "Chức năng quản lý cấu hình",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "9 Chức năng quản lý cấu hình",
+        "Trạng thái & Phiên bản",
+        "Cập nhật đồng thời",
+        "Rollback hủy thay đổi",
+        "Chống sửa trái phép",
+        "Truy vết nguồn gốc (Traceability)"
+      ],
+      "mnemonic": "Biết trạng thái & version, chặn sửa đồng thời, rollback, chống phá, truy vết code với yêu cầu."
     },
     {
       "id": 28,
@@ -1363,7 +1557,15 @@ const PM_BANK = {
       ],
       "topic": "Đội dự án và cấu hình",
       "title": "Lập kế hoạch quản lý cấu hình",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "12 Hoạt động lập kế hoạch quản lý cấu hình",
+        "Xác định mục cấu hình (CI)",
+        "Cơ chế đặt tên & thư mục",
+        "Phân quyền truy cập",
+        "Thủ tục thay đổi, sao lưu, hòa giải, phát hành, lưu trữ, baseline"
+      ],
+      "mnemonic": "12 việc: Định danh CI, thư mục, quyền truy cập, quy trình đổi, backup, phát hành, mốc baseline."
     },
     {
       "id": 29,
@@ -1406,7 +1608,12 @@ const PM_BANK = {
       ],
       "topic": "Đội dự án và cấu hình",
       "title": "Thay đổi trong kiểm soát cấu hình",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "6 Bước thực hiện thay đổi cấu hình",
+        "Chấp nhận thay đổi → Thiết lập theo dõi → Tách mục (Check-out) → Sửa đổi → Đưa lại (Check-in) → Chu kỳ sống"
+      ],
+      "mnemonic": "Chấp nhận → Theo dõi → Tách ra (Check-out) → Sửa đổi → Đưa vào lại (Check-in) → Tiếp tục vòng đời."
     },
     {
       "id": 30,
@@ -1441,7 +1648,12 @@ const PM_BANK = {
       ],
       "topic": "Chất lượng và lỗi",
       "title": "Xem xét lại bởi nhóm",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "Tiến trình xem xét lại bởi nhóm (Group Review)",
+        "Lập kế hoạch → Chuẩn bị & tổng quan → Họp xem xét (Thống nhất lỗi) → Làm lại & tiếp tục (Sửa lỗi)"
+      ],
+      "mnemonic": "4 Bước Group Review: Lập kế hoạch → Chuẩn bị → Họp chốt danh sách lỗi → Sửa lỗi & thông qua."
     },
     {
       "id": 31,
@@ -1490,7 +1702,13 @@ const PM_BANK = {
       ],
       "topic": "Chất lượng và lỗi",
       "title": "Xem xét lại bởi một người",
-      "sourceNote": "Điều kiện “gần như không có lỗi” và “không phải là quan trọng” được giữ theo tài liệu tham khảo; nên đối chiếu giáo trình hoặc hướng dẫn của giảng viên trước khi dùng làm tiêu chí thực tế."
+      "sourceNote": "Điều kiện “gần như không có lỗi” và “không phải là quan trọng” được giữ theo tài liệu tham khảo; nên đối chiếu giáo trình hoặc hướng dẫn của giảng viên trước khi dùng làm tiêu chí thực tế.",
+      "keywords": [
+        "Xem xét bởi 1 người (Peer Review)",
+        "Áp dụng: Đơn giản, ít lỗi, không quan trọng",
+        "5 Bước: Chuẩn bị → Xem xét → Ghi nhận kết quả → Sửa lỗi → Xác nhận lại"
+      ],
+      "mnemonic": "Dùng khi việc nhỏ, ít rủi ro. 5 Bước: Chuẩn bị → Đọc soát → Ghi lỗi → Sửa → Xác nhận lại."
     },
     {
       "id": 32,
@@ -1565,7 +1783,13 @@ const PM_BANK = {
       ],
       "topic": "Chất lượng và lỗi",
       "title": "Xem xét đặc tả yêu cầu",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "Sản phẩm xem xét nhóm",
+        "Xem xét đặc tả yêu cầu: Nhu cầu khách hàng, Khả thi, Bỏ sót & không nhất quán",
+        "3 Thành phần: Khách hàng, Thiết kế mức cao, Kiểm thử hệ thống"
+      ],
+      "mnemonic": "3 Người họp: Khách hàng + Kiến trúc sư (Thiết kế) + Tester. Tiêu chí: Đúng - Khả thi - Nhất quán."
     },
     {
       "id": 33,
@@ -1596,7 +1820,12 @@ const PM_BANK = {
       ],
       "topic": "Đo lường và giám sát",
       "title": "Nỗ lực thực tế thấp hơn ước lượng",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "Nỗ lực thực tế THẤP hơn ước lượng",
+        "3 Nguyên nhân & Kiểm soát: Ước lượng quá cao → Ước lượng lại; Team giỏi hơn → Tối ưu nhân công; Làm chưa kỹ → Xem xét lại"
+      ],
+      "mnemonic": "Nỗ lực thấp: Hoặc do dự toán quá đà, hoặc team quá đỉnh, hoặc làm dối chưa kỹ."
     },
     {
       "id": 34,
@@ -1631,7 +1860,12 @@ const PM_BANK = {
       ],
       "topic": "Đo lường và giám sát",
       "title": "Số lỗi thực tế thấp hơn ước lượng",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "Số lỗi thực tế THẤP hơn ước lượng",
+        "4 Nguyên nhân & Kiểm soát: Chất lượng cao → Rút kinh nghiệm; Test chưa đủ → Test thêm; Kiểm soát kỹ từ trước → Soát nhật ký; Ước lượng lỗi quá cao → Hiệu chỉnh"
+      ],
+      "mnemonic": "Ít lỗi: Hoặc code quá ngon, hoặc test chưa tới, hoặc soát kỹ từ trước, hoặc dự đoán lỗi quá cao."
     },
     {
       "id": 35,
@@ -1675,7 +1909,12 @@ const PM_BANK = {
       ],
       "topic": "Chất lượng và lỗi",
       "title": "Sơ đồ nhân quả",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "6 Bước xây dựng sơ đồ nhân quả (Fishbone / Xương cá)",
+        "Hộp hậu quả (Đầu cá) → Mũi tên ngang (Xương sống) → Nguyên nhân chính → Nhánh chéo → Thu thập ý kiến → Nguyên nhân con"
+      ],
+      "mnemonic": "Đầu cá (Hậu quả) → Xương sống (Mũi tên) → Xương lớn (Nhóm nguyên nhân) → Xương con (Chi tiết)."
     },
     {
       "id": 36,
@@ -1706,7 +1945,14 @@ const PM_BANK = {
       ],
       "topic": "Kết thúc và bài học",
       "title": "Vai trò phân tích kết thúc",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "3 Vai trò phân tích kết thúc dự án (Post-Mortem)",
+        "Hiểu rõ năng lực & hiệu suất thực tế",
+        "Xác định điểm mạnh & yếu",
+        "Đưa ra hành động cải tiến tiến trình"
+      ],
+      "mnemonic": "3 Mục tiêu kết thúc: Đo hiệu suất thực → Rút kinh nghiệm mạnh/yếu → Cải tiến tiến trình."
     },
     {
       "id": 37,
@@ -1757,7 +2003,12 @@ const PM_BANK = {
       ],
       "topic": "Kết thúc và bài học",
       "title": "Dữ liệu báo cáo kết thúc",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "8 Loại dữ liệu báo cáo kết thúc",
+        "Thông tin chung, Rủi ro, Kích thước, Năng suất, Nỗ lực, Dữ liệu lỗi, Phân tích nhân quả, Thành phần tiến trình"
+      ],
+      "mnemonic": "Báo cáo đóng gói: Chung - Rủi ro - Kích thước - Năng suất - Nỗ lực - Lỗi - Nguyên nhân - Tiến trình."
     },
     {
       "id": 38,
@@ -1792,7 +2043,15 @@ const PM_BANK = {
       ],
       "topic": "Kết thúc và bài học",
       "title": "Bài học từ dự án ACIC",
-      "sourceNote": ""
+      "sourceNote": "",
+      "keywords": [
+        "4 Bài học kinh nghiệm dự án ACIC",
+        "Phát triển tăng dần: Dữ liệu ngừa lỗi",
+        "Phòng ngừa lỗi: Giảm rework",
+        "Quản lý yêu cầu: Phân tích kỹ, hoãn nếu cần",
+        "Cải tiến kiểm thử: Nâng cao code review & unit test"
+      ],
+      "mnemonic": "4 Bài học ACIC: Tăng dần (lấy số liệu) → Phòng ngừa (bớt sửa lại) → Chặt yêu cầu (tránh vỡ) → Nâng cấp kiểm thử."
     }
   ]
 };

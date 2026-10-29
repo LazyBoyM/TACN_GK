@@ -565,6 +565,74 @@ body.pm-study #btn-shuffle {
   color: var(--text-1);
 }
 
+.pm-keywords-wrap {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pm-keywords-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pm-keywords-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pm-keyword-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #7dd3fc;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  line-height: 1.4;
+}
+
+.pm-mnemonic-box {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.28);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: #fde68a;
+}
+
+.pm-mnemonic-box strong {
+  color: #fef3c7;
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+.pm-mnemonic-box em {
+  font-style: normal;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.pm-mnemonic-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
 .pm-note {
   border: 1px solid rgba(245, 158, 11, 0.35);
   border-radius: var(--radius-sm);
