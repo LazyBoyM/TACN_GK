@@ -38,7 +38,26 @@
   state.search=typeof state.search==='string'?state.search.slice(0,160):'';
   const switcher=document.createElement('div');
   switcher.className='subject-switch';
-  switcher.innerHTML='<label for="subject-select">Môn học</label><select id="subject-select"><option value="english">Tiếng Anh CNTT</option><option value="pm">Quản lý dự án phần mềm · 38 câu</option></select>';
+  switcher.innerHTML=`<div class="subject-switch-bar">
+    <div class="subject-switch-meta">
+      <span class="subject-switch-icon" aria-hidden="true">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+      </span>
+      <label for="subject-select" class="subject-switch-label">Môn học</label>
+    </div>
+    <div class="subject-select-wrap">
+      <select id="subject-select" aria-label="Chọn môn học">
+        <option value="english">🇬🇧 Tiếng Anh CNTT (TACN)</option>
+        <option value="pm">📊 Quản lý dự án phần mềm · 38 câu</option>
+      </select>
+      <span class="subject-select-arrow" aria-hidden="true">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </span>
+    </div>
+  </div>`;
   document.querySelector('.top-bar').after(switcher);
   switcher.querySelector('select').addEventListener('change',event=>selectSubject(event.target.value));
   document.getElementById('btn-audio').addEventListener('click',()=>{
@@ -97,7 +116,7 @@
   }
   function header() {
     const c=counts();
-    return `<header class="pm-header"><h2>Quản lý dự án phần mềm</h2><p>38 câu tự luận · Học trước, tự kiểm tra sau.</p></header><nav class="pm-tabs" aria-label="Cách học Quản lý dự án">${[['read','Học thuộc'],['learn','Tự kiểm tra'],['review','Ôn ý thiếu'],['exam','Thi tự luận']].map(([mode,label])=>`<button class="btn-quiet" type="button" data-pm-action="mode" data-value="${mode}" aria-pressed="${state.mode===mode}">${label}${mode==='review'&&c.missing?` <span>${c.missing}</span>`:''}</button>`).join('')}</nav><p id="pm-save-error" class="pm-error" role="status" ${storageError?'':'hidden'}>Không lưu được trên trình duyệt này. Hãy giữ trang đang mở.</p>`;
+    return `<header class="pm-header"><div class="pm-header-badge">38 CÂU TỰ LUẬN · ĐH GTVT</div><h2>Quản lý dự án phần mềm</h2><p>Học thuộc dàn ý cốt lõi, tự kiểm tra và ôn tập theo phương pháp ngắt quãng.</p></header><nav class="pm-tabs" aria-label="Cách học Quản lý dự án">${[['read','Học thuộc'],['learn','Tự kiểm tra'],['review','Ôn ý thiếu'],['exam','Thi tự luận']].map(([mode,label])=>`<button class="btn-quiet" type="button" data-pm-action="mode" data-value="${mode}" aria-pressed="${state.mode===mode}">${label}${mode==='review'&&c.missing?` <span>${c.missing}</span>`:''}</button>`).join('')}</nav><p id="pm-save-error" class="pm-error" role="status" ${storageError?'':'hidden'}>Không lưu được trên trình duyệt này. Hãy giữ trang đang mở.</p>`;
   }
   function topicFilter() {return `<label>Chủ đề<select data-pm-field="topic"><option value="all">Tất cả chủ đề</option>${topics.map(topic=>`<option value="${e(topic)}" ${topic===state.topic?'selected':''}>${e(topic)}</option>`).join('')}</select></label>`;}
   function source(q) {
@@ -106,7 +125,7 @@
   function note(q) {return q.sourceNote?`<aside class="pm-note"><strong>Lưu ý tài liệu</strong><p>${e(q.sourceNote)}</p><p>Danh sách đối chiếu chỉ gồm các ý có trong tài liệu; chưa dùng để kết luận đã đủ toàn bộ yêu cầu đề.</p></aside>`:'';}
   function questionHeading(q,meta='') {return `<div class="pm-meta">Câu ${q.id} · ${e(q.topic)}${meta?' · '+e(meta):''}</div><section class="pm-question"><h3 tabindex="-1">${e(q.prompt)}</h3></section>`;}
   function draftField(value,label='Tự viết dàn ý hoặc câu trả lời',field='draft',readOnly=false) {return `<label class="pm-draft">${label}<textarea data-pm-field="${field}" spellcheck="false" maxlength="30000" ${readOnly?'readonly':''} placeholder="Viết các ý bạn nhớ bằng lời của mình…">${e(value)}</textarea></label>`;}
-  function outline(q) {return `<section class="pm-outline"><h4>Khung trả lời</h4><ol>${q.sections.map(section=>`<li>${e(section.label)} <span>(${section.points.length} ý)</span></li>`).join('')}</ol><p class="pm-helper">Khung được chia từ đáp án trong tài liệu.</p></section>`;}
+  function outline(q) {return `<section class="pm-outline"><div class="pm-outline-header"><h4>Khung trả lời</h4></div><ol>${q.sections.map(section=>`<li>${e(section.label)} <span>(${section.points.length} ý)</span></li>`).join('')}</ol><p class="pm-helper">Khung được chia từ đáp án trong tài liệu.</p></section>`;}
   function readView() {
     const list=selectedQuestions(),r=state.reading;
     if(!list.some(q=>q.id===r.questionId)){r.questionId=list[0].id;r.hiddenSections=[];}
@@ -114,7 +133,124 @@
     if(state.learn?.stage==='recall'&&state.learn.ids[state.learn.index]===q.id)state.learn.assisted=true;
     const hidden=new Set(r.hiddenSections),allHidden=q.sections.every(section=>hidden.has(section.id));
     const read=r.readIds.includes(q.id);
-    return `<div class="pm-toolbar">${topicFilter()}<label for="pm-read-question">Chọn câu để học<select id="pm-read-question" data-pm-field="read-question">${list.map(item=>`<option value="${item.id}" ${item.id===q.id?'selected':''}>${item.id}. ${e(item.title)}${r.readIds.includes(item.id)?' · đã đọc':''}</option>`).join('')}</select></label></div><div class="pm-reading-meta"><span>${r.readIds.length}/38 câu đã đọc</span><span>Đọc không tính là đã thuộc</span></div>${questionHeading(q)}${outline(q)}${note(q)}<div class="pm-reading-tools"><p>Đọc từng phần, rồi che lại và thử nhắc bằng lời của mình.</p><button class="btn-quiet" data-pm-action="read-hide-all">${allHidden?'Hiện toàn bộ nội dung':'Che toàn bộ nội dung'}</button></div><div class="pm-reading-sections">${q.sections.map(section=>`<section class="pm-reading-section"><div class="pm-reading-section-header"><h4>${e(section.label)}</h4><button class="btn-quiet" data-pm-action="read-toggle" data-value="${e(section.id)}" aria-controls="pm-read-${q.id}-${e(section.id)}" aria-expanded="${!hidden.has(section.id)}">${hidden.has(section.id)?'Hiện ý':'Che ý'}<span class="pm-sr-only">: ${e(section.label)}</span></button></div><ol class="pm-reading-points" id="pm-read-${q.id}-${e(section.id)}" data-pm-section-panel="${e(section.id)}" ${hidden.has(section.id)?'hidden':''}>${section.points.map(point=>`<li>${e(point.text)}</li>`).join('')}</ol>${hidden.has(section.id)?'<p class="pm-helper">Đã che · thử nhắc lại các ý trước khi mở.</p>':''}</section>`).join('')}</div><div class="pm-actions"><button class="btn-quiet" data-pm-action="mark-read" ${read?'disabled':''}>${read?'Đã đọc câu này':'Đánh dấu đã đọc'}</button><button class="btn-primary" data-pm-action="read-test">Tự kiểm tra câu này</button></div><div class="pm-reading-nav"><button class="btn-quiet" data-pm-action="read-move" data-value="-1" ${index===0?'disabled':''}>Câu trước</button><span>${index+1}/${list.length} câu${state.topic==='all'?'':' trong chủ đề'}</span><button class="btn-quiet" data-pm-action="read-move" data-value="1" ${index===list.length-1?'disabled':''}>Câu tiếp theo</button></div>${source(q)}`;
+
+    // BÊN TRÁI: Danh sách 38 câu hỏi (Sidebar)
+    const sidebar=`<aside class="pm-sidebar" aria-label="Danh sách câu hỏi ôn tập">
+      <div class="pm-sidebar-top">
+        <div class="pm-sidebar-heading">
+          <span class="pm-sidebar-badge">DANH SÁCH 38 CÂU</span>
+          <span class="pm-sidebar-stat">${r.readIds.length}/38 đã đọc</span>
+        </div>
+        <div class="pm-sidebar-search-wrap">
+          <input type="search" class="pm-sidebar-search" data-pm-action="sidebar-search" placeholder="🔍 Tìm câu hỏi / từ khóa..." value="${e(state.sidebarSearch||'')}">
+        </div>
+      </div>
+      <ul class="pm-sidebar-list" id="pm-sidebar-list">
+        ${list.filter(item=>{
+          const qry=normalized(state.sidebarSearch||'');
+          return !qry||normalized(`${item.id} ${item.title} ${item.topic} ${item.prompt}`).includes(qry);
+        }).map(item=>`<li>
+          <button type="button" class="pm-sidebar-item ${item.id===q.id?'is-active':''}" data-pm-action="read-select" data-value="${item.id}">
+            <span class="pm-sidebar-num">${item.id<10?'0'+item.id:item.id}</span>
+            <span class="pm-sidebar-info">
+              <strong class="pm-sidebar-title">${e(item.title)}</strong>
+              <small class="pm-sidebar-topic-label">${e(item.topic)}</small>
+            </span>
+            ${r.readIds.includes(item.id)?'<span class="pm-sidebar-check" title="Đã đọc">✓</span>':''}
+          </button>
+        </li>`).join('')}
+      </ul>
+    </aside>`;
+
+    // BÊN PHẢI: Câu hỏi & Câu trả lời (Workbench)
+    const mainPane=`<div class="pm-main-pane">
+      <div class="pm-toolbar">
+        ${topicFilter()}
+        <label for="pm-read-question" class="pm-mobile-question-select">Chọn câu để học:
+          <select id="pm-read-question" data-pm-field="read-question">
+            ${list.map(item=>`<option value="${item.id}" ${item.id===q.id?'selected':''}>${item.id}. ${e(item.title)}${r.readIds.includes(item.id)?' · đã đọc':''}</option>`).join('')}
+          </select>
+        </label>
+      </div>
+
+      <div class="pm-reading-meta">
+        <span>${r.readIds.length}/38 câu đã đọc</span>
+        <span>Đọc không tính là đã thuộc</span>
+      </div>
+
+      <!-- 1. CÂU HỎI -->
+      <section class="pm-question-card">
+        <div class="pm-card-badge-label">
+          <span class="pm-badge-dot"></span>
+          <span>CÂU HỎI THI</span>
+        </div>
+        ${questionHeading(q)}
+      </section>
+
+      <!-- 2. DÀN Ý CỐT LÕI -->
+      ${outline(q)}
+
+      ${note(q)}
+
+      <!-- 3. CÂU TRẢ LỜI CHI TIẾT -->
+      <section class="pm-answer-wrapper">
+        <div class="pm-reading-tools">
+          <div class="pm-answer-title-group">
+            <span class="pm-answer-badge">💡 CÂU TRẢ LỜI CHI TIẾT</span>
+            <p>Đọc từng phần, rồi che lại và thử nhắc bằng lời của mình.</p>
+          </div>
+          <button class="btn-quiet pm-btn-hide-all" data-pm-action="read-hide-all">
+            ${allHidden?'👁️ Hiện toàn bộ nội dung':'🔒 Che toàn bộ nội dung'}
+          </button>
+        </div>
+
+        <div class="pm-reading-sections">
+          ${q.sections.map((section, sIdx)=>`
+            <section class="pm-reading-section">
+              <div class="pm-reading-section-header">
+                <h4>
+                  <span class="pm-section-num">${sIdx + 1}.</span>
+                  <span>${e(section.label)}</span>
+                  <small class="pm-section-badge">(${section.points.length} ý)</small>
+                </h4>
+                <button class="btn-quiet pm-toggle-btn" data-pm-action="read-toggle" data-value="${e(section.id)}" aria-controls="pm-read-${q.id}-${e(section.id)}" aria-expanded="${!hidden.has(section.id)}">
+                  ${hidden.has(section.id)?'👁️ Hiện ý':'🔒 Che ý'}
+                  <span class="pm-sr-only">: ${e(section.label)}</span>
+                </button>
+              </div>
+              <ol class="pm-reading-points" id="pm-read-${q.id}-${e(section.id)}" data-pm-section-panel="${e(section.id)}" ${hidden.has(section.id)?'hidden':''}>
+                ${section.points.map(point=>`<li>${e(point.text)}</li>`).join('')}
+              </ol>
+              ${hidden.has(section.id)?'<p class="pm-helper">🔒 Đã che phần này · Thử nhớ lại trước khi mở.</p>':''}
+            </section>
+          `).join('')}
+        </div>
+      </section>
+
+      <!-- 4. HÀNH ĐỘNG DƯỚI ĐÁY -->
+      <div class="pm-actions">
+        <button class="btn-quiet" data-pm-action="mark-read" ${read?'disabled':''}>
+          ${read?'✓ Đã đọc câu này':'Đánh dấu đã đọc'}
+        </button>
+        <button class="btn-primary" data-pm-action="read-test">
+          ✍️ Tự kiểm tra câu này
+        </button>
+      </div>
+
+      <div class="pm-reading-nav">
+        <button class="btn-quiet" data-pm-action="read-move" data-value="-1" ${index===0?'disabled':''}>
+          ← Câu trước
+        </button>
+        <span class="pm-reading-nav-counter">Câu ${index+1}/${list.length}</span>
+        <button class="btn-quiet" data-pm-action="read-move" data-value="1" ${index===list.length-1?'disabled':''}>
+          Câu tiếp theo →
+        </button>
+      </div>
+
+      ${source(q)}
+    </div>`;
+
+    return `<div class="pm-split-layout">${sidebar}${mainPane}</div>`;
   }
   function goRead(id) {
     if(!getQuestion(id))return;
@@ -128,7 +264,7 @@
     root.querySelector(`[data-pm-action="read-toggle"][data-value="${CSS.escape(sectionId)}"]`)?.focus({preventScroll:true});
   }
   function rubric(q,ratings={},disabled=false) {
-    return `<div class="pm-rubric">${q.sections.map(section=>`<fieldset><legend>${e(section.label)}</legend>${section.points.map(point=>`<div class="pm-point"><p>${e(point.text)}</p><div class="pm-ratings" role="group" aria-label="Tự đánh giá: ${e(point.text)}">${[['remembered','Nhớ được'],['missing','Thiếu ý'],['unsure','Chưa chắc']].map(([value,label])=>`<label><input type="radio" name="pm-point-${point.id}" data-pm-field="rating" data-point="${point.id}" value="${value}" ${ratings[point.id]===value?'checked':''} ${disabled?'disabled':''}>${label}</label>`).join('')}</div></div>`).join('')}</fieldset>`).join('')}</div>`;
+    return `<div class="pm-rubric">${q.sections.map(section=>`<fieldset class="pm-rubric-section"><legend>${e(section.label)} <small class="pm-rubric-count">(${section.points.length} ý)</small></legend><div class="pm-rubric-points">${section.points.map(point=>`<div class="pm-point"><p class="pm-point-text">${e(point.text)}</p><div class="pm-ratings" role="group" aria-label="Tự đánh giá: ${e(point.text)}">${[['remembered','Nhớ được','1'],['missing','Thiếu ý','2'],['unsure','Chưa chắc','3']].map(([value,label,k])=>`<label class="pm-rating-${value}"><input type="radio" name="pm-point-${point.id}" data-pm-field="rating" data-point="${point.id}" value="${value}" ${ratings[point.id]===value?'checked':''} ${disabled?'disabled':''}><span class="pm-rating-text">${label}</span><kbd class="pm-rating-kbd">${k}</kbd></label>`).join('')}</div></div>`).join('')}</div></fieldset>`).join('')}</div>`;
   }
   function catalogRows() {
     const list=filteredQuestions();
@@ -240,6 +376,25 @@
   root.addEventListener('input',event=>{
     if(active!=='pm')return;
     const input=event.target,field=input.dataset.pmField;
+    if(input.dataset.pmAction==='sidebar-search'){
+      state.sidebarSearch=input.value;
+      const qry=normalized(input.value);
+      const list=selectedQuestions().filter(item=>!qry||normalized(`${item.id} ${item.title} ${item.topic} ${item.prompt}`).includes(qry));
+      const listEl=root.querySelector('#pm-sidebar-list');
+      if(listEl){
+        listEl.innerHTML=list.map(item=>`<li>
+          <button type="button" class="pm-sidebar-item ${item.id===state.reading.questionId?'is-active':''}" data-pm-action="read-select" data-value="${item.id}">
+            <span class="pm-sidebar-num">${item.id<10?'0'+item.id:item.id}</span>
+            <span class="pm-sidebar-info">
+              <strong class="pm-sidebar-title">${e(item.title)}</strong>
+              <small class="pm-sidebar-topic-label">${e(item.topic)}</small>
+            </span>
+            ${state.reading.readIds.includes(item.id)?'<span class="pm-sidebar-check" title="Đã đọc">✓</span>':''}
+          </button>
+        </li>`).join('')||'<li class="pm-sidebar-empty">Không tìm thấy câu phù hợp</li>';
+      }
+      return;
+    }
     if(field==='search') {state.search=input.value;root.querySelector('#pm-catalog').innerHTML=catalogRows();root.querySelector('[data-pm-action="start-learn"]').disabled=!filteredQuestions().length;}
     if(field==='draft'&&state.learn?.stage==='recall')state.learn.draft=input.value;
     if(field==='review-draft'&&state.review?.stage==='recall')state.review.draft=input.value;
@@ -262,6 +417,7 @@
     const button=event.target.closest('[data-pm-action]');if(!button||button.disabled)return;
     const action=button.dataset.pmAction,value=button.dataset.value;
     if(action==='mode')setMode(value);
+    if(action==='read-select'){goRead(Number(value));return;}
     if(action==='read-toggle')toggleReadSection(value);
     if(action==='read-hide-all') {
       const q=getQuestion(state.reading.questionId),allHidden=q.sections.every(section=>state.reading.hiddenSections.includes(section.id));
@@ -297,8 +453,19 @@
   });
   window.addEventListener('keydown',event=>{
     if(active!=='pm'||event.ctrlKey||event.metaKey||event.altKey)return;
-    // Keep native form controls and links working; block only English quiz shortcuts.
     event.stopImmediatePropagation();
+    const tag=(event.target&&event.target.tagName)||'';
+    if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT')return;
+    if(state.mode==='read'){
+      const list=selectedQuestions(),curIdx=list.findIndex(item=>item.id===state.reading.questionId);
+      if((event.key==='ArrowLeft'||event.key==='Left')&&curIdx>0){event.preventDefault();goRead(list[curIdx-1].id);}
+      else if((event.key==='ArrowRight'||event.key==='Right')&&curIdx<list.length-1){event.preventDefault();goRead(list[curIdx+1].id);}
+      else if(event.key===' '||event.code==='Space'){
+        event.preventDefault();const q=getQuestion(state.reading.questionId);
+        const allHidden=q.sections.every(s=>state.reading.hiddenSections.includes(s.id));
+        state.reading.hiddenSections=allHidden?[]:q.sections.map(s=>s.id);save();render();
+      } else if(event.key==='t'||event.key==='T'){event.preventDefault();startLearn([state.reading.questionId]);}
+    }
   },true);
   window.addEventListener('pagehide',save);
   showLearnHome=!state.learn;showReviewHome=!state.review;showExamHome=!state.exam;
