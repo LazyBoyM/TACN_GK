@@ -69,43 +69,6 @@ body.pm-study #btn-shuffle {
   cursor: pointer;
 }
 
-.subject-switch-tabs {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.subject-tab-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 38px;
-  padding: 6px 14px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-hover);
-  background: var(--surface-1);
-  color: var(--text-2);
-  font: inherit;
-  font-size: 0.86rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition);
-}
-
-.subject-tab-btn:hover {
-  background: var(--surface-hover);
-  color: var(--text-1);
-  border-color: var(--border-subtle);
-}
-
-.subject-tab-btn[aria-pressed="true"] {
-  background: var(--accent-muted);
-  border-color: rgba(56, 189, 248, 0.5);
-  color: #38bdf8;
-  box-shadow: 0 0 14px rgba(56, 189, 248, 0.2);
-}
-
 .subject-select-wrap {
   position: relative;
   flex: 1;

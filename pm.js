@@ -48,14 +48,6 @@
       </span>
       <label for="subject-select" class="subject-switch-label">Môn học</label>
     </div>
-    <div class="subject-switch-tabs" role="tablist" aria-label="Chọn môn học">
-      <button type="button" class="subject-tab-btn" data-subject="english" aria-pressed="true">
-        <span>🇬🇧 Tiếng Anh CNTT</span>
-      </button>
-      <button type="button" class="subject-tab-btn" data-subject="pm" aria-pressed="false">
-        <span>📊 Quản lý dự án · 38 câu</span>
-      </button>
-    </div>
     <div class="subject-select-wrap">
       <select id="subject-select" aria-label="Chọn môn học">
         <option value="english">🇬🇧 Tiếng Anh CNTT (TACN)</option>
@@ -68,10 +60,6 @@
   </div>`;
   document.querySelector('.top-bar').after(switcher);
   switcher.querySelector('select').addEventListener('change',event=>selectSubject(event.target.value));
-  switcher.addEventListener('click',event=>{
-    const btn=event.target.closest('.subject-tab-btn');
-    if(btn&&btn.dataset.subject)selectSubject(btn.dataset.subject);
-  });
   document.getElementById('btn-audio').addEventListener('click',()=>{
     if(active!=='pm')return;
     saved.muted=audioMuted;
@@ -122,9 +110,6 @@
       enter(workspace==='practice'?(mode==='all'?'part1':mode):'all');
     }
     switcher.querySelector('select').value=active;
-    switcher.querySelectorAll('.subject-tab-btn').forEach(btn=>{
-      btn.setAttribute('aria-pressed',btn.dataset.subject===active?'true':'false');
-    });
     try{localStorage.setItem(SUBJECT_KEY,active);}catch{}
     try {const url=new URL(location.href);url.searchParams.set('subject',active);history.replaceState(null,'',url);}catch{}
     document.getElementById('study-notice').textContent='';
