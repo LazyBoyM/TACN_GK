@@ -182,32 +182,29 @@
         <span>Đọc không tính là đã thuộc</span>
       </div>
 
-      <!-- 1. CÂU HỎI -->
-      <section class="pm-question-card">
-        <div class="pm-card-badge-label">
-          <span class="pm-badge-dot"></span>
-          <span>CÂU HỎI THI</span>
-        </div>
-        ${questionHeading(q)}
-      </section>
+      <!-- THẺ BÀI HỌC: CÂU HỎI VÀ CÂU TRẢ LỜI LIỀN MẠCH -->
+      <article class="pm-question-card pm-unified-card">
+        <!-- PHẦN CÂU HỎI -->
+        <header class="pm-unified-header">
+          <div class="pm-card-badge-label">
+            <span class="pm-badge-dot"></span>
+            <span>CÂU HỎI THI</span>
+          </div>
+          ${questionHeading(q)}
+        </header>
 
-      <!-- 2. DÀN Ý CỐT LÕI -->
-      ${outline(q)}
-
-      ${note(q)}
-
-      <!-- 3. CÂU TRẢ LỜI CHI TIẾT -->
-      <section class="pm-answer-wrapper">
+        <!-- ĐƯỜNG KẺ VÀ TIÊU ĐỀ TRẢ LỜI -->
         <div class="pm-reading-tools">
           <div class="pm-answer-title-group">
-            <span class="pm-answer-badge">💡 CÂU TRẢ LỜI CHI TIẾT</span>
-            <p>Đọc từng phần, rồi che lại và thử nhắc bằng lời của mình.</p>
+            <span class="pm-answer-badge">💡 CÂU TRẢ LỜI</span>
+            <p>Đọc liền mạch toàn bộ nội dung, có thể che để tự nhẩm nhớ bài.</p>
           </div>
           <button class="btn-quiet pm-btn-hide-all" data-pm-action="read-hide-all">
-            ${allHidden?'👁️ Hiện toàn bộ nội dung':'🔒 Che toàn bộ nội dung'}
+            ${allHidden?'👁️ Hiện toàn bộ':'🔒 Che toàn bộ'}
           </button>
         </div>
 
+        <!-- PHẦN TRẢ LỜI LIỀN MẠCH -->
         <div class="pm-reading-sections">
           ${q.sections.map((section, sIdx)=>`
             <section class="pm-reading-section">
@@ -215,21 +212,25 @@
                 <h4>
                   <span class="pm-section-num">${sIdx + 1}.</span>
                   <span>${e(section.label)}</span>
-                  <small class="pm-section-badge">(${section.points.length} ý)</small>
                 </h4>
-                <button class="btn-quiet pm-toggle-btn" data-pm-action="read-toggle" data-value="${e(section.id)}" aria-controls="pm-read-${q.id}-${e(section.id)}" aria-expanded="${!hidden.has(section.id)}">
-                  ${hidden.has(section.id)?'👁️ Hiện ý':'🔒 Che ý'}
+                <button class="btn-quiet pm-toggle-btn" data-pm-action="read-toggle" data-value="${e(section.id)}" aria-controls="pm-read-${q.id}-${e(section.id)}" aria-expanded="${!hidden.has(section.id)}" title="Ẩn/hiện đoạn này">
+                  ${hidden.has(section.id)?'👁️ Hiện':'🔒 Che'}
                   <span class="pm-sr-only">: ${e(section.label)}</span>
                 </button>
               </div>
-              <ol class="pm-reading-points" id="pm-read-${q.id}-${e(section.id)}" data-pm-section-panel="${e(section.id)}" ${hidden.has(section.id)?'hidden':''}>
-                ${section.points.map(point=>`<li>${e(point.text)}</li>`).join('')}
-              </ol>
+              <div class="pm-reading-points" id="pm-read-${q.id}-${e(section.id)}" data-pm-section-panel="${e(section.id)}" ${hidden.has(section.id)?'hidden':''}>
+                ${section.points.map(point=>`<span class="pm-point-sentence">${e(point.text)}</span>`).join(' ')}
+              </div>
               ${hidden.has(section.id)?'<p class="pm-helper">🔒 Đã che phần này · Thử nhớ lại trước khi mở.</p>':''}
             </section>
           `).join('')}
         </div>
-      </section>
+      </article>
+
+      ${note(q)}
+
+      <!-- TỔNG KẾT DÀN Ý & MẸO NHỚ VẤN ĐÁP -->
+      ${outline(q)}
 
       <!-- 4. HÀNH ĐỘNG DƯỚI ĐÁY -->
       <div class="pm-actions">
