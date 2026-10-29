@@ -4,6 +4,30 @@
    ========================================================================== */
 
 /* Hide English quiz elements in PM study mode */
+.pm-flashcards { max-width: 780px; margin: 24px auto; }
+.pm-flash-toolbar label { display: grid; gap: 8px; color: var(--text-2); }
+.pm-flash-toolbar select { width: 100%; min-height: 44px; padding: 10px; background: var(--bg-card, #0f172a); color: var(--text-1); border: 1px solid var(--border, #334155); border-radius: 8px; font: inherit; }
+.pm-flashcard { padding: clamp(18px, 4vw, 32px); background: #0f172a; border: 1px solid #334155; border-radius: 16px; margin: 18px 0; }
+.pm-flashcard .pm-question { margin-bottom: 24px; }
+.pm-flashcard .pm-outline { padding: 0; background: transparent; border: 0; box-shadow: none; }
+.pm-flashcard > .btn-primary { margin-top: 20px; min-height: 44px; white-space: normal; }
+.pm-flash-prompt { color: var(--text-2); line-height: 1.7; padding: 24px 0; }
+.pm-flashcards button:focus-visible, .pm-flashcards select:focus-visible { outline: 2px solid #38bdf8; outline-offset: 4px; }
+
+.pm-recall-guide { padding: 18px 0; border-top: 1px solid #334155; margin-bottom: 12px; }
+.pm-recall-guide h3 { margin: 0 0 8px; font-size: 1rem; color: #e2e8f0; }
+.pm-recall-guide p { color: #cbd5e1; line-height: 1.7; margin: 0 0 12px; max-width: 70ch; }
+.pm-recall-guide [aria-pressed="true"] { background: #164e63; color: #ecfeff; border-color: #38bdf8; }
+.pm-unified-card > .pm-outline { margin: 0 24px 20px; background: transparent; border: 0; border-radius: 0; padding: 0; box-shadow: none; }
+.pm-study-points { margin: 0; padding-left: 1.3em; }
+.pm-study-points li { display: list-item; padding-left: 4px; margin-bottom: 12px; max-width: 70ch; }
+.pm-study-points li:last-child { margin-bottom: 0; }
+.pm-study-points li::marker { color: #7dd3fc; }
+@media (max-width: 600px) {
+  .pm-unified-card > .pm-outline { margin-inline: 16px; }
+  .pm-recall-guide .pm-actions { display: flex; flex-wrap: wrap; }
+}
+
 body.pm-study .study-navigation,
 body.pm-study .segmented-control,
 body.pm-study .metrics-dashboard,
@@ -1242,4 +1266,65 @@ body.pm-study #btn-shuffle {
     transition: none !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Reading rhythm and compact study navigation. */
+.pm-flashcard .pm-keywords-wrap { display: none; }
+.pm-flashcard .pm-outline { margin: 0; }
+.pm-flashcard .pm-outline ol { margin-bottom: 24px; }
+.pm-flashcard.is-front .pm-question { margin-bottom: 0; }
+.pm-flashcard .pm-mnemonic-box { border: 0; background: transparent; padding: 16px 0 0; border-top: 1px solid #334155; border-radius: 0; color: #e2e8f0; }
+.pm-flash-toolbar { max-width: 180px; }
+.pm-tabs button { box-shadow: none; }
+.pm-reading-meta span:last-child { display: none; }
+.pm-card-badge-label { display: none; }
+.pm-recall-guide { padding: 0; border: 0; margin: 0; }
+.pm-app { --pm-reading-text: #e2e8f0; --pm-muted-text: #b8c5d6; }
+.pm-header { gap: 4px; }
+.pm-header h2 { font-size: clamp(1.2rem, 2.5vw, 1.65rem); }
+.pm-header p { color: var(--pm-muted-text); font-size: .875rem; }
+.pm-tabs { gap: 4px; padding: 4px; background: #111827; border: 1px solid #29364a; border-radius: 12px; }
+.pm-tabs button { border: 0; border-radius: 8px; min-height: 44px; }
+.pm-tabs button[aria-pressed="true"] { background: #164e63; color: #ecfeff; }
+.pm-app .pm-helper { color: var(--pm-muted-text); line-height: 1.65; }
+.pm-app .pm-question h3 { color: #f1f5f9; line-height: 1.65; text-wrap: pretty; }
+.pm-reading-points { font-size: 1rem; line-height: 1.9; color: var(--pm-reading-text); }
+.pm-outline li { font-size: 1rem; line-height: 1.8; margin-bottom: 8px; }
+.pm-mnemonic-box { font-size: 1rem; line-height: 1.8; }
+.pm-mnemonic-box em { font-style: normal; }
+.pm-keyword-tag { font-size: .875rem; line-height: 1.6; }
+.pm-flashcards { width: 100%; max-width: 760px; margin: 0 auto; }
+.pm-flash-toolbar { display: grid; gap: 16px; }
+.pm-flash-toolbar label { font-size: .875rem; }
+.pm-flash-toolbar select { font-size: 1rem; }
+.pm-flash-position { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; color: var(--pm-muted-text); font-size: .875rem; }
+.pm-flash-position strong { color: #e2e8f0; font-size: 1rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pm-flash-position strong span { color: var(--pm-muted-text); font-weight: 400; }
+.pm-flash-position > span { text-align: right; }
+.pm-flashcard { margin: 16px 0 0; padding: clamp(22px, 4vw, 36px); }
+.pm-flashcard.is-front { min-height: 320px; display: flex; flex-direction: column; justify-content: center; }
+.pm-flashcard .pm-question h3 { font-size: clamp(1.2rem, 2.5vw, 1.6rem); font-weight: 600; }
+.pm-flashcard.is-flipped .pm-question h3 { font-size: 1.1rem; }
+.pm-flashcard.is-flipped .pm-question { padding-bottom: 20px; border-bottom: 1px solid #334155; }
+.pm-flashcard .pm-outline h4 { font-size: 1.125rem; color: #e2e8f0; }
+.pm-flashcard .pm-keywords-list { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.pm-flashcard .pm-keyword-tag { background: none; border: 0; border-radius: 0; padding: 0; font-size: 1rem; color: #bae6fd; font-weight: 500; }
+.pm-flashcard .pm-keywords-label { font-size: .875rem; letter-spacing: 0; }
+.pm-flashcard .pm-mnemonic-box { padding: 16px 0 0; background: transparent; border: 0; border-top: 1px solid #334155; border-radius: 0; }
+.pm-flash-prompt { padding: 0; font-size: .9375rem; }
+.pm-flash-controls { display: grid; grid-template-columns: 1fr 1.4fr 1fr; gap: 10px; position: sticky; bottom: 0; z-index: 5; padding: 16px 0 max(12px, env(safe-area-inset-bottom)); margin-top: 0; background: #090d16; border-top: 0; }
+.pm-flash-controls button { min-height: 48px; justify-content: center; white-space: normal; }
+.pm-flash-controls .btn-primary { border-radius: 10px; }
+.pm-flashcards > .pm-helper { margin-top: 0; font-size: .8125rem; }
+@media (max-width: 640px) {
+  .pm-app { gap: 16px; }
+  .pm-tabs { display: flex; overflow-x: auto; scrollbar-width: thin; scrollbar-color: #475569 transparent; }
+  .pm-tabs button { flex: 0 0 auto; padding: 10px 14px; white-space: nowrap; }
+  .pm-tabs button[aria-pressed="true"] { scroll-margin-inline: 12px; }
+  .pm-flashcard { padding: 22px 18px; }
+  .pm-flashcard.is-front { min-height: 300px; }
+  .pm-flash-controls { gap: 8px; }
+  .pm-flash-controls button { padding: 10px 8px; font-size: .875rem; }
+  .pm-flash-position { gap: 10px; }
+  .pm-unified-card > .pm-outline { margin-inline: 0; }
 }

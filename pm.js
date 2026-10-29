@@ -21,6 +21,8 @@
   const allPoints=q=>q.sections.flatMap(section=>section.points);
   const getQuestion=id=>questionById.get(Number(id));
   const plainObject=value=>!!value&&typeof value==='object'&&!Array.isArray(value);
+  // Persist the position, but always hide the answer when opening the page.
+  state.flashcards={questionId:getQuestion(state.flashcards?.questionId)?.id||1,flipped:false};
   const hasQuestionIds=session=>session&&Array.isArray(session.ids)&&session.ids.length>0&&session.ids.length<=38&&new Set(session.ids).size===session.ids.length&&session.ids.every(id=>questionById.has(id))&&Number.isInteger(session.index)&&session.index>=0&&session.index<session.ids.length;
   if(!hasQuestionIds(state.learn)||!['recall','check','done','complete'].includes(state.learn.stage)||typeof state.learn.draft!=='string'||!plainObject(state.learn.ratings)||!plainObject(state.learn.results))state.learn=null;
   if(!hasQuestionIds(state.exam)||!['active','submitted'].includes(state.exam.stage)||!plainObject(state.exam.answers)||!Object.values(state.exam.answers).every(value=>typeof value==='string')||!plainObject(state.exam.flags)||!plainObject(state.exam.checks)||!Object.values(state.exam.checks).every(value=>plainObject(value)&&plainObject(value.ratings)))state.exam=null;
@@ -29,10 +31,11 @@
   if(!state.readingRevision){state.mode='read';state.readingRevision=1;}
   if(!plainObject(state.reading))state.reading={questionId:1,hiddenSections:[],readIds:[]};
   if(!getQuestion(state.reading.questionId))state.reading.questionId=1;
+  if(!['full','keywords'].includes(state.reading.display))state.reading.display='full';
   state.reading.readIds=Array.isArray(state.reading.readIds)?[...new Set(state.reading.readIds.filter(id=>questionById.has(id)))]:[];
   const validSections=getQuestion(state.reading.questionId).sections.map(section=>section.id);
   state.reading.hiddenSections=Array.isArray(state.reading.hiddenSections)?state.reading.hiddenSections.filter(id=>validSections.includes(id)):[];
-  if(!['read','learn','review','exam'].includes(state.mode))state.mode='read';
+  if(!['read','flashcards','learn','review','exam'].includes(state.mode))state.mode='read';
   const topics=[...new Set(questions.map(q=>q.topic))];
   if(state.topic!=='all'&&!topics.includes(state.topic))state.topic='all';
   state.search=typeof state.search==='string'?state.search.slice(0,160):'';
@@ -116,7 +119,7 @@
   }
   function header() {
     const c=counts();
-    return `<header class="pm-header"><div class="pm-header-badge">38 CÂU TỰ LUẬN · ĐH GTVT</div><h2>Quản lý dự án phần mềm</h2><p>Học thuộc dàn ý cốt lõi, tự kiểm tra và ôn tập theo phương pháp ngắt quãng.</p></header><nav class="pm-tabs" aria-label="Cách học Quản lý dự án">${[['read','Học thuộc'],['learn','Tự kiểm tra'],['review','Ôn ý thiếu'],['exam','Thi tự luận']].map(([mode,label])=>`<button class="btn-quiet" type="button" data-pm-action="mode" data-value="${mode}" aria-pressed="${state.mode===mode}">${label}${mode==='review'&&c.missing?` <span>${c.missing}</span>`:''}</button>`).join('')}</nav><p id="pm-save-error" class="pm-error" role="status" ${storageError?'':'hidden'}>Không lưu được trên trình duyệt này. Hãy giữ trang đang mở.</p>`;
+    return `<nav class="pm-tabs" aria-label="Cách học Quản lý dự án">${[['read','Học thuộc'],['flashcards','Flashcard'],['learn','Tự kiểm tra'],['review','Ôn ý thiếu'],['exam','Thi tự luận']].map(([mode,label])=>`<button class="btn-quiet" type="button" data-pm-action="mode" data-value="${mode}" aria-pressed="${state.mode===mode}">${label}${mode==='review'&&c.missing?` <span>${c.missing}</span>`:''}</button>`).join('')}</nav><p id="pm-save-error" class="pm-error" role="status" ${storageError?'':'hidden'}>Không lưu được trên trình duyệt này. Hãy giữ trang đang mở.</p>`;
   }
   function topicFilter() {return `<label>Chủ đề<select data-pm-field="topic"><option value="all">Tất cả chủ đề</option>${topics.map(topic=>`<option value="${e(topic)}" ${topic===state.topic?'selected':''}>${e(topic)}</option>`).join('')}</select></label>`;}
   function source(q) {
@@ -126,9 +129,30 @@
   function questionHeading(q,meta='') {return `<div class="pm-meta">Câu ${q.id} · ${e(q.topic)}${meta?' · '+e(meta):''}</div><section class="pm-question"><h3 tabindex="-1">${e(q.prompt)}</h3></section>`;}
   function draftField(value,label='Tự viết dàn ý hoặc câu trả lời',field='draft',readOnly=false) {return `<label class="pm-draft">${label}<textarea data-pm-field="${field}" spellcheck="false" maxlength="30000" ${readOnly?'readonly':''} placeholder="Viết các ý bạn nhớ bằng lời của mình…">${e(value)}</textarea></label>`;}
   function outline(q) {
-    const kw=Array.isArray(q.keywords)&&q.keywords.length?`<div class="pm-keywords-wrap"><span class="pm-keywords-label">🔑 Từ khóa cốt lõi:</span><div class="pm-keywords-list">${q.keywords.map(k=>`<span class="pm-keyword-tag">${e(k)}</span>`).join('')}</div></div>`:'';
-    const mn=q.mnemonic?`<div class="pm-mnemonic-box"><span class="pm-mnemonic-icon">💡</span><div><strong>Mẹo nhớ vấn đáp:</strong> <em>${e(q.mnemonic)}</em></div></div>`:'';
-    return `<section class="pm-outline"><div class="pm-outline-header"><h4>Khung trả lời</h4></div><ol>${q.sections.map(section=>`<li>${e(section.label)} <span>(${section.points.length} ý)</span></li>`).join('')}</ol>${kw}${mn}<p class="pm-helper">Khung được chia từ đáp án trong tài liệu.</p></section>`;
+    const kw=Array.isArray(q.keywords)&&q.keywords.length?`<div class="pm-keywords-wrap"><span class="pm-keywords-label">Từ khóa</span><div class="pm-keywords-list">${q.keywords.map(k=>`<span class="pm-keyword-tag">${e(k)}</span>`).join('')}</div></div>`:'';
+    const mn=q.mnemonic?`<div class="pm-mnemonic-box"><div><strong>Mẹo nhớ:</strong> <em>${e(q.mnemonic)}</em></div></div>`:'';
+    return `<section class="pm-outline"><div class="pm-outline-header"><h4>Dàn ý</h4></div><ol>${q.sections.map(section=>`<li>${e(section.label)} <span>(${section.points.length} ý)</span></li>`).join('')}</ol>${kw}${mn}</section>`;
+  }
+  function flashcardView() {
+    const f=state.flashcards,q=getQuestion(f.questionId),index=questions.indexOf(q);
+    return `<section class="pm-flashcards" aria-label="Flashcard 38 câu Quản lý dự án">
+      <div class="pm-flash-toolbar"><label for="pm-flash-question"><span class="pm-sr-only">Chọn thẻ</span><select id="pm-flash-question" data-pm-field="flash-question">${questions.map(item=>`<option value="${item.id}" ${item.id===q.id?'selected':''}>Câu ${item.id} / 38</option>`).join('')}</select></label></div>
+      <article class="pm-flashcard ${f.flipped?'is-flipped':'is-front'}" aria-label="${f.flipped?'Mặt sau: dàn ý và mẹo nhớ':'Mặt trước: câu hỏi'}">
+        ${f.flipped?`${outline(q)}${note(q)}`:`<section class="pm-question"><h3 tabindex="-1">${e(q.prompt)}</h3></section>`}
+
+      </article>
+      <nav class="pm-reading-nav pm-flash-controls" aria-label="Chuyển flashcard"><button class="btn-quiet" type="button" data-pm-action="flash-move" data-value="-1" ${index===0?'disabled':''}>← Trước</button><button class="btn-primary" type="button" data-pm-action="flash-flip" aria-expanded="${f.flipped}">${f.flipped?'Về câu hỏi':'Lật thẻ'}</button><button class="btn-quiet" type="button" data-pm-action="flash-move" data-value="1" ${index===questions.length-1?'disabled':''}>Tiếp →</button></nav>
+
+    </section>`;
+  }
+  function moveFlashcard(id) {
+    if(!getQuestion(id))return;
+    state.flashcards={questionId:id,flipped:false};save();render();
+    root.querySelector('[data-pm-action="flash-flip"]')?.focus({preventScroll:true});
+  }
+  function flipFlashcard() {
+    state.flashcards.flipped=!state.flashcards.flipped;save();render();
+    root.querySelector('[data-pm-action="flash-flip"]')?.focus({preventScroll:true});
   }
   function readView() {
     const list=selectedQuestions(),r=state.reading;
@@ -182,22 +206,31 @@
         <span>Đọc không tính là đã thuộc</span>
       </div>
 
+      <section class="pm-recall-guide" aria-label="Cách học câu này">
+        <div class="pm-actions" role="group" aria-label="Mức gợi ý khi học">
+          <button class="btn-quiet" data-pm-action="read-display" data-value="full" aria-pressed="${r.display==='full'}">Đọc từng ý</button>
+          <button class="btn-quiet" data-pm-action="read-display" data-value="keywords" aria-pressed="${r.display==='keywords'}">Chỉ xem từ khóa</button>
+        </div>
+      </section>
+
       <!-- THẺ BÀI HỌC: CÂU HỎI VÀ CÂU TRẢ LỜI LIỀN MẠCH -->
       <article class="pm-question-card pm-unified-card">
         <!-- PHẦN CÂU HỎI -->
         <header class="pm-unified-header">
           <div class="pm-card-badge-label">
             <span class="pm-badge-dot"></span>
-            <span>CÂU HỎI THI</span>
+            <span>Câu hỏi</span>
           </div>
           ${questionHeading(q)}
         </header>
 
+        ${!allHidden?outline(q):''}
+
         <!-- ĐƯỜNG KẺ VÀ TIÊU ĐỀ TRẢ LỜI -->
         <div class="pm-reading-tools">
           <div class="pm-answer-title-group">
-            <span class="pm-answer-badge">💡 CÂU TRẢ LỜI</span>
-            <p>Đọc liền mạch toàn bộ nội dung, có thể che để tự nhẩm nhớ bài.</p>
+            <span class="pm-answer-badge">Trả lời</span>
+
           </div>
           <button class="btn-quiet pm-btn-hide-all" data-pm-action="read-hide-all">
             ${allHidden?'👁️ Hiện toàn bộ':'🔒 Che toàn bộ'}
@@ -213,15 +246,15 @@
                   <span class="pm-section-num">${sIdx + 1}.</span>
                   <span>${e(section.label)}</span>
                 </h4>
-                <button class="btn-quiet pm-toggle-btn" data-pm-action="read-toggle" data-value="${e(section.id)}" aria-controls="pm-read-${q.id}-${e(section.id)}" aria-expanded="${!hidden.has(section.id)}" title="Ẩn/hiện đoạn này">
-                  ${hidden.has(section.id)?'👁️ Hiện':'🔒 Che'}
+                <button class="btn-quiet pm-toggle-btn" data-pm-action="read-toggle" data-value="${e(section.id)}" aria-controls="pm-read-${q.id}-${e(section.id)}" aria-expanded="${!hidden.has(section.id)&&r.display!=='keywords'}" title="Ẩn/hiện đoạn này">
+                  ${hidden.has(section.id)||r.display==='keywords'?'👁️ Hiện':'🔒 Che'}
                   <span class="pm-sr-only">: ${e(section.label)}</span>
                 </button>
               </div>
-              <div class="pm-reading-points" id="pm-read-${q.id}-${e(section.id)}" data-pm-section-panel="${e(section.id)}" ${hidden.has(section.id)?'hidden':''}>
-                ${section.points.map(point=>`<span class="pm-point-sentence">${e(point.text)}</span>`).join(' ')}
+              <div class="pm-reading-points" id="pm-read-${q.id}-${e(section.id)}" data-pm-section-panel="${e(section.id)}" ${hidden.has(section.id)||r.display==='keywords'?'hidden':''}>
+                <ul class="pm-study-points">${section.points.map(point=>`<li class="pm-point-sentence">${e(point.text)}</li>`).join('')}</ul>
               </div>
-              ${hidden.has(section.id)?'<p class="pm-helper">🔒 Đã che phần này · Thử nhớ lại trước khi mở.</p>':''}
+              ${hidden.has(section.id)||r.display==='keywords'?`<p class="pm-helper">${section.points.length} ý · Thử nói lại trước khi mở đáp án.</p>`:''}
             </section>
           `).join('')}
         </div>
@@ -230,7 +263,6 @@
       ${note(q)}
 
       <!-- TỔNG KẾT DÀN Ý & MẸO NHỚ VẤN ĐÁP -->
-      ${outline(q)}
 
       <!-- 4. HÀNH ĐỘNG DƯỚI ĐÁY -->
       <div class="pm-actions">
@@ -264,6 +296,9 @@
   }
   function toggleReadSection(sectionId) {
     const q=getQuestion(state.reading.questionId);if(!q.sections.some(section=>section.id===sectionId))return;
+    if(state.reading.display==='keywords'){
+      state.reading.display='full';state.reading.hiddenSections=q.sections.map(section=>section.id);
+    }
     const set=new Set(state.reading.hiddenSections);if(set.has(sectionId))set.delete(sectionId);else set.add(sectionId);
     state.reading.hiddenSections=[...set];save();render();
     root.querySelector(`[data-pm-action="read-toggle"][data-value="${CSS.escape(sectionId)}"]`)?.focus({preventScroll:true});
@@ -372,12 +407,14 @@
   }
   function render() {
     if(active!=='pm')return;
-    const body=state.mode==='read'?readView():state.mode==='learn'?(showLearnHome||!state.learn?learnHome():learnView()):state.mode==='review'?(showReviewHome||!state.review?reviewHome():reviewView()):(showExamHome||!state.exam?examHome():examView());
+    const body=state.mode==='flashcards'?flashcardView():state.mode==='read'?readView():state.mode==='learn'?(showLearnHome||!state.learn?learnHome():learnView()):state.mode==='review'?(showReviewHome||!state.review?reviewHome():reviewView()):(showExamHome||!state.exam?examHome():examView());
     root.innerHTML=`<div class="pm-app">${header()}${body}</div>`;
+    const tabs=root.querySelector('.pm-tabs'),selected=tabs.querySelector('[aria-pressed="true"]');
+    if(selected&&tabs.scrollWidth>tabs.clientWidth)tabs.scrollLeft=Math.max(0,selected.offsetLeft-tabs.offsetLeft-(tabs.clientWidth-selected.offsetWidth)/2);
     if(state.mode==='read')save();
   }
   function focusQuestion() {root.querySelector('.pm-question h3')?.focus({preventScroll:true});root.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});}
-  function setMode(mode) {if(!['read','learn','review','exam'].includes(mode))return;state.mode=mode;save();render();}
+  function setMode(mode) {if(!['read','flashcards','learn','review','exam'].includes(mode))return;if(mode==='flashcards')state.flashcards.flipped=false;state.mode=mode;save();render();}
   root.addEventListener('input',event=>{
     if(active!=='pm')return;
     const input=event.target,field=input.dataset.pmField;
@@ -410,6 +447,7 @@
     if(active!=='pm')return;
     const input=event.target,field=input.dataset.pmField;
     if(field==='read-question'){goRead(Number(input.value));return;}
+    if(field==='flash-question'){moveFlashcard(Number(input.value));return;}
     if(field==='topic'){state.topic=input.value;save();render();return;}
     if(field==='rating') {
       if(state.mode==='learn'&&state.learn?.stage==='check')state.learn.ratings[input.dataset.point]=input.value;
@@ -421,10 +459,17 @@
     if(active!=='pm')return;
     const button=event.target.closest('[data-pm-action]');if(!button||button.disabled)return;
     const action=button.dataset.pmAction,value=button.dataset.value;
+    if(action==='flash-flip'){flipFlashcard();return;}
+    if(action==='flash-move'){moveFlashcard(state.flashcards.questionId+Number(value));return;}
     if(action==='mode')setMode(value);
     if(action==='read-select'){goRead(Number(value));return;}
+    if(action==='read-display'&&['full','keywords'].includes(value)){
+      state.reading.display=value;state.reading.hiddenSections=[];save();render();
+      root.querySelector(`[data-pm-action="read-display"][data-value="${value}"]`)?.focus({preventScroll:true});return;
+    }
     if(action==='read-toggle')toggleReadSection(value);
     if(action==='read-hide-all') {
+      if(state.reading.display==='keywords'){state.reading.display='full';state.reading.hiddenSections=[];}
       const q=getQuestion(state.reading.questionId),allHidden=q.sections.every(section=>state.reading.hiddenSections.includes(section.id));
       state.reading.hiddenSections=allHidden?[]:q.sections.map(section=>section.id);save();render();root.querySelector('[data-pm-action="read-hide-all"]')?.focus({preventScroll:true});
     }
@@ -461,6 +506,11 @@
     event.stopImmediatePropagation();
     const tag=(event.target&&event.target.tagName)||'';
     if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT')return;
+    if(state.mode==='flashcards'){
+      if(event.key===' '||event.code==='Space'){event.preventDefault();flipFlashcard();}
+      else if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();moveFlashcard(state.flashcards.questionId+(event.key==='ArrowLeft'?-1:1));}
+      return;
+    }
     if(state.mode==='read'){
       const list=selectedQuestions(),curIdx=list.findIndex(item=>item.id===state.reading.questionId);
       if((event.key==='ArrowLeft'||event.key==='Left')&&curIdx>0){event.preventDefault();goRead(list[curIdx-1].id);}
