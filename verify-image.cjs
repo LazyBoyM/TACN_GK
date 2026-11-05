@@ -132,6 +132,25 @@ assert.equal(fs.readFileSync('index.html','utf8'),fs.readFileSync('IT_English_Qu
     await page.locator('[data-image-mode="keywords"]').click();
     assert.equal(await page.locator('[data-keyword-batch]').inputValue(),focusOptions.at(-1));
     assert.equal(await page.locator('.image-keyword-card').getAttribute('data-keyword-id'),String(focusIds[150]));
+    await page.locator('[data-image-mode="quiz"]').click();
+    const testBatches=await page.locator('[data-image-field="batch"] optgroup[label="Tự kiểm tra 400 câu gốc"] option').evaluateAll(options=>options.map(option=>option.value));
+    assert.equal(testBatches.length,8);
+    for(const [index,value] of testBatches.entries()){
+      await page.locator('[data-image-field="batch"]').selectOption(value);
+      const ids=await page.locator('[data-image-field="question"] option').evaluateAll(options=>options.map(option=>Number(option.value)));
+      assert.deepEqual(ids,Array.from({length:50},(_,i)=>index*50+i+1));
+    }
+    await page.locator('[data-image-field="batch"]').selectOption(testBatches[0]);
+    await page.locator('[data-image-field="question"]').selectOption('1');
+    assert.equal(await page.locator('.image-feedback').count(),0);
+    await page.locator('[data-image-answer="0"]').click();
+    await page.reload();
+    assert.equal(await page.locator('[data-image-field="batch"]').inputValue(),testBatches[0]);
+    assert.equal((await state()).testAnswers[1],0);
+    assert.equal((await state()).answers[1],1);
+    await page.locator('[data-image-action="shuffle"]').click();
+    assert.equal((await state()).testAnswers[1],undefined);
+    assert.equal((await state()).answers[1],1);
     await page.locator('#subject-select').selectOption('english');
     assert.equal(await page.locator('#writing-answer').inputValue(),'English draft before image quiz');
     assert.equal(await page.evaluate(()=>localStorage.getItem('it-english-study-v2')),english);
