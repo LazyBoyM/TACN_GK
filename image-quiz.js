@@ -102,7 +102,11 @@
     try {localStorage.setItem(KEY,JSON.stringify(state));storageError=false;}
     catch {storageError=true;}
   }
-  function resetQueue() {queue=list();if(!queue.some(q=>q.id===state.questionId))state.questionId=queue[0]?.id||1;save();}
+  function resetQueue(restart=false) {
+    queue=list();
+    if(restart||!queue.some(q=>q.id===state.questionId))state.questionId=queue[0]?.id||1;
+    save();
+  }
   function render() {
     if(!active())return;
     if(studyMode==='keywords'){renderKeywords();return;}
@@ -112,7 +116,7 @@
     root.innerHTML=`<div class="pm-app image-quiz">
       <button class="btn-quiet" data-image-mode="keywords">Học từ khóa →</button>
       <label><span class="pm-sr-only">Chọn lượt 50 câu</span><select data-image-field="batch">${Array.from({length:batchCount},(_,i)=>`<option value="${i}" ${i===state.batch?'selected':''}>Lượt ${i+1} · Câu ${i*BATCH_SIZE+1}–${Math.min((i+1)*BATCH_SIZE,bank.length)}</option>`).join('')}</select></label>
-      <button class="btn-quiet" data-image-action="shuffle" ${queue.length<2?'disabled':''}>Trộn 50 câu</button>
+      <button class="btn-quiet" data-image-action="shuffle" ${batch.length<2?'disabled':''}>Trộn 50 câu và làm lại</button>
       <label><span class="pm-sr-only">Độ dài hiển thị, xếp từ ngắn đến dài</span><select data-image-field="lengthRule" ${visualReady?'':'disabled'}>${[['skip',visualReady?`Ôn ${bank.length-thirdLengthIds.size} câu · Bỏ nhóm thứ 3`:'Đang đo độ dài hiển thị…'],['only',`Chỉ ${thirdLengthIds.size} câu · Ngắn → dài, thứ 3`],['all','Đủ 400 câu']].map(([value,label])=>`<option value="${value}" ${value===state.lengthRule?'selected':''}>${label}</option>`).join('')}</select></label>
       <div class="image-toolbar"><label><span class="pm-sr-only">Lọc câu hỏi</span><select data-image-field="filter">${[['all','Tất cả câu'],['unanswered','Chưa làm'],['wrong','Câu sai']].map(([value,label])=>`<option value="${value}" ${value===state.filter?'selected':''}>${label}</option>`).join('')}</select></label><label><span class="pm-sr-only">Chủ đề</span><select data-image-field="topic"><option value="all">Tất cả chủ đề</option>${topics.map(topic=>`<option ${topic===state.topic?'selected':''}>${e(topic)}</option>`).join('')}</select></label></div>
       <p class="image-progress">Đã làm ${answered}/${batch.length} · Đúng ${correct}<span>Đáp án tham khảo</span></p>
@@ -156,7 +160,12 @@
       render();return;
     }
     if(button.dataset.imageAnswer!==undefined)answer(Number(button.dataset.imageAnswer));
-    if(button.dataset.imageAction==='shuffle'){shuffleBatch(state.batch);resetQueue();state.questionId=queue[0]?.id||1;save();render();}
+    if(button.dataset.imageAction==='shuffle'){
+      shuffleBatch(state.batch);
+      for(const id of batchOrders.get(state.batch))delete state.answers[id];
+      if(state.filter==='wrong')state.filter='all';
+      resetQueue(true);render();
+    }
     if(button.dataset.imageMove)move(Number(button.dataset.imageMove));
     if(button.dataset.imageAction==='retry'){delete state.answers[state.questionId];save();render();}
     if(button.dataset.imageAction==='next-batch'&&state.batch<batchCount-1){state.batch++;resetQueue();render();}
