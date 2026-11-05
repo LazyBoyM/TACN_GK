@@ -2,7 +2,7 @@
 Mỗi lời giải có một câu đại diện. Số câu trong ngoặc là số thứ tự trong đề 400 câu.
 Đáp án tham khảo và giải thích nằm ở cuối tệp.
 
-LƯỢT 1 — CÂU 1–50
+LƯỢT 1 — CÂU 1–20
 
 Câu 1 (gốc 1). Theo nội dung bài giảng, phát biểu nào mô tả đúng nhất về Nhiễu ngẫu nhiên?
 A. Thường cho khả năng nén cao hơn nhưng dữ liệu phục hồi không hoàn toàn giống ảnh gốc
@@ -124,6 +124,8 @@ B. Biểu diễn số điểm ảnh tương ứng với từng mức xám
 C. Khôi phục ảnh theo tiêu chuẩn giảm sai số trung bình bình phương khi xét cả suy hao và nhiễu
 D. Nhiễu có biên độ tuân theo phân bố Gaussian
 
+LƯỢT 2 — CÂU 21–40
+
 Câu 21 (gốc 26). Theo nội dung bài giảng, phát biểu nào mô tả đúng nhất về Tăng độ sáng?
 A. Cộng một hằng số dương vào mức xám làm ảnh sáng hơn
 B. Phân bố lại mức xám để cải thiện độ tương phản của ảnh
@@ -244,6 +246,8 @@ B. Chia một vùng chưa đồng nhất thành các vùng nhỏ hơn
 C. Phân biệt vùng đối tượng và nền dựa trên một hoặc nhiều ngưỡng mức xám
 D. Ghép các vùng lân cận nếu chúng thỏa tiêu chuẩn đồng nhất
 
+LƯỢT 3 — CÂU 41–60
+
 Câu 41 (gốc 53). Trong xử lý ảnh số, nhận định nào phù hợp nhất với Làm trơn histogram?
 A. Bắt đầu từ các điểm hạt giống rồi bổ sung các điểm lân cận thỏa tiêu chuẩn đồng nhất
 B. Giảm dao động không cần thiết trên histogram trước khi xác định ngưỡng
@@ -304,8 +308,6 @@ B. Tự hình thành các lớp và đặc trưng lớp khi không có thư vi�
 C. Phân đối tượng vào K cụm bằng cách lặp gán điểm tới tâm gần nhất và cập nhật tâm
 D. Sử dụng hàm phân biệt tuyến tính tạo siêu phẳng giữa các lớp
 
-LƯỢT 2 — CÂU 51–100
-
 Câu 51 (gốc 64). Trong xử lý ảnh số, nhận định nào phù hợp nhất với K láng giềng?
 A. Biểu diễn đối tượng bằng quan hệ hoặc chuỗi ký hiệu và nhận dạng dựa trên quy tắc cấu trúc
 B. Gán lớp theo lớp chiếm đa số trong số K mẫu gần nhất của đối tượng cần nhận dạng
@@ -365,6 +367,8 @@ A. Biến đổi ảnh sang miền khác trước khi lượng tử hoặc mã h
 B. Chia các hệ số DCT cho ma trận lượng tử và làm tròn, khiến nhiều hệ số tần số cao trở thành 0
 C. Chuyển dữ liệu ảnh từ miền không gian sang miền tần số để tập trung năng lượng và thuận lợi loại bớt chi tiết
 D. Khai thác cấu trúc và mô hình ảnh ở mức cao hơn nhằm vượt giới hạn của các phương pháp truyền thống
+
+LƯỢT 4 — CÂU 61–80
 
 Câu 61 (gốc 74). Trong xử lý ảnh số, nhận định nào phù hợp nhất với Huffman thích nghi?
 A. Tỷ số giữa kích thước dữ liệu trước nén và kích thước dữ liệu sau nén
@@ -486,6 +490,8 @@ B. Tìm ngưỡng tự động
 C. Tách ngưỡng
 D. Lọc trung bình theo k giá trị gần nhất
 
+LƯỢT 5 — CÂU 81–100
+
 Câu 81 (gốc 119). Khi gặp tình huống có đặc điểm: Hạn chế ảnh hưởng của các thành phần làm phép đảo trở nên không ổn định, kỹ thuật nào nên được nhận diện?
 A. Lọc giả đảo
 B. Cân bằng histogram
@@ -606,7 +612,7 @@ B. Học cạnh tranh Kohonen
 C. Thuật toán khoảng cách lớn nhất
 D. Hàm phân lớp
 
-LƯỢT 3 — CÂU 101–147
+LƯỢT 6 — CÂU 101–120
 
 Câu 101 (gốc 173). Một bước xử lý cần đạt đặc điểm sau: Bản đồ tự tổ chức ánh xạ các vector gần nhau vào các nơron lân cận. Kỹ thuật hoặc khái niệm nào phù hợp nhất?
 A. ISODATA
@@ -728,6 +734,8 @@ B. Nửa cường độ
 C. Mô hình Vector
 D. TIFF
 
+LƯỢT 7 — CÂU 121–140
+
 Câu 121 (gốc 246). Một bài toán có yêu cầu Ảnh có nhiều mức cường độ sáng từ tối đến sáng. Kỹ thuật nào phù hợp nhất?
 A. Thiết bị thu nhận ảnh Vector
 B. Ảnh mức xám
@@ -847,6 +855,8 @@ A. Tỷ số giữa kích thước dữ liệu trước nén và kích thước 
 B. Thay một chuỗi ký hiệu lặp liên tiếp bằng biểu diễn gồm độ dài loạt và ký hiệu
 C. Biểu diễn các khối dữ liệu bằng các từ mã tương ứng
 D. Mã hóa từng dòng bằng độ dài các chuỗi bit liên tiếp, thường bắt đầu từ số lượng bit 0
+
+LƯỢT 8 — CÂU 141–147
 
 Câu 141 (gốc 380). Một bài toán có yêu cầu Bao gồm các phương pháp mã hóa tương đối trực tiếp như RLE, Huffman và LZW. Kỹ thuật nào phù hợp nhất?
 A. Mã hóa khối

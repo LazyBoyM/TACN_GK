@@ -12,12 +12,12 @@ const assert=require('node:assert/strict');
     // Each distinct answer explanation has one card.
     const bank=await page.evaluate(()=>IMAGE_BANK.studyQuestions);
     const fullBatches=page.locator('[data-keyword-batch] optgroup[label="147 câu không trùng"] option');
-    assert.equal(await fullBatches.count(),3);
-    assert.match(await fullBatches.first().innerText(),/50 câu/);
-    assert.match(await fullBatches.last().innerText(),/47 câu/);
+    assert.equal(await fullBatches.count(),8);
+    assert.match(await fullBatches.first().innerText(),/20 câu/);
+    assert.match(await fullBatches.last().innerText(),/7 câu/);
     const cards=await page.evaluate(()=>{
       const rows=[];
-      for(let batch=0;batch<3;batch++){
+      for(let batch=0;batch<8;batch++){
         const select=document.querySelector('[data-keyword-batch]');select.value=String(batch);select.dispatchEvent(new Event('change',{bubbles:true}));
         while(true){
           const card=document.querySelector('.image-keyword-card');
@@ -64,50 +64,7 @@ const assert=require('node:assert/strict');
     await page.locator('[data-keyword-action="reveal"]').click();
     await page.locator('[data-keyword-action="remember"]').click();
     assert.equal(await page.locator('.pm-empty').count(),1);
-    // Shuffling preserves all 50 IDs, hides the answer, and leaves saved work intact.
-    const savedKeywords=await page.evaluate(()=>localStorage.getItem('image-keyword-study-v1'));
-    let shuffled=[];
-    for(let batch=0;batch<3;batch++){
-      await page.locator('[data-keyword-batch]').selectOption(String(batch));
-      await page.locator('[data-keyword-action="reveal"]').click();
-      await page.locator('[data-keyword-action="shuffle"]').click();
-      assert.equal(await page.locator('.image-feedback').count(),0);
-      shuffled=await page.evaluate(()=>{
-        const ids=[];
-        while(true){
-          ids.push(Number(document.querySelector('.image-keyword-card').dataset.keywordId));
-          const next=document.querySelector('[data-keyword-action="next"]');
-          if(next.disabled)break;
-          next.click();
-        }
-        return ids;
-      });
-      const expected=bank.slice(batch*50,(batch+1)*50).map(q=>q.id);
-      assert.deepEqual([...shuffled].sort((a,b)=>a-b),expected);
-      assert.notDeepEqual(shuffled,expected);
-    }
-    assert.equal(await page.evaluate(()=>localStorage.getItem('image-keyword-study-v1')),savedKeywords);
-    await page.locator('[data-image-mode="quiz"]').click();
-    await page.locator('[data-image-field="lengthRule"]').selectOption('all');
-    await page.locator('[data-image-field="batch"]').selectOption('2');
-    const quizOrder=()=>page.locator('[data-image-field="question"] option').evaluateAll(options=>options.map(option=>Number(option.value)));
-    assert.deepEqual(await quizOrder(),shuffled);
-    await page.locator('[data-image-field="batch"]').selectOption('0');
-    await page.locator('[data-image-field="question"]').selectOption('1');
-    await page.locator('[data-image-answer="1"]').click();
-    await page.locator('[data-image-field="batch"]').selectOption('2');
-    await page.locator('[data-image-field="question"]').selectOption('399');
-    await page.locator('[data-image-answer="0"]').click();
-    await page.locator('[data-image-field="filter"]').selectOption('wrong');
-    await page.locator('[data-image-action="shuffle"]').click();
-    const mixed=await quizOrder();
-    assert.notDeepEqual(mixed,shuffled);
-    assert.deepEqual([...mixed].sort((a,b)=>a-b),bank.slice(100).map(q=>q.id));
-    assert.equal(await page.locator('[data-image-field="question"]').inputValue(),String(mixed[0]));
-    assert.equal(await page.locator('[data-image-field="filter"]').inputValue(),'all');
-    assert.equal(await page.locator('.image-feedback').count(),0);
-    await page.reload();
-    assert.deepEqual(await page.evaluate(()=>JSON.parse(localStorage.getItem('image-processing-quiz-v1')).answers),{1:1});
+    assert.equal(await page.locator('[data-keyword-action="shuffle"]').count(),0);
     assert.deepEqual(errors,[]);
     console.log('PASS image keywords: all 147 deduplicated cards and answers, recall, scheduling, persistence, review, mobile, quiz isolation');
   } finally {await browser.close();}

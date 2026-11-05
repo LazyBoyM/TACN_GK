@@ -46,7 +46,7 @@ assert.equal(fs.readFileSync('index.html','utf8'),fs.readFileSync('IT_English_Qu
     for(const rule of ['skip','only']) {
       await page.locator('[data-image-field="lengthRule"]').selectOption(rule);
       const allIds=[];
-      for(let batch=0;batch<3;batch++) {
+      for(let batch=0;batch<8;batch++) {
         await page.locator('[data-image-field="batch"]').selectOption(String(batch));
         allIds.push(...await page.locator('[data-image-field="question"] option').evaluateAll(options=>options.map(option=>Number(option.value))));
       }
@@ -57,11 +57,11 @@ assert.equal(fs.readFileSync('index.html','utf8'),fs.readFileSync('IT_English_Qu
     await page.locator('[data-image-field="lengthRule"]').waitFor({state:'attached'});
     assert.equal(await page.locator('[data-image-field="lengthRule"]').inputValue(),'only');
     await page.locator('[data-image-field="lengthRule"]').selectOption('all');
-    assert.equal(await page.locator('[data-image-field="batch"] optgroup[label="147 câu không trùng"] option').count(),3);
-    for(let batch=0;batch<3;batch++) {
+    assert.equal(await page.locator('[data-image-field="batch"] optgroup[label="147 câu không trùng"] option').count(),8);
+    for(let batch=0;batch<8;batch++) {
       await page.locator('[data-image-field="batch"]').selectOption(String(batch));
       const ids=await page.locator('[data-image-field="question"] option').evaluateAll(options=>options.map(option=>Number(option.value)));
-      assert.deepEqual(ids,Array.from(study.slice(batch*50,(batch+1)*50),q=>q.id));
+      assert.deepEqual(ids,Array.from(study.slice(batch*20,(batch+1)*20),q=>q.id));
     }
     await page.locator('[data-image-field="batch"]').selectOption('0');
     assert.equal(await page.locator('.image-options button').count(),4);
@@ -87,20 +87,20 @@ assert.equal(fs.readFileSync('index.html','utf8'),fs.readFileSync('IT_English_Qu
     await page.keyboard.press('d');assert.equal((await state()).answers[2],3);
     await page.keyboard.press('ArrowRight');assert.equal((await state()).questionId,3);
     await page.locator('[data-image-field="topic"]').selectOption('Nén ảnh');
-    assert((await page.locator('[data-image-field="question"] option').count())<50);
+    assert((await page.locator('[data-image-field="question"] option').count())<20);
     await page.locator('[data-image-field="topic"]').selectOption('all');
-    await page.locator('[data-image-field="question"]').selectOption(String(study[49].id));
+    await page.locator('[data-image-field="question"]').selectOption(String(study[19].id));
     assert(await page.locator('[data-image-move="1"]').isDisabled());
     await page.locator('[data-image-action="next-batch"]').click();
     assert.equal((await state()).batch,1);
-    assert.equal((await state()).questionId,study[50].id);
-    await page.locator('[data-image-field="batch"]').selectOption('2');
+    assert.equal((await state()).questionId,study[20].id);
+    await page.locator('[data-image-field="batch"]').selectOption('7');
     await page.locator('[data-image-field="question"]').selectOption('399');
     assert(await page.locator('[data-image-move="1"]').isDisabled());
     await page.locator('[data-image-answer="2"]').click();
     await page.reload();
     await page.locator('.image-question').waitFor();
-    assert.equal(await page.locator('[data-image-field="batch"]').inputValue(),'2');
+    assert.equal(await page.locator('[data-image-field="batch"]').inputValue(),'7');
     assert.equal((await state()).questionId,399);
     assert.equal((await state()).answers[1],1);
     fs.mkdirSync('.test-artifacts',{recursive:true});
@@ -120,7 +120,7 @@ assert.equal(fs.readFileSync('index.html','utf8'),fs.readFileSync('IT_English_Qu
       localStorage.setItem(key,JSON.stringify({...saved,batch:11}));
     },key);
     await page.reload();
-    assert.equal(await page.locator('[data-image-field="batch"]').inputValue(),'2');
+    assert.equal(await page.locator('[data-image-field="batch"]').inputValue(),'7');
     assert.equal(await page.locator('[data-image-field="batch"] optgroup').count(),2);
     await page.locator('[data-image-mode="keywords"]').click();
     assert.equal(await page.locator('[data-keyword-batch] optgroup').count(),1);
@@ -140,9 +140,40 @@ assert.equal(fs.readFileSync('index.html','utf8'),fs.readFileSync('IT_English_Qu
     assert.equal(await page.locator('[data-image-field="batch"]').inputValue(),testBatches[0]);
     assert.equal((await state()).testAnswers[1],0);
     assert.equal((await state()).answers[1],1);
+    const questionOrder=()=>page.locator('[data-image-field="question"] option').evaluateAll(options=>options.map(option=>Number(option.value)));
+    const displayedOptions=()=>page.locator('.image-option > span:nth-child(2)').allTextContents();
+    const originalOrder=await questionOrder();
     await page.locator('[data-image-action="shuffle"]').click();
+    assert.deepEqual(await questionOrder(),originalOrder);
+    assert.equal(await page.locator('[data-image-field="question"]').inputValue(),'1');
     assert.equal((await state()).testAnswers[1],undefined);
     assert.equal((await state()).answers[1],1);
+    const mixed=await displayedOptions(),firstQuestion=bank.questions[0];
+    assert.notDeepEqual(mixed,[...firstQuestion.options]);
+    assert.deepEqual([...mixed].sort(),[...firstQuestion.options].sort());
+    const correctPosition=mixed.indexOf(firstQuestion.options[firstQuestion.answer]);
+    const wrongPosition=(correctPosition+1)%4;
+    await page.locator(`[data-image-answer="${wrongPosition}"]`).click();
+    assert.equal(await page.locator('.image-feedback strong').innerText(),`Chưa đúng · Đáp án ${'ABCD'[correctPosition]}`);
+    assert.equal(await page.locator('.image-option.is-correct > span:nth-child(2)').innerText(),firstQuestion.options[firstQuestion.answer]);
+    await page.locator('[data-image-action="retry"]').click();
+    await page.locator('body').click({position:{x:2,y:2}});
+    await page.keyboard.press('abcd'[correctPosition]);
+    assert.equal(await page.locator('.image-feedback strong').innerText(),'Đúng');
+    assert.equal((await state()).testAnswers[1],firstQuestion.answer);
+    await page.locator('[data-image-action="grade"]').click();
+    assert.match(await page.locator('[data-image-result]').innerText(),/1\/50 điểm[\s\S]*Đúng 1 · Sai 0 · Chưa làm 49/);
+    await page.evaluate(key=>{
+      const saved=JSON.parse(localStorage.getItem(key));
+      for(const q of IMAGE_BANK.questions.slice(350,399))saved.testAnswers[q.id]=q.answer;
+      localStorage.setItem(key,JSON.stringify({...saved,batch:31,testBatchSize:20,questionId:400}));
+    },key);
+    await page.reload();
+    assert.equal(await page.locator('[data-image-field="batch"]').inputValue(),testBatches.at(-1));
+    assert.equal(await page.locator('[data-image-field="question"]').inputValue(),'400');
+    assert.equal((await state()).testAnswers[1],firstQuestion.answer);
+    await page.locator('[data-image-answer="0"]').click();
+    assert.match(await page.locator('[data-image-result]').innerText(),/49\/50 điểm[\s\S]*Đúng 49 · Sai 1 · Chưa làm 0/);
     await page.locator('#subject-select').selectOption('english');
     assert.equal(await page.locator('#writing-answer').inputValue(),'English draft before image quiz');
     assert.equal(await page.evaluate(()=>localStorage.getItem('it-english-study-v2')),english);
