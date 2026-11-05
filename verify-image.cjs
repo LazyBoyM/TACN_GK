@@ -7,10 +7,6 @@ assert.equal(bank.questions.length,400);
 const study=bank.studyQuestions;
 assert.equal(study.length,147);
 assert.deepEqual([...study],[...bank.questions.filter((q,i)=>bank.questions.findIndex(item=>item.explanation===q.explanation)===i)]);
-assert.equal(bank.focusIds.length,200);
-assert.equal(new Set(bank.focusIds).size,200);
-assert(bank.focusIds.every(id=>bank.questions.some(q=>q.id===id)));
-assert.deepEqual(Array.from(bank.focusIds.slice(0,147)),Array.from(study,q=>q.id));
 for(const [i,q] of bank.questions.entries()) {
   assert.equal(q.id,i+1);assert.equal(q.options.length,4);
   assert(Number.isInteger(q.answer)&&q.answer>=0&&q.answer<4);
@@ -118,20 +114,16 @@ assert.equal(fs.readFileSync('index.html','utf8'),fs.readFileSync('IT_English_Qu
     assert(await page.locator('.pm-reading-section').count()>0);
     await page.locator('#subject-select').selectOption('image');
     assert.equal((await state()).answers[399],2);
-    await page.locator('[data-image-field="lengthRule"]').selectOption('only');
-    const focusOptions=await page.locator('[data-image-field="batch"] optgroup[label="200 câu trọng tâm"] option').evaluateAll(options=>options.map(option=>option.value));
-    assert.equal(focusOptions.length,4);
-    const focusIds=[];
-    for(const value of focusOptions){
-      await page.locator('[data-image-field="batch"]').selectOption(value);
-      const ids=await page.locator('[data-image-field="question"] option').evaluateAll(options=>options.map(option=>Number(option.value)));
-      assert.equal(ids.length,Math.min(50,bank.focusIds.length-focusIds.length));
-      focusIds.push(...ids);
-    }
-    assert.deepEqual(focusIds,[...bank.focusIds]);
+    // An old priority selection falls back to the matching study question.
+    await page.evaluate(key=>{
+      const saved=JSON.parse(localStorage.getItem(key));
+      localStorage.setItem(key,JSON.stringify({...saved,batch:11}));
+    },key);
+    await page.reload();
+    assert.equal(await page.locator('[data-image-field="batch"]').inputValue(),'2');
+    assert.equal(await page.locator('[data-image-field="batch"] optgroup').count(),2);
     await page.locator('[data-image-mode="keywords"]').click();
-    assert.equal(await page.locator('[data-keyword-batch]').inputValue(),focusOptions.at(-1));
-    assert.equal(await page.locator('.image-keyword-card').getAttribute('data-keyword-id'),String(focusIds[150]));
+    assert.equal(await page.locator('[data-keyword-batch] optgroup').count(),1);
     await page.locator('[data-image-mode="quiz"]').click();
     const testBatches=await page.locator('[data-image-field="batch"] optgroup[label="Tự kiểm tra 400 câu gốc"] option').evaluateAll(options=>options.map(option=>option.value));
     assert.equal(testBatches.length,8);

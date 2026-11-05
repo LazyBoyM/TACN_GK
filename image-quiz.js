@@ -7,18 +7,14 @@
   const BATCH_SIZE=50,fullBatchCount=Math.ceil(bank.length/BATCH_SIZE);
   const originalBank=IMAGE_BANK.questions;
   const questionsById=new Map(originalBank.map(q=>[q.id,q]));
-  const focusBank=IMAGE_BANK.focusIds.map(id=>questionsById.get(id));
-  // Retain the saved batch numbers for the priority set.
-  const focusStart=Math.ceil(IMAGE_BANK.questions.length/BATCH_SIZE);
-  const focusBatchCount=Math.ceil(focusBank.length/BATCH_SIZE);
-  const isFocusBatch=batch=>batch>=focusStart&&batch<focusStart+focusBatchCount;
-  const testStart=focusStart+focusBatchCount;
+  // Preserve existing saved test batch IDs after removing the priority set.
+  const testStart=12;
   const testBatchCount=Math.ceil(originalBank.length/BATCH_SIZE);
   const isTestBatch=batch=>batch>=testStart&&batch<testStart+testBatchCount;
-  const validBatch=batch=>Number.isInteger(batch)&&batch>=0&&(batch<fullBatchCount||isFocusBatch(batch)||isTestBatch(batch));
+  const validBatch=batch=>Number.isInteger(batch)&&batch>=0&&(batch<fullBatchCount||isTestBatch(batch));
   function questionsInBatch(batch) {
-    const source=isTestBatch(batch)?originalBank:isFocusBatch(batch)?focusBank:bank;
-    const start=(isTestBatch(batch)?batch-testStart:isFocusBatch(batch)?batch-focusStart:batch)*BATCH_SIZE;
+    const source=isTestBatch(batch)?originalBank:bank;
+    const start=(isTestBatch(batch)?batch-testStart:batch)*BATCH_SIZE;
     return source.slice(start,start+BATCH_SIZE);
   }
   function batchOptions(selected,includeTest=false) {
@@ -28,9 +24,9 @@
       return `<option value="${value}" ${value===selected?'selected':''}>${label}</option>`;
     }).join('');
     const test=includeTest?`<optgroup label="Tự kiểm tra 400 câu gốc">${options(testStart,testBatchCount,'Kiểm tra')}</optgroup>`:'';
-    return `<optgroup label="${focusBank.length} câu trọng tâm">${options(focusStart,focusBatchCount,'Trọng tâm')}</optgroup><optgroup label="${bank.length} câu không trùng">${options(0,fullBatchCount,'Lượt')}</optgroup>${test}`;
+    return `<optgroup label="${bank.length} câu không trùng">${options(0,fullBatchCount,'Lượt')}</optgroup>${test}`;
   }
-  const hasNextBatch=batch=>isTestBatch(batch)?isTestBatch(batch+1):isFocusBatch(batch)?isFocusBatch(batch+1):batch+1<fullBatchCount;
+  const hasNextBatch=batch=>isTestBatch(batch)?isTestBatch(batch+1):batch+1<fullBatchCount;
   const batchOrders=new Map();
   function orderedBatch(items,batch) {
     const order=batchOrders.get(batch);
@@ -76,9 +72,9 @@
     const raw=JSON.parse(localStorage.getItem(KEY));
     if(raw&&typeof raw==='object') {
       const savedQuestion=questionsById.get(raw.questionId);
-      const current=isFocusBatch(raw.batch)||isTestBatch(raw.batch)?savedQuestion:imageQuestionsByExplanation.get(savedQuestion?.explanation);
+      const current=isTestBatch(raw.batch)?savedQuestion:imageQuestionsByExplanation.get(savedQuestion?.explanation);
       if(current)state.questionId=current.id;
-      if(validBatch(raw.batch)&&(raw.deduplicated||isFocusBatch(raw.batch)))state.batch=raw.batch;
+      if(validBatch(raw.batch)&&raw.deduplicated)state.batch=raw.batch;
       else if(current)state.batch=Math.floor(bank.indexOf(current)/BATCH_SIZE);
       if(['all','wrong','unanswered'].includes(raw.filter))state.filter=raw.filter;
       if(bank.some(q=>q.topic===raw.topic))state.topic=raw.topic;
@@ -108,7 +104,7 @@
     'Phép co':['Thu nhỏ vùng sáng','Co lại; đối chiếu phép giãn mở rộng vùng sáng.'],
     'Cân bằng histogram':['Phân bố lại mức xám → tăng tương phản','Không đồng nghĩa với cộng cùng một số vào mọi điểm ảnh.']
   };
-  focusBank.forEach(q=>{
+  bank.forEach(q=>{
     const split=q.explanation.indexOf(':'),name=split>0?q.explanation.slice(0,split).trim():q.topic;
     keywordGroups.push({id:q.id,name,prompt:q.prompt,answer:q.options[q.answer],caution:q.caution,explanation:q.explanation,meaning:split>0?q.explanation.slice(split+1).trim():q.explanation});
   });
@@ -122,7 +118,7 @@
     root.innerHTML=`<div class="pm-app image-quiz"><div class="image-toolbar"><button class="btn-quiet" data-image-mode="quiz">← Trắc nghiệm</button><button class="btn-quiet" data-keyword-action="review" aria-pressed="${keywordReview}">${keywordReview?'Tất cả từ khóa':'Ôn đến hạn'}</button></div>
       <label><span class="pm-sr-only">Lượt 50 câu</span><select data-keyword-batch>${batchOptions(keywordBatch)}</select></label>
       ${keywordReview?'':`<button class="btn-quiet" data-keyword-action="shuffle">Trộn ${items.length} câu</button>`}
-      <p class="image-progress">${keywordReview?`${items.length} câu đến hạn`:isFocusBatch(keywordBatch)?`${focusBank.length} câu trọng tâm`:`${bank.length} câu không trùng`} · Mỗi câu một thẻ từ khóa<span>Đáp án tham khảo</span></p>
+      <p class="image-progress">${keywordReview?`${items.length} câu đến hạn`:`${bank.length} câu không trùng`} · Mỗi câu một thẻ từ khóa<span>Đáp án tham khảo</span></p>
       ${group?`<section class="image-question image-keyword-card" data-keyword-id="${group.id}"><p>Câu ${group.id} · ${keywordIndex+1}/${items.length}</p><h2>${e(group.prompt)}</h2><p>Tự nhớ ý chính trước khi mở.</p>
       ${keywordReveal?`<div class="image-feedback" role="status"><strong>${e(hint?.[0]||group.meaning)}</strong>${hint?`<p>${e(hint[1])}</p>`:''}<details class="image-reference"><summary>Xem đáp án và giải thích</summary><p>Đáp án tham khảo: ${e(group.answer)}</p><p>${e(group.explanation)}</p></details>${group.caution?`<p class="pm-note">${e(group.caution)}</p>`:''}</div><div class="image-toolbar"><button class="btn-quiet" data-keyword-action="again">Ôn lại · 10 phút</button><button class="btn-primary" data-keyword-action="remember">Đã nhớ · mai ôn</button></div>`:'<button class="btn-primary" data-keyword-action="reveal">Hiện từ khóa</button>'}</section>
       <nav class="pm-reading-nav" aria-label="Chuyển từ khóa"><button class="btn-quiet" data-keyword-action="previous" ${keywordIndex===0?'disabled':''}>← Trước</button><button class="btn-quiet" data-keyword-action="next" ${keywordIndex===items.length-1?'disabled':''}>Tiếp →</button></nav>`:'<p class="pm-empty" role="status">Chưa có từ khóa đến hạn. Chọn một lượt để học tiếp.</p>'}
@@ -187,7 +183,6 @@
     if(button.dataset.imageMode){
       studyMode=button.dataset.imageMode;
       if(studyMode==='quiz')resetQueue();
-      else if(isFocusBatch(state.batch)&&keywordBatch!==state.batch){keywordBatch=state.batch;keywordIndex=0;keywordReview=false;keywordReveal=false;}
       render();return;
     }
     if(button.dataset.keywordAction){
@@ -222,7 +217,7 @@
     if(event.target.matches('[data-keyword-batch]')){keywordBatch=Number(value);keywordIndex=0;keywordReview=false;keywordReveal=false;render();return;}
     if(field==='lengthRule'&&['all','skip','only'].includes(value)){state.lengthRule=value;resetQueue();}
     if(field==='batch'&&validBatch(Number(value))){
-      if(isTestBatch(Number(value))!==isTestBatch(state.batch)||(isFocusBatch(Number(value))&&!isFocusBatch(state.batch))){state.filter='all';state.topic='all';}
+      if(isTestBatch(Number(value))!==isTestBatch(state.batch)){state.filter='all';state.topic='all';}
       state.batch=Number(value);resetQueue();
     }
     if(field==='question'&&queue.some(q=>q.id===Number(value)))state.questionId=Number(value);
