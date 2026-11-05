@@ -1,0 +1,389 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-05T02:05:17.370Z",
+  "title": "Design System: TACN Study Studio",
+  "extensions": {
+    "colorMeta": {
+      "bg": {
+        "role": "neutral",
+        "displayName": "bg",
+        "tonalRamp": [
+          "oklch(15% 0.0086 84.57)",
+          "oklch(26% 0.0086 84.57)",
+          "oklch(38% 0.0086 84.57)",
+          "oklch(49% 0.0086 84.57)",
+          "oklch(61% 0.0086 84.57)",
+          "oklch(72% 0.0086 84.57)",
+          "oklch(84% 0.0086 84.57)",
+          "oklch(95% 0.0086 84.57)"
+        ]
+      },
+      "bg-surface": {
+        "role": "neutral",
+        "displayName": "bg surface",
+        "tonalRamp": [
+          "oklch(15% 0.0054 95.10)",
+          "oklch(26% 0.0054 95.10)",
+          "oklch(38% 0.0054 95.10)",
+          "oklch(49% 0.0054 95.10)",
+          "oklch(61% 0.0054 95.10)",
+          "oklch(72% 0.0054 95.10)",
+          "oklch(84% 0.0054 95.10)",
+          "oklch(95% 0.0054 95.10)"
+        ]
+      },
+      "surface-2": {
+        "role": "neutral",
+        "displayName": "surface 2",
+        "tonalRamp": [
+          "oklch(15% 0.0115 84.58)",
+          "oklch(26% 0.0115 84.58)",
+          "oklch(38% 0.0115 84.58)",
+          "oklch(49% 0.0115 84.58)",
+          "oklch(61% 0.0115 84.58)",
+          "oklch(72% 0.0115 84.58)",
+          "oklch(84% 0.0115 84.58)",
+          "oklch(95% 0.0115 84.58)"
+        ]
+      },
+      "surface-3": {
+        "role": "neutral",
+        "displayName": "surface 3",
+        "tonalRamp": [
+          "oklch(15% 0.0161 82.79)",
+          "oklch(26% 0.0161 82.79)",
+          "oklch(38% 0.0161 82.79)",
+          "oklch(49% 0.0161 82.79)",
+          "oklch(61% 0.0161 82.79)",
+          "oklch(72% 0.0161 82.79)",
+          "oklch(84% 0.0161 82.79)",
+          "oklch(95% 0.0161 82.79)"
+        ]
+      },
+      "text-1": {
+        "role": "neutral",
+        "displayName": "text 1",
+        "tonalRamp": [
+          "oklch(15% 0.0146 118.78)",
+          "oklch(26% 0.0146 118.78)",
+          "oklch(38% 0.0146 118.78)",
+          "oklch(49% 0.0146 118.78)",
+          "oklch(61% 0.0146 118.78)",
+          "oklch(72% 0.0146 118.78)",
+          "oklch(84% 0.0146 118.78)",
+          "oklch(95% 0.0146 118.78)"
+        ]
+      },
+      "text-2": {
+        "role": "neutral",
+        "displayName": "text 2",
+        "tonalRamp": [
+          "oklch(15% 0.0153 122.12)",
+          "oklch(26% 0.0153 122.12)",
+          "oklch(38% 0.0153 122.12)",
+          "oklch(49% 0.0153 122.12)",
+          "oklch(61% 0.0153 122.12)",
+          "oklch(72% 0.0153 122.12)",
+          "oklch(84% 0.0153 122.12)",
+          "oklch(95% 0.0153 122.12)"
+        ]
+      },
+      "text-3": {
+        "role": "neutral",
+        "displayName": "text 3",
+        "tonalRamp": [
+          "oklch(15% 0.0156 116.14)",
+          "oklch(26% 0.0156 116.14)",
+          "oklch(38% 0.0156 116.14)",
+          "oklch(49% 0.0156 116.14)",
+          "oklch(61% 0.0156 116.14)",
+          "oklch(72% 0.0156 116.14)",
+          "oklch(84% 0.0156 116.14)",
+          "oklch(95% 0.0156 116.14)"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "accent",
+        "tonalRamp": [
+          "oklch(15% 0.1651 35.95)",
+          "oklch(26% 0.1651 35.95)",
+          "oklch(38% 0.1651 35.95)",
+          "oklch(49% 0.1651 35.95)",
+          "oklch(61% 0.1651 35.95)",
+          "oklch(72% 0.1651 35.95)",
+          "oklch(84% 0.1651 35.95)",
+          "oklch(95% 0.1651 35.95)"
+        ]
+      },
+      "accent-deep": {
+        "role": "primary",
+        "displayName": "accent deep",
+        "tonalRamp": [
+          "oklch(15% 0.1409 35.70)",
+          "oklch(26% 0.1409 35.70)",
+          "oklch(38% 0.1409 35.70)",
+          "oklch(49% 0.1409 35.70)",
+          "oklch(61% 0.1409 35.70)",
+          "oklch(72% 0.1409 35.70)",
+          "oklch(84% 0.1409 35.70)",
+          "oklch(95% 0.1409 35.70)"
+        ]
+      },
+      "accent-muted": {
+        "role": "primary",
+        "displayName": "accent muted",
+        "tonalRamp": [
+          "oklch(15% 0.0272 53.16)",
+          "oklch(26% 0.0272 53.16)",
+          "oklch(38% 0.0272 53.16)",
+          "oklch(49% 0.0272 53.16)",
+          "oklch(61% 0.0272 53.16)",
+          "oklch(72% 0.0272 53.16)",
+          "oklch(84% 0.0272 53.16)",
+          "oklch(95% 0.0272 53.16)"
+        ]
+      },
+      "border-subtle": {
+        "role": "neutral",
+        "displayName": "border subtle",
+        "tonalRamp": [
+          "oklch(15% 0.0162 82.79)",
+          "oklch(26% 0.0162 82.79)",
+          "oklch(38% 0.0162 82.79)",
+          "oklch(49% 0.0162 82.79)",
+          "oklch(61% 0.0162 82.79)",
+          "oklch(72% 0.0162 82.79)",
+          "oklch(84% 0.0162 82.79)",
+          "oklch(95% 0.0162 82.79)"
+        ]
+      },
+      "border-hover": {
+        "role": "neutral",
+        "displayName": "border hover",
+        "tonalRamp": [
+          "oklch(15% 0.0225 83.26)",
+          "oklch(26% 0.0225 83.26)",
+          "oklch(38% 0.0225 83.26)",
+          "oklch(49% 0.0225 83.26)",
+          "oklch(61% 0.0225 83.26)",
+          "oklch(72% 0.0225 83.26)",
+          "oklch(84% 0.0225 83.26)",
+          "oklch(95% 0.0225 83.26)"
+        ]
+      },
+      "emerald": {
+        "role": "semantic",
+        "displayName": "emerald",
+        "tonalRamp": [
+          "oklch(15% 0.0916 158.89)",
+          "oklch(26% 0.0916 158.89)",
+          "oklch(38% 0.0916 158.89)",
+          "oklch(49% 0.0916 158.89)",
+          "oklch(61% 0.0916 158.89)",
+          "oklch(72% 0.0916 158.89)",
+          "oklch(84% 0.0916 158.89)",
+          "oklch(95% 0.0916 158.89)"
+        ]
+      },
+      "emerald-muted": {
+        "role": "semantic",
+        "displayName": "emerald muted",
+        "tonalRamp": [
+          "oklch(15% 0.0184 150.55)",
+          "oklch(26% 0.0184 150.55)",
+          "oklch(38% 0.0184 150.55)",
+          "oklch(49% 0.0184 150.55)",
+          "oklch(61% 0.0184 150.55)",
+          "oklch(72% 0.0184 150.55)",
+          "oklch(84% 0.0184 150.55)",
+          "oklch(95% 0.0184 150.55)"
+        ]
+      },
+      "rose": {
+        "role": "semantic",
+        "displayName": "rose",
+        "tonalRamp": [
+          "oklch(15% 0.1573 19.46)",
+          "oklch(26% 0.1573 19.46)",
+          "oklch(38% 0.1573 19.46)",
+          "oklch(49% 0.1573 19.46)",
+          "oklch(61% 0.1573 19.46)",
+          "oklch(72% 0.1573 19.46)",
+          "oklch(84% 0.1573 19.46)",
+          "oklch(95% 0.1573 19.46)"
+        ]
+      },
+      "rose-muted": {
+        "role": "semantic",
+        "displayName": "rose muted",
+        "tonalRamp": [
+          "oklch(15% 0.0197 21.36)",
+          "oklch(26% 0.0197 21.36)",
+          "oklch(38% 0.0197 21.36)",
+          "oklch(49% 0.0197 21.36)",
+          "oklch(61% 0.0197 21.36)",
+          "oklch(72% 0.0197 21.36)",
+          "oklch(84% 0.0197 21.36)",
+          "oklch(95% 0.0197 21.36)"
+        ]
+      },
+      "amber-muted": {
+        "role": "semantic",
+        "displayName": "amber muted",
+        "tonalRamp": [
+          "oklch(15% 0.0358 89.44)",
+          "oklch(26% 0.0358 89.44)",
+          "oklch(38% 0.0358 89.44)",
+          "oklch(49% 0.0358 89.44)",
+          "oklch(61% 0.0358 89.44)",
+          "oklch(72% 0.0358 89.44)",
+          "oklch(84% 0.0358 89.44)",
+          "oklch(95% 0.0358 89.44)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Page Heading",
+        "purpose": "Subject heading."
+      },
+      "body": {
+        "displayName": "Reading Text",
+        "purpose": "Study content."
+      },
+      "label": {
+        "displayName": "Navigation Label",
+        "purpose": "Modes and subjects."
+      }
+    },
+    "shadows": [
+      {
+        "name": "ambient-low",
+        "value": "0 3px 8px #4636220a",
+        "purpose": "Low ambient elevation."
+      },
+      {
+        "name": "ambient-medium",
+        "value": "0 12px 30px #4636220d",
+        "purpose": "Medium ambient elevation."
+      },
+      {
+        "name": "action-hover",
+        "value": "0 5px 14px #bb401d20",
+        "purpose": "Primary button hover."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(.16,1,.3,1)",
+        "purpose": "Entrance easing."
+      },
+      {
+        "name": "question-enter",
+        "value": "360ms",
+        "purpose": "Question entry; translateY(12px) to rest."
+      },
+      {
+        "name": "flashcard-enter",
+        "value": "360ms",
+        "purpose": "Perspective(1000px), rotateY(-12deg), scale(.98) to rest."
+      },
+      {
+        "name": "confirmation",
+        "value": "350ms",
+        "purpose": "Correct badge scale .75 to 1.12 to 1; reduced motion disables animations."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact-desktop",
+        "value": "1100px"
+      },
+      {
+        "name": "mobile",
+        "value": "760px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "description": "Primary Button from the shipped paper studio.",
+      "refersTo": "button-primary",
+      "html": "<button class=\"ds-primary\">Next</button>",
+      "css": ".ds-primary{font-family:\"Be Vietnam Pro\",sans-serif;background:var(--accent);color:var(--bg-surface);border:1px solid var(--accent);border-radius:10px;padding:12px 26px;min-height:46px;font-size:.875rem;font-weight:600;cursor:pointer;}.ds-primary:hover{background:var(--accent-deep);box-shadow:0 5px 14px #bb401d20}.ds-primary:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}.ds-primary:active{transform:scale(.97)}"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "description": "Quiet Button from the shipped paper studio.",
+      "refersTo": "button-quiet",
+      "html": "<button class=\"ds-quiet\">Review</button>",
+      "css": ".ds-quiet{font-family:\"Be Vietnam Pro\",sans-serif;background:var(--bg-surface);color:var(--text-2);border:1px solid var(--border-subtle);border-radius:9px;padding:9px 12px;cursor:pointer;}.ds-quiet:hover{background:var(--surface-2);border-color:var(--border-hover)}.ds-quiet:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}.ds-quiet:active{transform:scale(.97)}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "description": "Text Field from the shipped paper studio.",
+      "html": "<input class=\"ds-field\" aria-label=\"Answer\" placeholder=\"Answer\">",
+      "css": ".ds-field{font-family:\"Be Vietnam Pro\",sans-serif;background:var(--bg-surface);color:var(--text-1);border:1px solid var(--border-subtle);border-radius:8px;padding:12px 14px;font-size:16px;}.ds-field:hover{border-color:var(--border-hover)}.ds-field:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px #bb401d14;outline:2px solid var(--accent);outline-offset:3px;}"
+    },
+    {
+      "name": "Subject Rail",
+      "kind": "nav",
+      "description": "Subject Rail from the shipped paper studio.",
+      "html": "<nav aria-label=\"Subjects\"><button class=\"ds-subject\" aria-pressed=\"true\">IT English</button></nav>",
+      "css": ".ds-subject{font-family:\"Be Vietnam Pro\",sans-serif;background:#2c3028;color:var(--bg-surface);border:0;border-radius:12px;padding:13px 12px;font-size:.8125rem;font-weight:600;cursor:pointer;}.ds-subject:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}.ds-subject:active{transform:scale(.97)}"
+    },
+    {
+      "name": "Keyword Tag",
+      "kind": "chip",
+      "description": "Keyword Tag from the shipped paper studio.",
+      "refersTo": "keyword",
+      "html": "<span class=\"ds-keyword\">Risk management</span>",
+      "css": ".ds-keyword{font-family:\"Be Vietnam Pro\",sans-serif;display:inline-block;background:var(--accent-muted);color:var(--accent-deep);border-radius:8px;padding:4px 8px;font-size:.8125rem;}"
+    },
+    {
+      "name": "Question Sheet",
+      "kind": "card",
+      "description": "Question Sheet from the shipped paper studio.",
+      "refersTo": "sheet",
+      "html": "<article class=\"ds-sheet\"><h3>Choose the correct answer</h3><p>Course revision</p></article>",
+      "css": ".ds-sheet{font-family:\"Be Vietnam Pro\",sans-serif;background:var(--bg-surface);color:var(--text-1);border:1px solid var(--border-subtle);border-radius:16px;padding:30px;box-shadow:none;line-height:1.7;}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Study Studio",
+    "overview": "A study studio organized like a notebook: warm paper surrounds clean work sheets, while burnt orange marks actions and selected modes. Quiet borders and direct Vietnamese typography keep attention on recall and feedback.\n\nThe shared system serves all three subjects with compact navigation and minimal repeated copy.",
+    "keyCharacteristics": [
+      "Warm paper and clean work sheets.",
+      "Orange actions with distinct correctness feedback.",
+      "Compact navigation and generous reading surfaces."
+    ],
+    "rules": [
+      {
+        "name": "The Feedback Rule",
+        "body": "Keep correctness distinct from orange action and selection states.",
+        "section": "colors"
+      },
+      {
+        "name": "The Paper Rule",
+        "body": "Keep study sheets flat; use surface tone and borders to separate content.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use the shared paper, ink and orange tokens across subjects.",
+      "Do keep keyboard focus visible and honor reduced motion.",
+      "Do keep interface copy short and preserve readable study content."
+    ],
+    "donts": [
+      "Don't restore decorative gradients or ambient glows to study sheets.",
+      "Don't use orange alone to communicate correct or incorrect answers.",
+      "Don't animate typed input or progress updates."
+    ]
+  }
+}

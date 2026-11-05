@@ -599,6 +599,7 @@ let activeMode = 'part1';
       }
 
       showFeedback(isCorrect, q);
+      window.studyCompanion?.react({correct:isCorrect,source:'english-quiz'});
     };
 
     window.submitBinary = function(val, clickedEl) {
@@ -632,6 +633,7 @@ let activeMode = 'part1';
       }
 
       showFeedback(isCorrect, q);
+      window.studyCompanion?.react({correct:isCorrect,source:'english-quiz'});
     };
 
     function showFeedback(isCorrect, q) {

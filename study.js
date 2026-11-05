@@ -51,7 +51,7 @@ function persist() {
   catch { const message='Không lưu được trên thiết bị này; hãy giữ trang đang mở.';document.getElementById('save-status').textContent=message;notice(message); }
 }
 function snapshot() {
-  if(document.body.dataset.subject==='pm')return;
+  if(document.body.dataset.subject==='pm'||document.body.dataset.subject==='image')return;
   if (restoring || !currentKey) return;
   saved.sessions[currentKey] = {activeMode,part1SubMode,questions,curIdx,correctCount,wrongCount,missedItems,isReviewingMissed,isAnswered,matchingState,exam};
   if(workspace==='practice'&&activeMode==='part1')saved.part1Preference=part1SubMode;
@@ -78,7 +78,7 @@ function record(q, correct) {
   saved.history[q.id] = h;
 }
 function updateNavigation() {
-  if(document.body.dataset.subject==='pm')return;
+  if(document.body.dataset.subject==='pm'||document.body.dataset.subject==='image')return;
   bar.querySelectorAll('[data-workspace]').forEach(b => { b.classList.toggle('active', b.dataset.workspace === workspace); b.setAttribute('aria-pressed',b.dataset.workspace === workspace); });
   document.getElementById('due-count').textContent = weakQuestions().length;
   document.querySelector('.segmented-control').hidden = workspace !== 'practice';
@@ -183,14 +183,14 @@ bar.querySelectorAll('[data-workspace]').forEach(b => b.onclick=()=>{
 });
 // Intercept destructive restart and mode controls before the original listeners.
 document.addEventListener('click', e => {
-  if(document.body.dataset.subject==='pm')return;
+  if(document.body.dataset.subject==='pm'||document.body.dataset.subject==='image')return;
   if (e.target.closest('#btn-shuffle')) { e.preventDefault(); e.stopImmediatePropagation(); startFresh(); }
   const tab=e.target.closest('.segmented-control [data-mode]');
   if (tab) { e.preventDefault(); e.stopImmediatePropagation(); playSfx('btn'); enter(tab.dataset.mode); }
   if (e.target.closest('#btn-audio')) setTimeout(snapshot,0);
 },true);
 window.addEventListener('keydown',e=>{
-  if(document.body.dataset.subject==='pm')return;
+  if(document.body.dataset.subject==='pm'||document.body.dataset.subject==='image')return;
   const isInput = e.target && typeof e.target.matches === 'function' && (e.target.matches('input,textarea,select') || e.target.isContentEditable);
   if (isInput) return;
 
@@ -308,6 +308,7 @@ window.submitExam=()=>{
   correctCount=0; wrongCount=0; missedItems=[];
   questions.forEach((q,i)=>{const value=exam.answers[i]??'',correct=writtenCorrect(q,value);if(correct)correctCount++;else {wrongCount++;missedItems.push(q);} if(isWrittenQuestion(q)){const item=writingItem(Number(q.id.split(':')[1]));recordWriting(item,String(value),correct,false,classifyWritten(value,q.correctAnswer));}else record(q,correct);});
   exam.submitted=true; curIdx=questions.length; renderCurrentQuestion();
+  window.studyCompanion?.react({kind:'complete',source:'english-exam'});
   snapshot();
   if (correctCount >= Math.round(questions.length * 0.6)) {
     playSfx('complete');

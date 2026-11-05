@@ -125,6 +125,7 @@ function rateMemory(confidence) {
   s.results.push({id:entry.id,correct,confidence,helped:s.helped,repeat:entry.repeat,reverse:entry.reverse,at:Date.now()});
   if(!correct||confidence==='unsure'||s.helped)scheduleMemoryRepeat(entry);
   s.stage='feedback';renderMemoryStudy();triggerChime(correct, document.querySelector('.memory-feedback'));
+  window.studyCompanion?.react({correct,assisted:s.helped,source:'english-memory'});
   document.getElementById('memory-next')?.focus({preventScroll:true});
   scrollMemorySection('.memory-feedback');
 }
@@ -133,6 +134,7 @@ function nextMemory() {
   const s=memorySession;if(s?.stage!=='feedback')return;
   s.index++;s.stage=s.index>=s.queue.length?'complete':'recall';s.answerId=null;s.confidence=null;s.helped=false;
   renderMemoryStudy();document.getElementById('memory-prompt')?.focus({preventScroll:true});
+  if(s.stage==='complete')window.studyCompanion?.react({kind:'complete',source:'english-memory'});
   document.getElementById('active-card-container').scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
 }
 function newMemoryRound(early=false) { memorySession=createMemorySession(early);renderMemoryStudy(); }

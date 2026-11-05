@@ -181,6 +181,7 @@ function finishWritingAttempt(revealed) {
   s.results.push({id:entry.id,correct,assisted,revealed,repeat:entry.repeat,answer:s.draft,hints:s.hint,at:Date.now()});
   if(!correct||assisted)scheduleWritingRepeat(entry);
   s.stage='feedback';s.copy='';s.copied=false;renderWritingStudy();triggerChime(correct, document.querySelector('.memory-feedback'));
+  window.studyCompanion?.react({correct,assisted,source:'english-writing'});
   document.getElementById(correct?'writing-next':'writing-copy')?.focus({preventScroll:true});
   document.querySelector('.memory-feedback')?.scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
 }
@@ -215,6 +216,7 @@ function nextWriting(skipCopy=false) {
   playSfx('next');
   s.index++;s.stage=s.index>=s.queue.length?'complete':'answer';s.draft='';s.copy='';s.hint=0;s.copied=false;
   renderWritingStudy();document.getElementById('writing-answer')?.focus();
+  if(s.stage==='complete')window.studyCompanion?.react({kind:'complete',source:'english-writing'});
 }
 function newWritingRound(early=false) { writingSession=createWritingSession(early);renderWritingStudy(); }
 function setPart2Mode(mode) {
@@ -267,6 +269,7 @@ function submitWritingExam() {
   if(!confirm(left?`Còn ${left} câu chưa điền. Nộp bài thi viết?`:'Nộp bài thi viết và xem kết quả?'))return;
   s.results=s.ids.map((id,i)=>{const q=DATASET.part2Data.find(q=>q.id===id),answer=s.answers[i]||'',correct=writtenCorrect(q,answer);recordWriting(writingItem(id),answer,correct,false,classifyWritten(answer,q.answer));return {id,answer,correct};});
   s.stage='complete';s.submitted=Date.now();renderWritingExam();
+  window.studyCompanion?.react({kind:'complete',source:'english-writing-exam'});
   const writingScore=s.results.filter(r=>r.correct).length;
   if(writingScore>=Math.round(s.ids.length*0.6)){triggerConfetti();playSfx('complete');}else playSfx('wrong');
 }
@@ -301,4 +304,5 @@ function submitMixedWriting(event) {
   recordWriting(writingItem(Number(q.id.split(':')[1])),value,correct,false,classifyWritten(value,q.correctAnswer));
   document.querySelectorAll('#mixed-writing-form input,#mixed-writing-form button').forEach(el=>el.disabled=true);
   originalFeedback(correct,q);triggerChime(correct, document.getElementById('mixed-written-answer'));snapshot();document.getElementById('btn-next')?.focus({preventScroll:true});
+  window.studyCompanion?.react({correct,source:'english-mixed-writing'});
 }

@@ -53,15 +53,22 @@
     </div>
     <div class="subject-select-wrap">
       <select id="subject-select" aria-label="Chọn môn học">
-        <option value="english">🇬🇧 Tiếng Anh CNTT (TACN)</option>
-        <option value="pm">📊 Quản lý dự án phần mềm · 38 câu</option>
+        <option value="english">Tiếng Anh CNTT (TACN)</option>
+        <option value="pm">Quản lý dự án phần mềm · 38 câu</option>
+        <option value="image">Nhập môn xử lý ảnh · 400 câu</option>
       </select>
       <span class="subject-select-arrow" aria-hidden="true">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </span>
     </div>
   </div>`;
+  switcher.insertAdjacentHTML('beforeend',`<nav class="subject-rail" aria-label="Môn học">${[['english','Tiếng Anh CNTT','EN'],['pm','Quản lý dự án','PM'],['image','Xử lý ảnh','IP']].map(([id,label,code])=>`<button type="button" data-subject-target="${id}" aria-pressed="${id===active}"><span class="subject-code" aria-hidden="true">${code}</span><span>${label}</span><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 5 7 7-7 7"/></svg></button>`).join('')}</nav>`);
   document.querySelector('.top-bar').after(switcher);
+  const pageHeading=document.createElement('header');
+  pageHeading.className='study-page-heading';
+  pageHeading.innerHTML='<h2>Tiếng Anh CNTT</h2>';
+  switcher.after(pageHeading);
+  switcher.querySelectorAll('[data-subject-target]').forEach(button=>button.addEventListener('click',()=>selectSubject(button.dataset.subjectTarget)));
   switcher.querySelector('select').addEventListener('change',event=>selectSubject(event.target.value));
   document.getElementById('btn-audio').addEventListener('click',()=>{
     if(active!=='pm')return;
@@ -101,7 +108,12 @@
   function normalized(s) {return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D').toLowerCase();}
   function filteredQuestions() {const query=normalized(state.search);return selectedQuestions().filter(q=>!query||normalized(`${q.id} ${q.title} ${q.prompt}`).includes(query));}
   function selectSubject(subject) {
-    if(subject==='pm') {
+    if(subject==='image') {
+      if(active==='english')snapshot();
+      active='image';document.body.dataset.subject='image';document.body.classList.add('pm-study');document.body.classList.remove('guided-study');
+      document.querySelector('.app-brand-title span')?.replaceChildren(document.createTextNode('Ôn tập'));
+      window.ImageQuiz.open();
+    } else if(subject==='pm') {
       if(active==='english')snapshot();
       active='pm';document.body.dataset.subject='pm';document.body.classList.add('pm-study');document.body.classList.remove('guided-study');
       document.querySelector('.app-brand-title span')?.replaceChildren(document.createTextNode('Ôn tập'));
@@ -113,6 +125,8 @@
       enter(workspace==='practice'?(mode==='all'?'part1':mode):'all');
     }
     switcher.querySelector('select').value=active;
+    switcher.querySelectorAll('[data-subject-target]').forEach(button=>button.setAttribute('aria-pressed',button.dataset.subjectTarget===active));
+    pageHeading.innerHTML=`<h2>${{english:'Tiếng Anh CNTT',pm:'Quản lý dự án',image:'Nhập môn xử lý ảnh'}[active]}</h2>`;
     try{localStorage.setItem(SUBJECT_KEY,active);}catch{}
     try {const url=new URL(location.href);url.searchParams.set('subject',active);history.replaceState(null,'',url);}catch{}
     document.getElementById('study-notice').textContent='';
@@ -170,7 +184,7 @@
           <span class="pm-sidebar-stat">${r.readIds.length}/38 đã đọc</span>
         </div>
         <div class="pm-sidebar-search-wrap">
-          <input type="search" class="pm-sidebar-search" data-pm-action="sidebar-search" placeholder="🔍 Tìm câu hỏi / từ khóa..." value="${e(state.sidebarSearch||'')}">
+          <input type="search" class="pm-sidebar-search" data-pm-action="sidebar-search" placeholder="Tìm câu hỏi / từ khóa..." value="${e(state.sidebarSearch||'')}">
         </div>
       </div>
       <ul class="pm-sidebar-list" id="pm-sidebar-list">
@@ -233,7 +247,7 @@
 
           </div>
           <button class="btn-quiet pm-btn-hide-all" data-pm-action="read-hide-all">
-            ${allHidden?'👁️ Hiện toàn bộ':'🔒 Che toàn bộ'}
+            ${allHidden?'Hiện toàn bộ':'Che toàn bộ'}
           </button>
         </div>
 
@@ -247,7 +261,7 @@
                   <span>${e(section.label)}</span>
                 </h4>
                 <button class="btn-quiet pm-toggle-btn" data-pm-action="read-toggle" data-value="${e(section.id)}" aria-controls="pm-read-${q.id}-${e(section.id)}" aria-expanded="${!hidden.has(section.id)&&r.display!=='keywords'}" title="Ẩn/hiện đoạn này">
-                  ${hidden.has(section.id)||r.display==='keywords'?'👁️ Hiện':'🔒 Che'}
+                  ${hidden.has(section.id)||r.display==='keywords'?'Hiện':'Che'}
                   <span class="pm-sr-only">: ${e(section.label)}</span>
                 </button>
               </div>
@@ -270,7 +284,7 @@
           ${read?'✓ Đã đọc câu này':'Đánh dấu đã đọc'}
         </button>
         <button class="btn-primary" data-pm-action="read-test">
-          ✍️ Tự kiểm tra câu này
+          Tự kiểm tra câu này
         </button>
       </div>
 
@@ -334,7 +348,10 @@
     state.mode='learn';
     showLearnHome=false;save();render();focusQuestion();
   }
-  function completeCheck(q,ratings,assisted) {for(const point of allPoints(q))recordPoint(point.id,ratings[point.id],assisted);}
+  function completeCheck(q,ratings,assisted) {
+    for(const point of allPoints(q))recordPoint(point.id,ratings[point.id],assisted);
+    window.studyCompanion?.react({kind:'self-check',correct:allPoints(q).every(point=>ratings[point.id]==='remembered'),assisted,source:'pm'});
+  }
   function checkAllRated(q,ratings) {return allPoints(q).every(p=>['remembered','missing','unsure'].includes(ratings[p.id]));}
   function error(message) {const el=document.getElementById('pm-check-error');if(el){el.textContent=message;el.scrollIntoView({block:'nearest'});}}
   function saveLearnCheck() {
@@ -348,6 +365,7 @@
     if(s.index===s.ids.length-1)s.stage='complete';
     else{s.index++;s.stage='recall';s.draft='';s.assisted=false;s.ratings={};}
     save();render();focusQuestion();
+    if(s.stage==='complete')window.studyCompanion?.react({kind:'complete',source:'pm'});
   }
   function reviewCandidates() {
     const topicIds=new Set(selectedQuestions().map(q=>q.id));
@@ -374,6 +392,7 @@
     const entry=s.queue[s.index];recordPoint(entry.id,rating,false);s.results.push({id:entry.id,rating});
     if(rating!=='remembered'&&!entry.repeat&&s.queue.length-s.index-1>=2)s.queue.splice(Math.min(s.index+4,s.queue.length),0,{id:entry.id,repeat:true});
     s.index++;s.stage=s.index>=s.queue.length?'complete':'recall';s.draft='';save();render();focusQuestion();
+    window.studyCompanion?.react({kind:s.stage==='complete'?'complete':'self-check',correct:rating==='remembered',source:'pm-review'});
   }
   function examHome() {
     const ex=state.exam;
@@ -397,6 +416,7 @@
     const left=s.ids.filter(id=>!s.answers[id]?.trim()).length;
     if(!confirm(left?`Còn ${left} câu chưa viết. Nộp bài và mở đối chiếu?`:'Nộp bài và mở đối chiếu?'))return;
     s.stage='submitted';s.submitted=Date.now();save();render();focusQuestion();
+    window.studyCompanion?.react({kind:'complete',source:'pm-exam'});
   }
   function saveExamCheck() {
     const s=state.exam;if(s?.stage!=='submitted')return;
@@ -503,6 +523,7 @@
   });
   window.addEventListener('keydown',event=>{
     if(active!=='pm'||event.ctrlKey||event.metaKey||event.altKey)return;
+    if(event.key==='Escape'){window.studyCompanion?.dismiss();return;}
     event.stopImmediatePropagation();
     const tag=(event.target&&event.target.tagName)||'';
     if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT')return;
@@ -526,7 +547,7 @@
   showLearnHome=!state.learn;showReviewHome=!state.review;showExamHome=!state.exam;
   try {
     const query=new URLSearchParams(location.search).get('subject');
-    const desired=['pm','english'].includes(query)?query:localStorage.getItem(SUBJECT_KEY);
-    if(desired==='pm')selectSubject('pm');
+    const desired=['pm','english','image'].includes(query)?query:localStorage.getItem(SUBJECT_KEY);
+    if(desired==='pm'||desired==='image')selectSubject(desired);
   }catch{}
 })();
