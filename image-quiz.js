@@ -5,6 +5,17 @@
   const root=document.getElementById('active-card-container');
   const e=escapeHTML,bank=IMAGE_BANK.questions;
   const BATCH_SIZE=50,batchCount=Math.ceil(bank.length/BATCH_SIZE);
+  const batchOrders=new Map();
+  function orderedBatch(items,batch) {
+    const order=batchOrders.get(batch);
+    return order?[...items].sort((a,b)=>order.indexOf(a.id)-order.indexOf(b.id)):items;
+  }
+  function shuffleBatch(batch) {
+    const ids=bank.slice(batch*BATCH_SIZE,(batch+1)*BATCH_SIZE).map(q=>q.id),previous=batchOrders.get(batch)||[...ids];
+    for(let i=ids.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ids[i],ids[j]]=[ids[j],ids[i]];}
+    if(ids.every((id,index)=>id===previous[index]))ids.push(ids.shift());
+    batchOrders.set(batch,ids);
+  }
   let thirdLengthIds=new Set(),visualReady=false,visualSignature='';
   const visualWidths=new Map();
   function measureVisualLengths() {
@@ -70,11 +81,12 @@
   let keywordProgress={};
   try {const raw=JSON.parse(localStorage.getItem(keywordKey));if(raw&&typeof raw==='object'&&!Array.isArray(raw))keywordProgress=raw;}catch{}
   let studyMode='quiz',keywordBatch=0,keywordIndex=0,keywordReveal=false,keywordReview=false;
-  const keywordList=()=>keywordReview?keywordGroups.filter(group=>keywordProgress[group.id]?.due<=Date.now()):keywordGroups.slice(keywordBatch*BATCH_SIZE,(keywordBatch+1)*BATCH_SIZE);
+  const keywordList=()=>keywordReview?keywordGroups.filter(group=>keywordProgress[group.id]?.due<=Date.now()):orderedBatch(keywordGroups.slice(keywordBatch*BATCH_SIZE,(keywordBatch+1)*BATCH_SIZE),keywordBatch);
   function renderKeywords() {
     const items=keywordList(),group=items[keywordIndex],hint=group&&keywordHints[group.name];
     root.innerHTML=`<div class="pm-app image-quiz"><div class="image-toolbar"><button class="btn-quiet" data-image-mode="quiz">← Trắc nghiệm</button><button class="btn-quiet" data-keyword-action="review" aria-pressed="${keywordReview}">${keywordReview?'Tất cả từ khóa':'Ôn đến hạn'}</button></div>
       <label><span class="pm-sr-only">Lượt 50 câu</span><select data-keyword-batch>${Array.from({length:batchCount},(_,i)=>`<option value="${i}" ${i===keywordBatch?'selected':''}>Lượt ${i+1} · Câu ${i*BATCH_SIZE+1}–${Math.min((i+1)*BATCH_SIZE,keywordGroups.length)}</option>`).join('')}</select></label>
+      ${keywordReview?'':'<button class="btn-quiet" data-keyword-action="shuffle">Trộn 50 câu</button>'}
       <p class="image-progress">${keywordGroups.length} câu · Mỗi câu một thẻ từ khóa<span>Đáp án tham khảo</span></p>
       ${group?`<section class="image-question image-keyword-card" data-keyword-id="${group.id}"><p>Câu ${group.id} · ${keywordIndex+1}/${items.length}</p><h2>${e(group.prompt)}</h2><p>Tự nhớ ý chính trước khi mở.</p>
       ${keywordReveal?`<div class="image-feedback" role="status"><strong>${e(hint?.[0]||group.meaning)}</strong>${hint?`<p>${e(hint[1])}</p>`:''}<details class="image-reference"><summary>Xem đáp án và giải thích</summary><p>Đáp án tham khảo: ${e(group.answer)}</p><p>${e(group.explanation)}</p></details>${group.caution?`<p class="pm-note">${e(group.caution)}</p>`:''}</div><div class="image-toolbar"><button class="btn-quiet" data-keyword-action="again">Ôn lại · 10 phút</button><button class="btn-primary" data-keyword-action="remember">Đã nhớ · mai ôn</button></div>`:'<button class="btn-primary" data-keyword-action="reveal">Hiện từ khóa</button>'}</section>
@@ -83,7 +95,7 @@
   }
   const active=()=>document.body.dataset.subject==='image';
   const batchQuestions=()=>bank.slice(state.batch*BATCH_SIZE,(state.batch+1)*BATCH_SIZE).filter(q=>!visualReady||state.lengthRule==='all'||(state.lengthRule==='skip'?!thirdLengthIds.has(q.id):thirdLengthIds.has(q.id)));
-  const list=()=>batchQuestions().filter(q=>(state.topic==='all'||q.topic===state.topic)&&(state.filter==='all'||(state.filter==='wrong'?state.answers[q.id]!==undefined&&state.answers[q.id]!==q.answer:state.answers[q.id]===undefined)));
+  const list=()=>orderedBatch(batchQuestions().filter(q=>(state.topic==='all'||q.topic===state.topic)&&(state.filter==='all'||(state.filter==='wrong'?state.answers[q.id]!==undefined&&state.answers[q.id]!==q.answer:state.answers[q.id]===undefined))),state.batch);
   // Keep a stable queue until a filter changes; answering must not move a question away.
   let queue=[];
   function save() {
@@ -100,6 +112,7 @@
     root.innerHTML=`<div class="pm-app image-quiz">
       <button class="btn-quiet" data-image-mode="keywords">Học từ khóa →</button>
       <label><span class="pm-sr-only">Chọn lượt 50 câu</span><select data-image-field="batch">${Array.from({length:batchCount},(_,i)=>`<option value="${i}" ${i===state.batch?'selected':''}>Lượt ${i+1} · Câu ${i*BATCH_SIZE+1}–${Math.min((i+1)*BATCH_SIZE,bank.length)}</option>`).join('')}</select></label>
+      <button class="btn-quiet" data-image-action="shuffle" ${queue.length<2?'disabled':''}>Trộn 50 câu</button>
       <label><span class="pm-sr-only">Độ dài hiển thị, xếp từ ngắn đến dài</span><select data-image-field="lengthRule" ${visualReady?'':'disabled'}>${[['skip',visualReady?`Ôn ${bank.length-thirdLengthIds.size} câu · Bỏ nhóm thứ 3`:'Đang đo độ dài hiển thị…'],['only',`Chỉ ${thirdLengthIds.size} câu · Ngắn → dài, thứ 3`],['all','Đủ 400 câu']].map(([value,label])=>`<option value="${value}" ${value===state.lengthRule?'selected':''}>${label}</option>`).join('')}</select></label>
       <div class="image-toolbar"><label><span class="pm-sr-only">Lọc câu hỏi</span><select data-image-field="filter">${[['all','Tất cả câu'],['unanswered','Chưa làm'],['wrong','Câu sai']].map(([value,label])=>`<option value="${value}" ${value===state.filter?'selected':''}>${label}</option>`).join('')}</select></label><label><span class="pm-sr-only">Chủ đề</span><select data-image-field="topic"><option value="all">Tất cả chủ đề</option>${topics.map(topic=>`<option ${topic===state.topic?'selected':''}>${e(topic)}</option>`).join('')}</select></label></div>
       <p class="image-progress">Đã làm ${answered}/${batch.length} · Đúng ${correct}<span>Đáp án tham khảo</span></p>
@@ -127,10 +140,11 @@
   root.addEventListener('click',event=>{
     if(!active())return;
     const button=event.target.closest('button');if(!button||button.disabled)return;
-    if(button.dataset.imageMode){studyMode=button.dataset.imageMode;render();return;}
+    if(button.dataset.imageMode){studyMode=button.dataset.imageMode;if(studyMode==='quiz')resetQueue();render();return;}
     if(button.dataset.keywordAction){
       const action=button.dataset.keywordAction,items=keywordList(),group=items[keywordIndex];
       if(action==='reveal')keywordReveal=true;
+      if(action==='shuffle'&&!keywordReview){shuffleBatch(keywordBatch);keywordIndex=0;keywordReveal=false;}
       if(action==='review'){keywordReview=!keywordReview;keywordIndex=0;keywordReveal=false;}
       if(action==='previous'||action==='next'){keywordIndex+=action==='next'?1:-1;keywordReveal=false;}
       if(group&&keywordReveal&&(action==='again'||action==='remember')){
@@ -142,6 +156,7 @@
       render();return;
     }
     if(button.dataset.imageAnswer!==undefined)answer(Number(button.dataset.imageAnswer));
+    if(button.dataset.imageAction==='shuffle'){shuffleBatch(state.batch);resetQueue();state.questionId=queue[0]?.id||1;save();render();}
     if(button.dataset.imageMove)move(Number(button.dataset.imageMove));
     if(button.dataset.imageAction==='retry'){delete state.answers[state.questionId];save();render();}
     if(button.dataset.imageAction==='next-batch'&&state.batch<batchCount-1){state.batch++;resetQueue();render();}

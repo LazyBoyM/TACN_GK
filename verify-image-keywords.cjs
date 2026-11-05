@@ -61,6 +61,39 @@ const assert=require('node:assert/strict');
     await page.locator('[data-keyword-action="reveal"]').click();
     await page.locator('[data-keyword-action="remember"]').click();
     assert.equal(await page.locator('.pm-empty').count(),1);
+    // Shuffling preserves all 50 IDs, hides the answer, and leaves saved work intact.
+    const savedKeywords=await page.evaluate(()=>localStorage.getItem('image-keyword-study-v1'));
+    let shuffled=[];
+    for(let batch=0;batch<8;batch++){
+      await page.locator('[data-keyword-batch]').selectOption(String(batch));
+      await page.locator('[data-keyword-action="reveal"]').click();
+      await page.locator('[data-keyword-action="shuffle"]').click();
+      assert.equal(await page.locator('.image-feedback').count(),0);
+      shuffled=await page.evaluate(()=>{
+        const ids=[];
+        for(let index=0;index<50;index++){
+          ids.push(Number(document.querySelector('.image-keyword-card').dataset.keywordId));
+          if(index<49)document.querySelector('[data-keyword-action="next"]').click();
+        }
+        return ids;
+      });
+      const expected=Array.from({length:50},(_,index)=>batch*50+index+1);
+      assert.deepEqual([...shuffled].sort((a,b)=>a-b),expected);
+      assert.notDeepEqual(shuffled,expected);
+    }
+    assert.equal(await page.evaluate(()=>localStorage.getItem('image-keyword-study-v1')),savedKeywords);
+    await page.locator('[data-image-mode="quiz"]').click();
+    await page.locator('[data-image-field="lengthRule"]').selectOption('all');
+    await page.locator('[data-image-field="batch"]').selectOption('7');
+    const quizOrder=()=>page.locator('[data-image-field="question"] option').evaluateAll(options=>options.map(option=>Number(option.value)));
+    assert.deepEqual(await quizOrder(),shuffled);
+    const answers=await page.evaluate(()=>JSON.parse(localStorage.getItem('image-processing-quiz-v1')).answers);
+    await page.locator('[data-image-action="shuffle"]').click();
+    const mixed=await quizOrder();
+    assert.notDeepEqual(mixed,shuffled);
+    assert.deepEqual([...mixed].sort((a,b)=>a-b),Array.from({length:50},(_,index)=>351+index));
+    assert.equal(await page.locator('[data-image-field="question"]').inputValue(),String(mixed[0]));
+    assert.deepEqual(await page.evaluate(()=>JSON.parse(localStorage.getItem('image-processing-quiz-v1')).answers),answers);
     assert.deepEqual(errors,[]);
     console.log('PASS image keywords: all 400 individual cards and answers, recall, scheduling, persistence, review, mobile, quiz isolation');
   } finally {await browser.close();}
