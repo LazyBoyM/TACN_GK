@@ -4,6 +4,9 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 const bank=vm.runInNewContext(fs.readFileSync('image-data.js','utf8')+';IMAGE_BANK');
 assert.equal(bank.questions.length,400);
+assert.equal(bank.focusIds.length,200);
+assert.equal(new Set(bank.focusIds).size,200);
+assert(bank.focusIds.every(id=>bank.questions.some(q=>q.id===id)));
 for(const [i,q] of bank.questions.entries()) {
   assert.equal(q.id,i+1);assert.equal(q.options.length,4);
   assert(Number.isInteger(q.answer)&&q.answer>=0&&q.answer<4);
@@ -54,7 +57,7 @@ assert.equal(fs.readFileSync('index.html','utf8'),fs.readFileSync('IT_English_Qu
     await page.locator('[data-image-field="lengthRule"]').waitFor({state:'attached'});
     assert.equal(await page.locator('[data-image-field="lengthRule"]').inputValue(),'only');
     await page.locator('[data-image-field="lengthRule"]').selectOption('all');
-    assert.equal(await page.locator('[data-image-field="batch"] option').count(),8);
+    assert.equal(await page.locator('[data-image-field="batch"] optgroup[label="Đủ 400 câu"] option').count(),8);
     for(let batch=0;batch<8;batch++) {
       await page.locator('[data-image-field="batch"]').selectOption(String(batch));
       const ids=await page.locator('[data-image-field="question"] option').evaluateAll(options=>options.map(option=>Number(option.value)));
@@ -111,6 +114,20 @@ assert.equal(fs.readFileSync('index.html','utf8'),fs.readFileSync('IT_English_Qu
     assert(await page.locator('.pm-reading-section').count()>0);
     await page.locator('#subject-select').selectOption('image');
     assert.equal((await state()).answers[400],3);
+    await page.locator('[data-image-field="lengthRule"]').selectOption('only');
+    const focusOptions=await page.locator('[data-image-field="batch"] optgroup[label="200 câu trọng tâm"] option').evaluateAll(options=>options.map(option=>option.value));
+    assert.equal(focusOptions.length,4);
+    const focusIds=[];
+    for(const value of focusOptions){
+      await page.locator('[data-image-field="batch"]').selectOption(value);
+      const ids=await page.locator('[data-image-field="question"] option').evaluateAll(options=>options.map(option=>Number(option.value)));
+      assert.equal(ids.length,50);
+      focusIds.push(...ids);
+    }
+    assert.deepEqual(focusIds,[...bank.focusIds]);
+    await page.locator('[data-image-mode="keywords"]').click();
+    assert.equal(await page.locator('[data-keyword-batch]').inputValue(),focusOptions.at(-1));
+    assert.equal(await page.locator('.image-keyword-card').getAttribute('data-keyword-id'),String(focusIds[150]));
     await page.locator('#subject-select').selectOption('english');
     assert.equal(await page.locator('#writing-answer').inputValue(),'English draft before image quiz');
     assert.equal(await page.evaluate(()=>localStorage.getItem('it-english-study-v2')),english);

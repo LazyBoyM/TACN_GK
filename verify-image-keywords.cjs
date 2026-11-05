@@ -11,9 +11,10 @@ const assert=require('node:assert/strict');
     await page.locator('[data-image-mode="keywords"]').click();
     // Every original question has its own card, including repeated concepts.
     const bank=await page.evaluate(()=>IMAGE_BANK.questions);
-    assert.equal(await page.locator('[data-keyword-batch] option').count(),8);
-    assert.match(await page.locator('[data-keyword-batch] option').first().innerText(),/Câu 1–50/);
-    assert.match(await page.locator('[data-keyword-batch] option').last().innerText(),/Câu 351–400/);
+    const fullBatches=page.locator('[data-keyword-batch] optgroup[label="Đủ 400 câu"] option');
+    assert.equal(await fullBatches.count(),8);
+    assert.match(await fullBatches.first().innerText(),/Câu 1–50/);
+    assert.match(await fullBatches.last().innerText(),/Câu 351–400/);
     const cards=await page.evaluate(()=>{
       const rows=[];
       for(let batch=0;batch<8;batch++){
