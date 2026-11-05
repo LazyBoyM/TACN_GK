@@ -55,7 +55,7 @@
       <select id="subject-select" aria-label="Chọn môn học">
         <option value="english">Tiếng Anh CNTT (TACN)</option>
         <option value="pm">Quản lý dự án phần mềm · 38 câu</option>
-        <option value="image">Nhập môn xử lý ảnh · 400 câu</option>
+        <option value="image">Nhập môn xử lý ảnh</option>
       </select>
       <span class="subject-select-arrow" aria-hidden="true">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>

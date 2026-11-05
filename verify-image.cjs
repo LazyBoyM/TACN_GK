@@ -4,9 +4,13 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 const bank=vm.runInNewContext(fs.readFileSync('image-data.js','utf8')+';IMAGE_BANK');
 assert.equal(bank.questions.length,400);
+const study=bank.studyQuestions;
+assert.equal(study.length,147);
+assert.deepEqual([...study],[...bank.questions.filter((q,i)=>bank.questions.findIndex(item=>item.explanation===q.explanation)===i)]);
 assert.equal(bank.focusIds.length,200);
 assert.equal(new Set(bank.focusIds).size,200);
 assert(bank.focusIds.every(id=>bank.questions.some(q=>q.id===id)));
+assert.deepEqual(Array.from(bank.focusIds.slice(0,147)),Array.from(study,q=>q.id));
 for(const [i,q] of bank.questions.entries()) {
   assert.equal(q.id,i+1);assert.equal(q.options.length,4);
   assert(Number.isInteger(q.answer)&&q.answer>=0&&q.answer<4);
@@ -46,22 +50,22 @@ assert.equal(fs.readFileSync('index.html','utf8'),fs.readFileSync('IT_English_Qu
     for(const rule of ['skip','only']) {
       await page.locator('[data-image-field="lengthRule"]').selectOption(rule);
       const allIds=[];
-      for(let batch=0;batch<8;batch++) {
+      for(let batch=0;batch<3;batch++) {
         await page.locator('[data-image-field="batch"]').selectOption(String(batch));
         allIds.push(...await page.locator('[data-image-field="question"] option').evaluateAll(options=>options.map(option=>Number(option.value))));
       }
-      const expected=bank.questions.filter(q=>rule==='only'?excluded.includes(q.id):!excluded.includes(q.id)).map(q=>q.id);
+      const expected=study.filter(q=>rule==='only'?excluded.includes(q.id):!excluded.includes(q.id)).map(q=>q.id);
       assert.deepEqual(allIds,Array.from(expected));
     }
     await page.reload();
     await page.locator('[data-image-field="lengthRule"]').waitFor({state:'attached'});
     assert.equal(await page.locator('[data-image-field="lengthRule"]').inputValue(),'only');
     await page.locator('[data-image-field="lengthRule"]').selectOption('all');
-    assert.equal(await page.locator('[data-image-field="batch"] optgroup[label="Đủ 400 câu"] option').count(),8);
-    for(let batch=0;batch<8;batch++) {
+    assert.equal(await page.locator('[data-image-field="batch"] optgroup[label="147 câu không trùng"] option').count(),3);
+    for(let batch=0;batch<3;batch++) {
       await page.locator('[data-image-field="batch"]').selectOption(String(batch));
       const ids=await page.locator('[data-image-field="question"] option').evaluateAll(options=>options.map(option=>Number(option.value)));
-      assert.deepEqual(ids,Array.from({length:50},(_,i)=>batch*50+i+1));
+      assert.deepEqual(ids,Array.from(study.slice(batch*50,(batch+1)*50),q=>q.id));
     }
     await page.locator('[data-image-field="batch"]').selectOption('0');
     assert.equal(await page.locator('.image-options button').count(),4);
@@ -89,19 +93,19 @@ assert.equal(fs.readFileSync('index.html','utf8'),fs.readFileSync('IT_English_Qu
     await page.locator('[data-image-field="topic"]').selectOption('Nén ảnh');
     assert((await page.locator('[data-image-field="question"] option').count())<50);
     await page.locator('[data-image-field="topic"]').selectOption('all');
-    await page.locator('[data-image-field="question"]').selectOption('50');
+    await page.locator('[data-image-field="question"]').selectOption(String(study[49].id));
     assert(await page.locator('[data-image-move="1"]').isDisabled());
     await page.locator('[data-image-action="next-batch"]').click();
     assert.equal((await state()).batch,1);
-    assert.equal((await state()).questionId,51);
-    await page.locator('[data-image-field="batch"]').selectOption('7');
-    await page.locator('[data-image-field="question"]').selectOption('400');
+    assert.equal((await state()).questionId,study[50].id);
+    await page.locator('[data-image-field="batch"]').selectOption('2');
+    await page.locator('[data-image-field="question"]').selectOption('399');
     assert(await page.locator('[data-image-move="1"]').isDisabled());
-    await page.locator('[data-image-answer="3"]').click();
+    await page.locator('[data-image-answer="2"]').click();
     await page.reload();
     await page.locator('.image-question').waitFor();
-    assert.equal(await page.locator('[data-image-field="batch"]').inputValue(),'7');
-    assert.equal((await state()).questionId,400);
+    assert.equal(await page.locator('[data-image-field="batch"]').inputValue(),'2');
+    assert.equal((await state()).questionId,399);
     assert.equal((await state()).answers[1],1);
     fs.mkdirSync('.test-artifacts',{recursive:true});
     await page.screenshot({path:'.test-artifacts/image-desktop.png',fullPage:true});
@@ -113,7 +117,7 @@ assert.equal(fs.readFileSync('index.html','utf8'),fs.readFileSync('IT_English_Qu
     await page.locator('#subject-select').selectOption('pm');
     assert(await page.locator('.pm-reading-section').count()>0);
     await page.locator('#subject-select').selectOption('image');
-    assert.equal((await state()).answers[400],3);
+    assert.equal((await state()).answers[399],2);
     await page.locator('[data-image-field="lengthRule"]').selectOption('only');
     const focusOptions=await page.locator('[data-image-field="batch"] optgroup[label="200 câu trọng tâm"] option').evaluateAll(options=>options.map(option=>option.value));
     assert.equal(focusOptions.length,4);
@@ -121,7 +125,7 @@ assert.equal(fs.readFileSync('index.html','utf8'),fs.readFileSync('IT_English_Qu
     for(const value of focusOptions){
       await page.locator('[data-image-field="batch"]').selectOption(value);
       const ids=await page.locator('[data-image-field="question"] option').evaluateAll(options=>options.map(option=>Number(option.value)));
-      assert.equal(ids.length,50);
+      assert.equal(ids.length,Math.min(50,bank.focusIds.length-focusIds.length));
       focusIds.push(...ids);
     }
     assert.deepEqual(focusIds,[...bank.focusIds]);
@@ -132,6 +136,6 @@ assert.equal(fs.readFileSync('index.html','utf8'),fs.readFileSync('IT_English_Qu
     assert.equal(await page.locator('#writing-answer').inputValue(),'English draft before image quiz');
     assert.equal(await page.evaluate(()=>localStorage.getItem('it-english-study-v2')),english);
     assert.deepEqual(errors,[]);
-    console.log('PASS: 400 questions, answers, filters, retry, persistence, keyboard, subject isolation, responsive layout');
+    console.log('PASS: 147 deduplicated questions, answers, filters, retry, persistence, keyboard, subject isolation, responsive layout');
   } finally {await browser.close();}
 })();
