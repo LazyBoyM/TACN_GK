@@ -26,11 +26,20 @@ assert.equal(fs.readFileSync('index.html','utf8'),fs.readFileSync('IT_English_Qu
     const english=await page.evaluate(()=>localStorage.getItem('it-english-study-v2'));
     await page.locator('#subject-select').selectOption('image');
     assert.equal(await page.locator('[data-image-field="lengthRule"]').inputValue(),'skip');
-    const excluded=bank.questions.filter(q=>{
-      const lengths=q.options.map(option=>[...option].length),correct=lengths[q.answer];
-      return lengths.filter(length=>length>correct).length===2&&lengths.filter(length=>length===correct).length===1;
-    }).map(q=>q.id);
-    assert.equal(excluded.length,99);
+    await page.evaluate(()=>document.fonts.ready);
+    await page.waitForFunction(()=>!document.querySelector('[data-image-field="lengthRule"]').disabled);
+    // Independent DOM measurement checks the canvas-based visual filter.
+    const excluded=await page.evaluate(()=>{
+      const style=getComputedStyle(document.querySelector('.image-option')),probe=document.createElement('span');
+      probe.style.cssText='position:absolute;left:-10000px;white-space:pre;width:max-content';
+      probe.style.font=style.font;probe.style.letterSpacing=style.letterSpacing;document.body.append(probe);
+      const ids=IMAGE_BANK.questions.filter(q=>{
+        const widths=q.options.map(option=>{probe.textContent=option.replace(/\s+/g,' ').trim();return probe.getBoundingClientRect().width;}),correct=widths[q.answer];
+        return widths.filter(width=>width<correct-.5).length===2&&widths.filter(width=>Math.abs(width-correct)<=.5).length===1;
+      }).map(q=>q.id);probe.remove();return ids;
+    });
+    assert(excluded.length>0&&excluded.length<400);
+    assert(!excluded.includes(7),'Q7 answer A is visually second-shortest, not third');
     for(const rule of ['skip','only']) {
       await page.locator('[data-image-field="lengthRule"]').selectOption(rule);
       const allIds=[];
