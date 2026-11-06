@@ -126,6 +126,127 @@
   try {const raw=JSON.parse(localStorage.getItem(keywordKey));if(raw&&typeof raw==='object'&&!Array.isArray(raw))keywordProgress=raw;}catch{}
   let studyMode='quiz',keywordBatch=0,keywordIndex=0,keywordReveal=false,keywordReview=false;
   const keywordsById=new Map(keywordGroups.map(group=>[group.id,group]));
+  const promptCues={
+    191:'tham gia tích cực trong giờ giảng',
+    192:'tích lũy và cập nhật kiến thức',
+    193:'thực hiện nhiệm vụ được giao',
+    194:'tự đánh giá việc học',
+    368:'giá trị trung bình của các đối tượng đang được gán vào cụm',
+    373:'Bản đồ tự tổ chức'
+  };
+  const shortKeywords={
+    'Nhiễu ngẫu nhiên':'Không rõ quy luật → dùng phép lọc',
+    'Tăng số mức xám':'Nội suy mức xám trung gian → ảnh mịn hơn',
+    'Ảnh số':'Số hóa → ma trận điểm ảnh',
+    'Nén không bảo toàn thông tin':'Nén cao hơn → ảnh khôi phục có thể khác ảnh gốc',
+    'Mô hình HSV':'Sắc độ · độ bão hòa · giá trị sáng'
+  };
+  const answerCues={
+    1:['không rõ quy luật','phép lọc'],
+    2:['Nội suy các mức xám trung gian','tăng độ mịn'],
+    3:['ma trận các điểm ảnh'],
+    4:['nén cao hơn','không hoàn toàn giống ảnh gốc'],
+    6:['đỏ, xanh lá và xanh dương','phối màu cộng'],
+    8:['sắc độ, độ bão hòa và giá trị sáng'],
+    9:['bitmap','cấu trúc điểm ảnh'],
+    10:['cộng các thành phần ánh sáng'],
+    11:['hấp thụ bớt thành phần ánh sáng'],
+    12:['thu nhận trực tiếp','mức xử lý tối thiểu'],
+    13:['Camera và scanner'],
+    14:['các vị trí rời rạc'],
+    15:['các đối tượng hình học','không bị vỡ hình'],
+    16:['một cảm biến','cần nội suy'],
+    17:['ba cảm biến riêng'],
+    19:['nhiều kiểu mã hóa và nhiều kiểu màu'],
+    21:['giá trị trung bình của vùng lân cận'],
+    22:['Ước lượng ảnh gốc','mô hình suy hao và nhiễu'],
+    23:['hình dạng và cấu trúc'],
+    25:['giảm sai số trung bình bình phương'],
+    26:['Cộng một hằng số dương'],
+    27:['Phân bố lại mức xám','cải thiện độ tương phản'],
+    28:['Mở rộng dải mức xám'],
+    30:['trung bình trên k giá trị','mức xám gần với điểm đang xét'],
+    31:['rất sáng hoặc rất tối rải rác'],
+    33:['bù trực tiếp hàm suy hao','miền tần số'],
+    36:['hiệu giữa ảnh đã giãn và ảnh đã co'],
+    38:['hai ngưỡng','biên mạnh, biên yếu'],
+    39:['hiệu giữa ảnh gốc và ảnh sau phép co'],
+    40:['biến thiên mức xám','đạo hàm'],
+    41:['xấp xỉ đạo hàm theo hai hướng'],
+    42:['trọng số lớn hơn ở hàng hoặc cột giữa'],
+    43:['nhiều bước','biên mảnh và liên tục'],
+    44:['co vùng đối tượng','loại bỏ chi tiết nhỏ'],
+    45:['giãn ảnh rồi co ảnh'],
+    46:['chi tiết mịn và điểm cô lập','nhạy với nhiễu'],
+    48:['Mẫu hình học'],
+    50:['Đạo hàm bậc nhất','sự thay đổi mức xám'],
+    51:['sự sắp xếp và biến thiên cục bộ của mức xám'],
+    52:['vùng đối tượng và nền','ngưỡng mức xám'],
+    53:['Giảm dao động','histogram'],
+    54:['tính đối xứng','mức xám thuộc nền'],
+    55:['Ghép các vùng lân cận','tiêu chuẩn đồng nhất'],
+    56:['đặc trưng texture'],
+    57:['hai nhóm mức xám','nền và đối tượng'],
+    58:['lân cận của điểm ảnh'],
+    60:['cập nhật ngưỡng cho đến khi ổn định'],
+    61:['thư viện mẫu chuẩn đã biết'],
+    62:['vector nhiều chiều','mỗi chiều là một đặc trưng'],
+    63:['K cụm','tâm gần nhất và cập nhật tâm'],
+    64:['lớp chiếm đa số','K mẫu gần nhất'],
+    65:['liên kết đầy đủ','tự kết hợp để hồi tưởng mẫu'],
+    66:['từ tần số thấp đến cao'],
+    67:['nhiều mức kích thước','low-pass','high-pass'],
+    68:['không thu được hoàn toàn dữ liệu gốc','tỷ lệ nén cao hơn'],
+    69:['Biến đổi ảnh sang miền khác'],
+    70:['ghép hai nút có xác suất nhỏ nhất'],
+    71:['mở rộng từ điển các chuỗi','không cần truyền từ điển hoàn chỉnh'],
+    72:['loại bỏ hoặc biểu diễn hiệu quả hơn'],
+    73:['cấu trúc và mô hình ảnh ở mức cao hơn'],
+    74:['thay đổi của thống kê dữ liệu'],
+    75:['4096 phần tử','12 bit'],
+    191:['chủ động trao đổi'],
+    192:['thường xuyên bổ sung kiến thức mới'],
+    193:['đúng phạm vi và thời điểm'],
+    194:['kiểm tra lại mức độ hiểu bài','nội dung cần bổ sung'],
+    207:['lớp đã xác định','mẫu chuẩn'],
+    213:['không làm mất thông tin gốc'],
+    233:['CMY','thành phần đen'],
+    257:['ngưỡng dựa trên đặc trưng phân bố mức xám'],
+    261:['trung vị','nhiễu xung'],
+    275:['Cộng một hằng số âm'],
+    289:['Nhóm các mức xám gần nhau'],
+    339:['Chia một vùng chưa đồng nhất'],
+    363:['tách và gộp lớp'],
+    367:['bảo toàn tương đối quan hệ lân cận'],
+    373:['bảo toàn tương đối quan hệ lân cận'],
+    375:['mở rộng động','các chuỗi mới'],
+    377:['Tỷ số','trước nén','sau nén'],
+    379:['các khối dữ liệu','các từ mã tương ứng'],
+    383:['chỉ khác nhau một bit'],
+    385:['kết thúc từ điển hiện tại','bắt đầu lại từ điển mới'],
+    395:['khôi phục chính xác dữ liệu gốc'],
+    399:['lặp liên tiếp','độ dài loạt']
+  };
+  function highlightCues(value,cues) {
+    let end=0,html='';
+    const lower=value.toLowerCase();
+    for(const cue of cues){
+      const start=lower.indexOf(cue.toLowerCase(),end);
+      if(start<0)continue;
+      html+=e(value.slice(end,start))+'<mark class="image-cue">'+e(value.slice(start,start+cue.length))+'</mark>';
+      end=start+cue.length;
+    }
+    return html+e(value.slice(end));
+  }
+  function wrongAnswerCue(q) {
+    const split=q.explanation.indexOf(':');
+    const name=split>0?q.explanation.slice(0,split).trim():'';
+    const meaning=q.explanation.slice(split+1).trim().replace(/\.$/,'');
+    const cue=promptCues[q.id]||(name&&q.prompt.includes(name)?name:meaning);
+    const keyword=name&&cue===meaning?name:keywordHints[name]?.[0]||shortKeywords[name]||meaning;
+    const answer=q.options[q.answer];
+    return {prompt:highlightCues(q.prompt,[cue]),answer:highlightCues(answer,answerCues[q.id]||[answer]),keyword};
+  }
   const keywordList=()=>keywordReview?keywordGroups.filter(group=>keywordProgress[group.id]?.due<=Date.now()):questionsInBatch(keywordBatch).map(q=>keywordsById.get(q.id));
   function renderKeywords() {
     const items=keywordList(),group=items[keywordIndex],hint=group&&keywordHints[group.name];
@@ -162,6 +283,7 @@
     const answers=currentAnswers();
     const batch=batchQuestions(),answered=batch.filter(q=>answers[q.id]!==undefined).length,correct=batch.filter(q=>answers[q.id]===q.answer).length;
     const selected=q?answers[q.id]:undefined;
+    const correction=selected!==undefined&&selected!==q.answer?wrongAnswerCue(q):null;
     const order=q?optionOrder(q):[];
     const testing=isTestBatch(state.batch),finished=answered===batch.length;
     root.innerHTML=`<div class="pm-app image-quiz">
@@ -175,8 +297,8 @@
       ${showTestResult||finished?`<div class="image-feedback" data-image-result role="status" tabindex="-1"><strong>Kết quả lượt ${state.batch-testStart+1} · ${correct}/${batch.length} điểm</strong><p>Đúng ${correct} · Sai ${answered-correct} · Chưa làm ${batch.length-answered}</p></div>`:''}`:''}
       ${storageError?'<p class="pm-error" role="status">Không lưu được tiến độ. Hãy giữ trang đang mở.</p>':''}
       ${q?`<label class="image-jump"><span class="pm-sr-only">Chọn câu</span><select data-image-field="question">${queue.map(item=>`<option value="${item.id}" ${item.id===q.id?'selected':''}>Câu ${item.id}</option>`).join('')}</select><span>${index+1}/${queue.length}</span></label>
-      <section class="image-question" aria-label="Câu ${q.id}"><h2>${e(q.prompt)}</h2><div class="image-options">${order.map((original,position)=>`<button type="button" data-image-answer="${position}" aria-pressed="${selected===original}" ${selected!==undefined?'disabled':''} class="image-option ${selected!==undefined&&original===q.answer?'is-correct':''} ${selected===original&&original!==q.answer?'is-wrong':''}"><span class="image-letter">${'ABCD'[position]}</span><span>${e(q.options[original])}</span>${selected!==undefined&&original===q.answer?'<strong class="image-verdict">Đúng</strong>':selected===original?'<strong class="image-verdict">Bạn chọn</strong>':''}</button>`).join('')}</div>
-      ${visualLengthDetails(q)}${selected!==undefined?`<div class="image-feedback" role="status"><strong>${selected===q.answer?'Đúng':'Chưa đúng · Đáp án '+ 'ABCD'[order.indexOf(q.answer)]}</strong><p>${e(q.explanation)}</p>${q.caution?`<p class="pm-note">${e(q.caution)}</p>`:''}<button class="btn-quiet" type="button" data-image-action="retry">Làm lại câu này</button></div>`:''}</section>
+      <section class="image-question" aria-label="Câu ${q.id}"><h2>${correction?.prompt||e(q.prompt)}</h2><div class="image-options">${order.map((original,position)=>`<button type="button" data-image-answer="${position}" aria-pressed="${selected===original}" ${selected!==undefined?'disabled':''} class="image-option ${selected!==undefined&&original===q.answer?'is-correct':''} ${selected===original&&original!==q.answer?'is-wrong':''}"><span class="image-letter">${'ABCD'[position]}</span><span>${correction&&original===q.answer?correction.answer:e(q.options[original])}</span>${selected!==undefined&&original===q.answer?'<strong class="image-verdict">Đúng</strong>':selected===original?'<strong class="image-verdict">Bạn chọn</strong>':''}</button>`).join('')}</div>
+      ${visualLengthDetails(q)}${selected!==undefined?`<div class="image-feedback" role="status"><strong>${selected===q.answer?'Đúng':'Chưa đúng · Đáp án '+ 'ABCD'[order.indexOf(q.answer)]}</strong>${correction?`<p>Từ khóa cần nhớ: <mark class="image-cue">${e(correction.keyword)}</mark></p>`:''}<p>${e(q.explanation)}</p>${q.caution?`<p class="pm-note">${e(q.caution)}</p>`:''}<button class="btn-quiet" type="button" data-image-action="retry">Làm lại câu này</button></div>`:''}</section>
       <nav class="pm-reading-nav" aria-label="Chuyển câu"><button class="btn-quiet" type="button" data-image-move="-1" ${index===0?'disabled':''}>← Trước</button><span>${index+1}/${queue.length}</span><button class="btn-primary" type="button" data-image-move="1" ${index===queue.length-1?'disabled':''}>Tiếp →</button></nav>`:'<p class="pm-empty" role="status">Không có câu phù hợp. Chọn bộ lọc khác để tiếp tục.</p>'}
       ${(index===queue.length-1||!q)&&hasNextBatch(state.batch)?'<button class="btn-quiet" type="button" data-image-action="next-batch">Lượt tiếp theo →</button>':''}
       <details class="image-reference"><summary>Về đáp án</summary><p>Đáp án do trợ lý suy luận từ nội dung câu hỏi, chưa phải đáp án chính thức của giảng viên.</p>${IMAGE_BANK.sources.map(source=>`<p><a href="${e(source.url)}" target="_blank" rel="noopener noreferrer">${e(source.title)}</a></p>`).join('')}</details>

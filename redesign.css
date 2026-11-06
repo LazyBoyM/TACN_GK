@@ -223,6 +223,7 @@ body #btn-next { box-shadow: none; }
 .image-feedback { color: var(--text-2); border-top: 1px solid var(--border-subtle); padding-top: 22px; }
 .image-feedback > strong { color: var(--text-1); }
 .image-feedback p { font-size: .9375rem; }
+.image-cue { background: var(--accent-muted); color: var(--accent-deep); font-weight: 700; }
 .image-reference,.image-reference a { color: var(--text-3); }
 .image-reference a:hover { color: var(--accent); }
 .image-quiz .pm-reading-nav { border: 0; padding-top: 0; }
